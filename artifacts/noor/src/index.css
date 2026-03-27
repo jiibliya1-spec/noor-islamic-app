@@ -1,0 +1,144 @@
+@import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+@import "tw-animate-css";
+@plugin "@tailwindcss/typography";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-card-border: hsl(var(--border));
+
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-popover-border: hsl(var(--border));
+
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+
+  --color-sidebar: hsl(var(--sidebar));
+  --color-sidebar-foreground: hsl(var(--sidebar-foreground));
+  --color-sidebar-border: hsl(var(--sidebar-border));
+  --color-sidebar-primary: hsl(var(--sidebar-primary));
+  --color-sidebar-primary-foreground: hsl(var(--sidebar-primary-foreground));
+  --color-sidebar-accent: hsl(var(--sidebar-accent));
+  --color-sidebar-accent-foreground: hsl(var(--sidebar-accent-foreground));
+
+  --font-sans: 'Inter', sans-serif;
+  --font-arabic: 'Noto Naskh Arabic', serif;
+  --font-quran: 'Amiri', serif;
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+:root {
+  /* Deep dark green and gold premium theme */
+  --background: 156 51% 10%; /* #0c261c */
+  --foreground: 0 0% 98%;
+  
+  --card: 156 45% 14%; /* slightly lighter */
+  --card-foreground: 0 0% 98%;
+  
+  --popover: 156 51% 10%;
+  --popover-foreground: 0 0% 98%;
+  
+  --primary: 46 65% 52%; /* Gold #d4af37 */
+  --primary-foreground: 156 51% 10%;
+  
+  --secondary: 156 40% 20%;
+  --secondary-foreground: 0 0% 98%;
+  
+  --muted: 156 30% 18%;
+  --muted-foreground: 156 10% 70%;
+  
+  --accent: 46 65% 52%;
+  --accent-foreground: 156 51% 10%;
+  
+  --destructive: 0 62.8% 50.6%;
+  --destructive-foreground: 0 0% 98%;
+
+  --border: 156 30% 25%;
+  --input: 156 30% 22%;
+  --ring: 46 65% 52%;
+
+  --sidebar: 156 55% 8%;
+  --sidebar-foreground: 0 0% 98%;
+  --sidebar-border: 156 30% 18%;
+  --sidebar-primary: 46 65% 52%;
+  --sidebar-primary-foreground: 156 51% 10%;
+  --sidebar-accent: 156 45% 15%;
+  --sidebar-accent-foreground: 0 0% 98%;
+
+  --radius: 1rem;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+    background-image: 
+      radial-gradient(circle at 100% 0%, hsla(46, 65%, 52%, 0.08) 0%, transparent 40%),
+      radial-gradient(circle at 0% 100%, hsla(156, 100%, 25%, 0.08) 0%, transparent 40%);
+    background-attachment: fixed;
+  }
+
+  html[dir="rtl"] {
+    font-family: var(--font-arabic);
+  }
+}
+
+@layer utilities {
+  .glass-card {
+    @apply bg-card/80 backdrop-blur-xl border border-white/10 shadow-xl shadow-black/20;
+  }
+  
+  .text-gradient {
+    @apply bg-gradient-to-r from-primary via-[#e6c86a] to-primary bg-clip-text text-transparent;
+  }
+  
+  .font-quran {
+    font-family: var(--font-quran);
+    line-height: 2.2;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: hsl(var(--background));
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted));
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--border));
+}

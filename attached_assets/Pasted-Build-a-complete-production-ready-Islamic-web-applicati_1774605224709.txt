@@ -1,0 +1,241 @@
+Build a complete, production-ready Islamic web application called "Noor".
+
+This must be a fully functional real-world app — NOT a mockup, NOT a demo. Everything must work perfectly from A to Z with no exceptions.
+
+====================================
+CRITICAL RULES
+====================================
+- Every button must work
+- No blank pages
+- No fake UI or placeholders
+- No broken navigation
+- No console errors
+- All features must be fully functional
+- If anything fails → automatically fix it
+
+====================================
+DESIGN (MATCH REFERENCE STYLE)
+====================================
+- Style: calm, spiritual, premium
+- Colors:
+  - Deep dark green (#0f2f25)
+  - Soft green gradients
+  - Gold accents (for highlights)
+  - White / light gray text
+
+- UI:
+  - Smooth gradients
+  - Soft shadows
+  - Rounded cards
+  - Clean spacing
+  - Mobile-first responsive design
+
+- Icons:
+  - Replace all emojis with professional icons (Lucide or Heroicons)
+  - Minimal outline style
+  - Colors matching theme
+
+====================================
+TYPOGRAPHY
+====================================
+- Arabic:
+  - Use elegant Quran-style font (Noto Naskh Arabic or Amiri)
+  - RTL support
+
+- Latin:
+  - Use modern font (Inter)
+
+====================================
+LOGO
+====================================
+- Create a professional logo for "Noor"
+- Style: minimal, spiritual
+- Include crescent or light concept
+- Use green + gold colors
+
+====================================
+AUTHENTICATION SYSTEM
+====================================
+- Full login / register / logout
+- Secure password hashing
+- JWT authentication
+- Persistent sessions
+- Use real database:
+  - SQLite or PostgreSQL ONLY (not JSON)
+
+====================================
+USER DATA
+====================================
+- Save:
+  - Adhkar progress
+  - Selected language
+  - Favorites
+  - Calendar events
+- Data must persist across sessions/devices
+
+====================================
+MULTI-LANGUAGE
+====================================
+- Support:
+  - Arabic
+  - English
+  - French
+  - German
+
+- Add language switcher
+- Entire app must update instantly when language changes
+- Store selected language
+- Arabic must use RTL layout
+
+====================================
+HOME PAGE
+====================================
+- Display:
+  - Current time
+  - Date
+  - Prayer times (real API)
+  - Verse of the day
+- Quick access cards:
+  - Quran
+  - Adhkar
+  - Search
+  - Settings
+
+====================================
+QURAN (FULL SYSTEM)
+====================================
+- Show all Surahs list
+- Each Surah clickable
+- Open full Surah page
+
+TEXT:
+- Display full Surah as continuous text (NOT separated random verses)
+- Use real Quran API or verified dataset
+- Proper Mushaf-style formatting
+- Clean Arabic text
+
+AUDIO:
+- Add at least 3 reciters
+- Real working audio
+- Controls:
+  - Play
+  - Pause
+  - Change reciter
+- Audio must match Surah
+
+====================================
+PRAYER TIMES
+====================================
+- Use real API
+- Based on user location
+- Update dynamically
+- Handle permission errors
+
+====================================
+ADHKAR (ADVANCED)
+====================================
+- Add:
+  - Morning
+  - Evening
+  - Sleep
+  - After الصلاة
+  - Daily life adhkar
+
+- Each dhikr:
+  - Arabic text (correct)
+  - Translation
+  - Optional transliteration
+
+- Features:
+  - Tasbeeh counter (working)
+  - Mark as completed
+  - Save progress
+
+====================================
+ISLAMIC CALENDAR
+====================================
+- Full year (Hijri + Gregorian)
+- Navigate months
+
+- Highlight:
+  - Ramadan
+  - Eid al-Fitr
+  - Eid al-Adha
+
+- Add:
+  - User can create events
+  - Edit/delete events
+  - Save per user
+
+====================================
+MOSQUES (ADVANCED)
+====================================
+- Detect user location
+- Show nearby mosques (real API)
+
+ADD:
+- Manual search:
+  - User types any city
+  - Show mosques in that area
+
+- Display:
+  - Name
+  - Location
+  - Distance (if available)
+
+- Interactive map
+
+====================================
+IMAGES & MEDIA
+====================================
+- All images must load correctly
+- Use valid URLs or /public folder
+- Add fallback image
+
+AUDIO:
+- Must work without errors
+- No broken links
+
+====================================
+NAVIGATION
+====================================
+- Pages:
+  - Home
+  - Quran
+  - Prayer Times
+  - Adhkar
+  - Calendar
+  - Mosques
+  - Dashboard
+  - Login/Register
+  - Settings
+
+- All routes must work
+- No white screens
+
+====================================
+TECHNICAL
+====================================
+- Use Next.js
+- Proper routing
+- Clean architecture
+- No crashes
+- Proper state management
+
+====================================
+FINAL STEP (MANDATORY)
+====================================
+- Run the app
+- Show working preview
+- Test:
+  - All buttons
+  - Quran navigation
+  - Audio
+  - Language switching
+  - Calendar events
+  - Mosque search
+
+DO NOT STOP until:
+- Everything works perfectly
+- No errors remain
+- App is fully usable like a real product

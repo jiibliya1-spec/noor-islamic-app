@@ -1,0 +1,17 @@
+packages:
+  "framer-motion": "Smooth page transitions and micro-interactions"
+  "date-fns": "For formatting and manipulating Gregorian dates"
+  "moment-hijri": "For calculating and formatting accurate Hijri dates"
+  "lucide-react": "Beautiful consistent icons"
+
+images:
+  - path: "artifacts/noor/public/images/noor-logo.png"
+    description: "A premium, elegant minimalist Islamic logo featuring a subtle crescent moon and star intertwining with modern geometric patterns. Gold and deep green colors on a transparent background."
+    aspect_ratio: "1:1"
+  - path: "artifacts/noor/public/images/hero-bg.png"
+    description: "An elegant, subtle Islamic geometric pattern background. Very dark green with soft, faint gold gradients and ethereal light leaks giving a premium, spiritual, and calming atmosphere."
+    aspect_ratio: "16:9"
+
+notes:
+  - "The App will patch window.fetch to automatically include the JWT Bearer token from localStorage for all /api requests."
+  - "External APIs used: Alquran.cloud for Quran text/audio, Aladhan for prayer times, OpenStreetMap (Nominatim & Overpass) for Mosques."
