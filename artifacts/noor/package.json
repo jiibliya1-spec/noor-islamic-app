@@ -75,7 +75,6 @@
     "zod": "catalog:"
   },
   "dependencies": {
-    "moment-hijri": "^3.0.0",
-    "zustand": "^5.0.12"
+    "moment-hijri": "^3.0.0"
   }
 }
