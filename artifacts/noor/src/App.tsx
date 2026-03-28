@@ -2,8 +2,9 @@ import { Switch, Route, Router as WouterRouter } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import { I18nProvider } from "@/lib/i18n";
+import { BottomNav } from "@/components/bottom-nav";
 import NotFound from "@/pages/not-found";
 
 import { AppSidebar } from "@/components/app-sidebar";
@@ -19,7 +20,7 @@ import Settings from "@/pages/settings";
 import Login from "@/pages/login";
 import Register from "@/pages/register";
 
-// Resolve base API URL — supports VITE_API_URL for external deployments (Vercel → Railway/Render)
+// Resolve base API URL — supports VITE_API_URL for external deployments
 const API_BASE = (import.meta.env.VITE_API_URL as string | undefined) || "";
 
 // Auto-inject JWT token for all internal API requests
@@ -36,7 +37,6 @@ window.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
     if (token) {
       init.headers = { ...init.headers, Authorization: `Bearer ${token}` };
     }
-    // Prepend external API base if configured (e.g. Vercel → Railway)
     if (API_BASE && typeof input === "string") {
       input = API_BASE + input;
     }
@@ -51,19 +51,19 @@ const queryClient = new QueryClient({
 });
 
 function AppLayout() {
-  const style = { "--sidebar-width": "18rem", "--sidebar-width-icon": "4rem" };
-
   return (
-    <SidebarProvider style={style as React.CSSProperties}>
+    /* Desktop: sidebar layout. Mobile: full-screen + bottom nav */
+    <SidebarProvider style={{ "--sidebar-width": "17rem", "--sidebar-width-icon": "4rem" } as React.CSSProperties}>
       <div className="flex min-h-screen w-full bg-background text-foreground">
-        <AppSidebar />
-        <div className="flex flex-col flex-1 relative w-full overflow-hidden">
-          <header className="sticky top-0 z-40 flex items-center justify-between p-4 bg-background/80 backdrop-blur-xl border-b border-white/5 lg:hidden">
-            <SidebarTrigger className="text-primary hover:bg-white/10 p-2 rounded-lg" />
-            <span className="font-bold text-xl text-primary tracking-widest">NOOR</span>
-            <div className="w-8" />
-          </header>
-          <main className="flex-1 overflow-y-auto w-full">
+
+        {/* Sidebar — hidden on mobile, shown on lg+ */}
+        <div className="hidden lg:block">
+          <AppSidebar />
+        </div>
+
+        {/* Main content area */}
+        <div className="flex flex-col flex-1 w-full min-w-0 overflow-hidden">
+          <main className="flex-1 overflow-y-auto pb-20 lg:pb-4">
             <Switch>
               <Route path="/" component={Home} />
               <Route path="/quran" component={QuranList} />
@@ -78,6 +78,11 @@ function AppLayout() {
             </Switch>
           </main>
         </div>
+      </div>
+
+      {/* Bottom nav — mobile only */}
+      <div className="lg:hidden">
+        <BottomNav />
       </div>
     </SidebarProvider>
   );
