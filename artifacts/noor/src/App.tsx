@@ -19,6 +19,9 @@ import Settings from "@/pages/settings";
 import Login from "@/pages/login";
 import Register from "@/pages/register";
 
+// Resolve base API URL — supports VITE_API_URL for external deployments (Vercel → Railway/Render)
+const API_BASE = (import.meta.env.VITE_API_URL as string | undefined) || "";
+
 // Auto-inject JWT token for all internal API requests
 const originalFetch = window.fetch;
 window.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
@@ -29,9 +32,13 @@ window.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
 
   if (urlStr.startsWith("/api")) {
     const token = localStorage.getItem("noor_token");
+    init = init || {};
     if (token) {
-      init = init || {};
       init.headers = { ...init.headers, Authorization: `Bearer ${token}` };
+    }
+    // Prepend external API base if configured (e.g. Vercel → Railway)
+    if (API_BASE && typeof input === "string") {
+      input = API_BASE + input;
     }
   }
   return originalFetch(input, init);
