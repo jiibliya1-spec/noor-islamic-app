@@ -5,10 +5,10 @@ import { Link } from "wouter";
 import { useQueryClient } from "@tanstack/react-query";
 
 const LANGUAGES = [
-  { code: "en", label: "English", flag: "🇬🇧" },
-  { code: "ar", label: "العربية", flag: "🇸🇦" },
-  { code: "fr", label: "Français", flag: "🇫🇷" },
-  { code: "de", label: "Deutsch", flag: "🇩🇪" },
+  { code: "en", label: "English",  short: "EN" },
+  { code: "ar", label: "العربية", short: "AR" },
+  { code: "fr", label: "Français", short: "FR" },
+  { code: "de", label: "Deutsch",  short: "DE" },
 ] as const;
 
 export default function Settings() {
@@ -18,7 +18,7 @@ export default function Settings() {
   const queryClient = useQueryClient();
 
   const handleLogout = async () => {
-    await logout.mutateAsync();
+    try { await logout.mutateAsync(); } catch {}
     localStorage.removeItem("noor_token");
     queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
     window.location.href = "/";
@@ -100,13 +100,17 @@ export default function Settings() {
             <button
               key={lang.code}
               onClick={() => setLanguage(lang.code)}
-              className={`flex items-center gap-3 p-3 rounded-xl font-semibold text-sm transition-all active:scale-95 ${
+              className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
                 language === lang.code
-                  ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
-                  : "bg-background/50 text-foreground hover:bg-white/10"
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-background/50 text-foreground hover:bg-white/10 border border-white/10"
               }`}
             >
-              <span className="text-xl">{lang.flag}</span>
+              <span className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs shrink-0 ${
+                language === lang.code ? "bg-white/20 text-white" : "bg-primary/20 text-primary"
+              }`}>
+                {lang.short}
+              </span>
               {lang.label}
             </button>
           ))}
@@ -114,37 +118,33 @@ export default function Settings() {
       </div>
 
       {/* Notifications */}
-      <div className="glass-card rounded-2xl p-5 mb-4 flex items-center justify-between">
+      <div className="glass-card rounded-2xl p-5 mb-4">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-primary/20 rounded-xl flex items-center justify-center">
             <Bell className="w-5 h-5 text-primary" />
           </div>
-          <div>
-            <h3 className="font-bold text-foreground">Notifications</h3>
-            <p className="text-muted-foreground text-xs">Prayer time alerts</p>
+          <div className="flex-1">
+            <h3 className="font-bold text-foreground">Prayer Notifications</h3>
+            <p className="text-muted-foreground text-xs">Coming soon</p>
+          </div>
+          <div className="w-10 h-6 rounded-full bg-white/10 relative">
+            <div className="w-4 h-4 rounded-full bg-muted-foreground absolute top-1 left-1" />
           </div>
         </div>
-        <button className="px-4 py-2 bg-primary text-primary-foreground rounded-xl font-semibold text-sm active:scale-95 transition">
-          Enable
-        </button>
       </div>
 
-      {/* Mosque finder */}
-      <Link href="/mosques" className="glass-card rounded-2xl p-5 mb-4 flex items-center gap-3 active:scale-95 transition-transform cursor-pointer block">
-        <div className="w-10 h-10 bg-primary/20 rounded-xl flex items-center justify-center">
-          <MapPin className="w-5 h-5 text-primary" />
-        </div>
-        <div>
-          <h3 className="font-bold text-foreground">{t("mosques")}</h3>
-          <p className="text-muted-foreground text-xs">Find mosques near you</p>
-        </div>
-      </Link>
-
-      {/* App info */}
-      <div className="text-center mt-8 text-muted-foreground text-xs space-y-1">
-        <p className="text-gradient font-bold text-base font-quran">نُـور · NOOR</p>
-        <p>Version 1.0.0</p>
-        <p>May Allah accept your worship. 🤲</p>
+      {/* Mosque Finder */}
+      <div className="glass-card rounded-2xl p-5">
+        <Link href="/mosques" className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-primary/20 rounded-xl flex items-center justify-center">
+            <MapPin className="w-5 h-5 text-primary" />
+          </div>
+          <div className="flex-1">
+            <h3 className="font-bold text-foreground">Mosque Finder</h3>
+            <p className="text-muted-foreground text-xs">Find nearby mosques</p>
+          </div>
+          <span className="text-muted-foreground text-lg">›</span>
+        </Link>
       </div>
     </div>
   );

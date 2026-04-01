@@ -2,12 +2,22 @@ import { useState, useEffect } from "react";
 import { Link } from "wouter";
 import { useI18n } from "@/lib/i18n";
 import { usePrayerTimesByCoords } from "@/hooks/use-external-api";
-import { BookOpen, Clock, Heart, CalendarDays, MapPin, LogIn, Settings } from "lucide-react";
+import { BookOpen, Clock, Heart, CalendarDays, MapPin, LogIn, Sunrise, Sun, Cloud, Sunset, Moon } from "lucide-react";
 import { format } from "date-fns";
 import { useGetMe } from "@workspace/api-client-react";
 
 const PRAYERS = ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"];
-const PRAYER_ICONS: Record<string, string> = { Fajr: "🌅", Dhuhr: "🌞", Asr: "🌤", Maghrib: "🌆", Isha: "🌙" };
+
+function PrayerIcon({ name, className = "w-5 h-5" }: { name: string; className?: string }) {
+  switch (name) {
+    case "Fajr":    return <Sunrise className={className} />;
+    case "Dhuhr":   return <Sun className={className} />;
+    case "Asr":     return <Cloud className={className} />;
+    case "Maghrib": return <Sunset className={className} />;
+    case "Isha":    return <Moon className={className} />;
+    default:        return <Sun className={className} />;
+  }
+}
 
 function getNextPrayer(timings: Record<string, string>): { name: string; time: string } | null {
   const now = new Date();
@@ -49,11 +59,11 @@ export default function Home() {
   const dir = language === "ar" ? "rtl" : "ltr";
 
   const quickLinks = [
-    { label: t("quran"), url: "/quran", icon: BookOpen, emoji: "📖" },
-    { label: t("prayerTimes"), url: "/prayer-times", icon: Clock, emoji: "🕌" },
-    { label: t("adhkar"), url: "/adhkar", icon: Heart, emoji: "🤲" },
-    { label: t("calendar"), url: "/calendar", icon: CalendarDays, emoji: "📅" },
-    { label: t("mosques"), url: "/mosques", icon: MapPin, emoji: "🕋" },
+    { label: t("quran"),       url: "/quran",         icon: BookOpen  },
+    { label: t("prayerTimes"), url: "/prayer-times",  icon: Clock     },
+    { label: t("adhkar"),      url: "/adhkar",        icon: Heart     },
+    { label: t("calendar"),    url: "/calendar",      icon: CalendarDays },
+    { label: t("mosques"),     url: "/mosques",       icon: MapPin    },
   ];
 
   return (
@@ -95,7 +105,9 @@ export default function Home() {
           <Link href="/prayer-times">
             <div className="glass-card rounded-2xl p-4 flex items-center justify-between active:scale-[0.98] transition-transform cursor-pointer border-l-4 border-l-primary">
               <div className="flex items-center gap-3">
-                <span className="text-3xl">{PRAYER_ICONS[nextPrayer.name] || "🕌"}</span>
+                <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+                  <PrayerIcon name={nextPrayer.name} className="w-5 h-5" />
+                </div>
                 <div>
                   <p className="text-xs text-muted-foreground font-medium uppercase tracking-widest">{t("nextPrayer")}</p>
                   <p className="text-xl font-bold text-foreground">{nextPrayer.name}</p>
@@ -122,7 +134,9 @@ export default function Home() {
                 const isNext = nextPrayer?.name === p;
                 return (
                   <div key={p} className={`flex flex-col items-center p-2 rounded-xl transition ${isNext ? "bg-primary/20 border border-primary/40" : ""}`}>
-                    <span className="text-base mb-1">{PRAYER_ICONS[p]}</span>
+                    <div className={`mb-1 ${isNext ? "text-primary" : "text-muted-foreground"}`}>
+                      <PrayerIcon name={p} className="w-4 h-4" />
+                    </div>
                     <span className="text-[10px] text-muted-foreground font-medium">{p}</span>
                     <span className={`text-xs font-bold font-mono mt-0.5 ${isNext ? "text-primary" : "text-foreground"}`}>{timings[p]}</span>
                   </div>
@@ -155,7 +169,9 @@ export default function Home() {
                 key={link.url}
                 className="glass-card rounded-2xl p-4 flex flex-col items-center justify-center gap-2 active:scale-95 transition-transform cursor-pointer hover:border-primary/30"
               >
-                <span className="text-3xl">{link.emoji}</span>
+                <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+                  <link.icon className="w-5 h-5" />
+                </div>
                 <span className="text-xs font-semibold text-center text-foreground leading-tight">{link.label}</span>
               </Link>
             ))}
