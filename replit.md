@@ -22,7 +22,13 @@ pnpm workspace monorepo using TypeScript. Contains a full-stack Islamic web appl
 
 - **Authentication**: JWT login/register/logout, token in localStorage
 - **Home**: Real-time clock, Hijri + Gregorian date, verse of the day, next prayer countdown
-- **Quran**: Full 114 surahs from alquran.cloud API, Arabic text + translation, audio with 3 reciters
+- **Quran**: Full 114 surahs from alquran.cloud API, mushaf-style Arabic + translation, audio with 3 reciters
+  - **Bookmarks**: bottom-sheet per-verse bookmark with gold icon indicator, saved to localStorage
+  - **Reading progress**: IntersectionObserver auto-saves last viewed ayah; "Continue Reading" banner deep-links back
+  - **Tafsir**: per-verse tafsir (ar.muyassar / en.maududi) fetched lazily from alquran.cloud
+  - **Word meanings**: word-by-word meanings from api.quran.com v4 (Arabic + transliteration + English)
+  - **Quranic Duas**: 12 authentic duas from the Quran (4 languages, transliteration, contextual notes)
+  - **Completion Duas**: 6 authentic Khatm al-Quran duas (4 languages, source attribution)
 - **Prayer Times**: Location-based using aladhan.com API, geolocation or Makkah fallback
 - **Adhkar**: Morning, Evening, Sleep, After-Prayer, Daily categories with tasbeeh counter
 - **Islamic Calendar**: Full calendar with Hijri dates, Islamic holidays highlighted, user events
@@ -54,7 +60,9 @@ artifacts-monorepo/
 
 ## External APIs Used
 
-- **Quran**: https://api.alquran.cloud/v1/surah
+- **Quran**: https://api.alquran.cloud/v1/surah + per-verse edition endpoint
+- **Tafsir**: https://api.alquran.cloud/v1/ayah/{ref}/{edition} (ar.muyassar / en.maududi)
+- **Word meanings**: https://api.quran.com/api/v4/verses/by_key/{key}?words=true
 - **Prayer Times**: https://api.aladhan.com/v1/timings
 - **Mosque Search**: https://overpass-api.de/api/interpreter (OpenStreetMap)
 - **Geocoding**: https://nominatim.openstreetmap.org/search
