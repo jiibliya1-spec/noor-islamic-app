@@ -1,7 +1,9 @@
 import { useParams, Link } from "wouter";
 import { useSurahDetail } from "@/hooks/use-external-api";
+import { useBookmarks } from "@/hooks/use-bookmarks";
 import { AudioPlayer } from "@/components/audio-player";
-import { Loader2, ArrowLeft } from "lucide-react";
+import { Loader2, ArrowLeft, Bookmark, BookmarkCheck } from "lucide-react";
+import { useEffect } from "react";
 
 /** Convert western digits to Arabic-Indic numerals */
 function toArabicNumeral(n: number): string {
@@ -12,6 +14,18 @@ export default function SurahDetail() {
   const params = useParams();
   const surahNumber = parseInt(params.id || "1", 10);
   const { data: surah, isLoading } = useSurahDetail(surahNumber);
+  const { isBookmarked, toggleBookmark } = useBookmarks();
+
+  // Scroll to a specific ayah if ?ayah=N is in the URL
+  useEffect(() => {
+    if (!surah) return;
+    const target = new URLSearchParams(window.location.search).get("ayah");
+    if (!target) return;
+    const el = document.getElementById(`ayah-${target}`);
+    if (el) {
+      setTimeout(() => el.scrollIntoView({ behavior: "smooth", block: "center" }), 150);
+    }
+  }, [surah]);
 
   if (isLoading) {
     return (
@@ -78,20 +92,55 @@ export default function SurahDetail() {
           </p>
         </div>
 
-        {/* ── Translations (numbered list) ── */}
+        {/* ── Translations with Bookmarks ── */}
         <div className="glass-card rounded-3xl p-6 md:p-8">
-          <h3 className="text-lg font-bold text-foreground mb-6 pb-3 border-b border-border/50">
+          <h3 className="text-lg font-bold text-foreground mb-6 pb-3 border-b border-border/50 flex items-center gap-2">
             Translation
+            <span className="text-xs text-muted-foreground font-normal ml-auto">Tap verse to bookmark</span>
           </h3>
-          <div className="space-y-5">
-            {surah.ayahs.map((ayah: any) => (
-              <div key={ayah.number} className="flex gap-4">
-                <span className="shrink-0 w-8 h-8 rounded-full bg-primary/15 flex items-center justify-center text-primary text-sm font-bold">
-                  {ayah.numberInSurah}
-                </span>
-                <p className="text-foreground leading-relaxed pt-1">{ayah.translation}</p>
-              </div>
-            ))}
+          <div className="space-y-3">
+            {surah.ayahs.map((ayah: any) => {
+              const bookmarked = isBookmarked(surahNumber, ayah.numberInSurah);
+              return (
+                <div
+                  key={ayah.number}
+                  id={`ayah-${ayah.numberInSurah}`}
+                  className={`flex gap-3 rounded-2xl p-3 transition-colors group ${
+                    bookmarked ? "bg-primary/8 border border-primary/20" : "hover:bg-white/5"
+                  }`}
+                >
+                  <span className="shrink-0 w-8 h-8 rounded-full bg-primary/15 flex items-center justify-center text-primary text-sm font-bold mt-0.5">
+                    {ayah.numberInSurah}
+                  </span>
+                  <p className="text-foreground leading-relaxed pt-1 flex-1">{ayah.translation}</p>
+                  <button
+                    onClick={() =>
+                      toggleBookmark({
+                        surahNumber,
+                        surahName: surah.name,
+                        surahEnglishName: surah.englishName,
+                        ayahNumber: ayah.numberInSurah,
+                        text: ayah.text,
+                        translation: ayah.translation,
+                      })
+                    }
+                    className={`shrink-0 p-1.5 rounded-xl transition-all mt-0.5 ${
+                      bookmarked
+                        ? "text-primary"
+                        : "text-muted-foreground opacity-0 group-hover:opacity-100 hover:text-primary"
+                    }`}
+                    title={bookmarked ? "Remove bookmark" : "Bookmark this verse"}
+                    aria-label={bookmarked ? "Remove bookmark" : "Bookmark verse"}
+                  >
+                    {bookmarked ? (
+                      <BookmarkCheck className="w-5 h-5 fill-primary/20" />
+                    ) : (
+                      <Bookmark className="w-5 h-5" />
+                    )}
+                  </button>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>

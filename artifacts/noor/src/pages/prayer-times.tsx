@@ -39,9 +39,32 @@ function calculateQibla(lat: number, lng: number): number {
   return (bearing + 360) % 360;
 }
 
-function getCurrentPrayer(timings: Record<string, string>): string {
+/**
+ * Get the current "minutes since midnight" in a given IANA timezone.
+ * Falls back to device local time if the timezone is invalid or unsupported.
+ */
+function getNowMinsInTimezone(timezone?: string): number {
+  try {
+    if (timezone) {
+      const now = new Date();
+      const formatted = new Intl.DateTimeFormat("en-GB", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+        timeZone: timezone,
+      }).format(now); // "HH:MM"
+      const [h, m] = formatted.split(":").map(Number);
+      return h * 60 + m;
+    }
+  } catch {
+    // fall through to device local time
+  }
   const now = new Date();
-  const nowMins = now.getHours() * 60 + now.getMinutes();
+  return now.getHours() * 60 + now.getMinutes();
+}
+
+function getCurrentPrayer(timings: Record<string, string>, timezone?: string): string {
+  const nowMins = getNowMinsInTimezone(timezone);
   let current = "Isha";
   for (const prayer of PRAYERS.filter(p => p !== "Sunrise")) {
     const [h, m] = (timings[prayer] || "00:00").split(":").map(Number);
@@ -50,9 +73,8 @@ function getCurrentPrayer(timings: Record<string, string>): string {
   return current;
 }
 
-function getNextPrayer(timings: Record<string, string>): string {
-  const now = new Date();
-  const nowMins = now.getHours() * 60 + now.getMinutes();
+function getNextPrayer(timings: Record<string, string>, timezone?: string): string {
+  const nowMins = getNowMinsInTimezone(timezone);
   for (const prayer of PRAYERS.filter(p => p !== "Sunrise")) {
     const [h, m] = (timings[prayer] || "00:00").split(":").map(Number);
     if (nowMins < h * 60 + m) return prayer;
@@ -159,6 +181,10 @@ export default function PrayerTimes() {
   const isLoading = coords ? coordLoading : cityLoading;
   const timings = data?.timings || null;
 
+  // The timezone from the API response — e.g. "Europe/Berlin" for Düsseldorf
+  // This is used to correctly determine the current/next prayer in the city's local time
+  const timezone: string | undefined = data?.meta?.timezone;
+
   // Set qibla from GPS coordinates
   useEffect(() => {
     if (coords) {
@@ -212,8 +238,10 @@ export default function PrayerTimes() {
   };
 
   const dir = language === "ar" ? "rtl" : "ltr";
-  const currentPrayer = timings ? getCurrentPrayer(timings) : null;
-  const nextPrayer = timings ? getNextPrayer(timings) : null;
+
+  // Use the city's own timezone for current/next prayer detection
+  const currentPrayer = timings ? getCurrentPrayer(timings, timezone) : null;
+  const nextPrayer = timings ? getNextPrayer(timings, timezone) : null;
 
   return (
     <div className="p-4 md:p-8 max-w-5xl mx-auto min-h-full pb-20" dir={dir}>
@@ -230,7 +258,7 @@ export default function PrayerTimes() {
               type="text"
               value={cityInput}
               onChange={e => setCityInput(e.target.value)}
-              placeholder={language === "ar" ? "اسم المدينة، البلد (مثال: Mecca, SA)" : "City, Country (e.g. London, GB)"}
+              placeholder={language === "ar" ? "اسم المدينة، البلد (مثال: Mecca, SA)" : "City, Country (e.g. Düsseldorf, DE)"}
               className="w-full pl-9 pr-4 py-3 rounded-xl bg-card border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary text-sm"
             />
           </div>
@@ -277,7 +305,12 @@ export default function PrayerTimes() {
         <>
           {data?.date && (
             <div className="text-center mb-6 text-muted-foreground text-sm">
-              {data.date.readable} — {data.meta?.timezone}
+              {data.date.readable}
+              {timezone && (
+                <span className="ml-2 px-2 py-0.5 bg-primary/10 text-primary rounded-full text-xs font-medium">
+                  {timezone}
+                </span>
+              )}
             </div>
           )}
 
