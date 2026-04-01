@@ -181,9 +181,10 @@ export default function PrayerTimes() {
   const isLoading = coords ? coordLoading : cityLoading;
   const timings = data?.timings || null;
 
-  // The timezone from the API response — e.g. "Europe/Berlin" for Düsseldorf
-  // This is used to correctly determine the current/next prayer in the city's local time
-  const timezone: string | undefined = data?.meta?.timezone;
+  // Use the browser's own local timezone (e.g. "Europe/Berlin" for a user in Germany).
+  // The AlAdhan API's meta.timezone field incorrectly returns "Asia/Riyadh" for all cities,
+  // so we rely on Intl.DateTimeFormat().resolvedOptions().timeZone instead.
+  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
   // Set qibla from GPS coordinates
   useEffect(() => {

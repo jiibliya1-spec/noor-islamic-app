@@ -1,9 +1,10 @@
 import { useParams, Link } from "wouter";
 import { useSurahDetail } from "@/hooks/use-external-api";
 import { useBookmarks } from "@/hooks/use-bookmarks";
+import { saveProgress } from "@/hooks/use-reading-progress";
 import { AudioPlayer } from "@/components/audio-player";
-import { Loader2, ArrowLeft, Bookmark, BookmarkCheck } from "lucide-react";
-import { useEffect } from "react";
+import { Loader2, ArrowLeft, Bookmark, BookmarkCheck, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 /** Convert western digits to Arabic-Indic numerals */
 function toArabicNumeral(n: number): string {
@@ -15,6 +16,16 @@ export default function SurahDetail() {
   const surahNumber = parseInt(params.id || "1", 10);
   const { data: surah, isLoading } = useSurahDetail(surahNumber);
   const { isBookmarked, toggleBookmark } = useBookmarks();
+  const [selectedAyah, setSelectedAyah] = useState<number | null>(null);
+  const translationRef = useRef<HTMLDivElement>(null);
+
+  // Close popup when clicking outside the translation section
+  useEffect(() => {
+    if (selectedAyah === null) return;
+    const close = () => setSelectedAyah(null);
+    document.addEventListener("click", close);
+    return () => document.removeEventListener("click", close);
+  }, [selectedAyah]);
 
   // Scroll to a specific ayah if ?ayah=N is in the URL
   useEffect(() => {
@@ -23,9 +34,35 @@ export default function SurahDetail() {
     if (!target) return;
     const el = document.getElementById(`ayah-${target}`);
     if (el) {
-      setTimeout(() => el.scrollIntoView({ behavior: "smooth", block: "center" }), 150);
+      setTimeout(() => el.scrollIntoView({ behavior: "smooth", block: "center" }), 200);
     }
   }, [surah]);
+
+  // Track reading progress — save the last ayah that enters the viewport
+  useEffect(() => {
+    if (!surah) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            const n = parseInt(entry.target.id.replace("ayah-", ""), 10);
+            if (!isNaN(n)) {
+              saveProgress({
+                surahNumber,
+                surahName: surah.name,
+                surahEnglishName: surah.englishName,
+                ayahNumber: n,
+              });
+            }
+          }
+        }
+      },
+      { threshold: 0.4 }
+    );
+    const els = translationRef.current?.querySelectorAll("[id^='ayah-']");
+    els?.forEach(el => observer.observe(el));
+    return () => observer.disconnect();
+  }, [surah, surahNumber]);
 
   if (isLoading) {
     return (
@@ -39,7 +76,6 @@ export default function SurahDetail() {
 
   return (
     <div className="min-h-screen pb-24">
-      {/* Sticky audio player at very top */}
       <AudioPlayer surahNumber={surahNumber} surahName={surah.englishName} />
 
       <div className="p-4 md:p-8 max-w-4xl mx-auto">
@@ -68,7 +104,7 @@ export default function SurahDetail() {
           </div>
         )}
 
-        {/* ── Mushaf-style flowing Arabic text ── */}
+        {/* Mushaf-style flowing Arabic text */}
         <div className="glass-card rounded-3xl p-6 md:p-10 mb-8">
           <p
             className="font-quran leading-[2.6] text-right text-foreground text-3xl md:text-4xl"
@@ -78,7 +114,6 @@ export default function SurahDetail() {
             {surah.ayahs.map((ayah: any) => (
               <span key={ayah.number}>
                 {ayah.text}
-                {/* Verse number marker in Arabic-Indic numerals */}
                 <span
                   className="inline-flex items-center justify-center mx-2 text-primary"
                   style={{ fontFamily: "'Amiri', serif", fontSize: "0.8em", verticalAlign: "middle" }}
@@ -92,52 +127,92 @@ export default function SurahDetail() {
           </p>
         </div>
 
-        {/* ── Translations with Bookmarks ── */}
-        <div className="glass-card rounded-3xl p-6 md:p-8">
-          <h3 className="text-lg font-bold text-foreground mb-6 pb-3 border-b border-border/50 flex items-center gap-2">
+        {/* Translations — tap a verse to bookmark */}
+        <div className="glass-card rounded-3xl p-6 md:p-8" ref={translationRef}>
+          <h3 className="text-lg font-bold text-foreground mb-1 pb-3 border-b border-border/50">
             Translation
-            <span className="text-xs text-muted-foreground font-normal ml-auto">Tap verse to bookmark</span>
           </h3>
-          <div className="space-y-3">
+          <p className="text-xs text-muted-foreground mb-5 pt-1">Tap any verse to bookmark it</p>
+
+          <div className="space-y-1">
             {surah.ayahs.map((ayah: any) => {
               const bookmarked = isBookmarked(surahNumber, ayah.numberInSurah);
+              const popupOpen = selectedAyah === ayah.numberInSurah;
+
               return (
-                <div
-                  key={ayah.number}
-                  id={`ayah-${ayah.numberInSurah}`}
-                  className={`flex gap-3 rounded-2xl p-3 transition-colors group ${
-                    bookmarked ? "bg-primary/8 border border-primary/20" : "hover:bg-white/5"
-                  }`}
-                >
-                  <span className="shrink-0 w-8 h-8 rounded-full bg-primary/15 flex items-center justify-center text-primary text-sm font-bold mt-0.5">
-                    {ayah.numberInSurah}
-                  </span>
-                  <p className="text-foreground leading-relaxed pt-1 flex-1">{ayah.translation}</p>
-                  <button
-                    onClick={() =>
-                      toggleBookmark({
-                        surahNumber,
-                        surahName: surah.name,
-                        surahEnglishName: surah.englishName,
-                        ayahNumber: ayah.numberInSurah,
-                        text: ayah.text,
-                        translation: ayah.translation,
-                      })
-                    }
-                    className={`shrink-0 p-1.5 rounded-xl transition-all mt-0.5 ${
+                <div key={ayah.number} id={`ayah-${ayah.numberInSurah}`}>
+                  {/* Verse row — tappable */}
+                  <div
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedAyah(prev => prev === ayah.numberInSurah ? null : ayah.numberInSurah);
+                    }}
+                    className={`flex gap-3 rounded-2xl p-3 transition-colors cursor-pointer select-none ${
                       bookmarked
-                        ? "text-primary"
-                        : "text-muted-foreground opacity-0 group-hover:opacity-100 hover:text-primary"
+                        ? "bg-primary/8 border border-primary/20"
+                        : popupOpen
+                        ? "bg-white/5 border border-white/10"
+                        : "hover:bg-white/5"
                     }`}
-                    title={bookmarked ? "Remove bookmark" : "Bookmark this verse"}
-                    aria-label={bookmarked ? "Remove bookmark" : "Bookmark verse"}
                   >
-                    {bookmarked ? (
-                      <BookmarkCheck className="w-5 h-5 fill-primary/20" />
-                    ) : (
-                      <Bookmark className="w-5 h-5" />
-                    )}
-                  </button>
+                    {/* Verse number + bookmark indicator */}
+                    <div className="shrink-0 flex items-start gap-1 mt-0.5">
+                      {bookmarked && (
+                        <Bookmark className="w-3 h-3 text-primary fill-primary mt-2 shrink-0" />
+                      )}
+                      <span className="w-8 h-8 rounded-full bg-primary/15 flex items-center justify-center text-primary text-sm font-bold shrink-0">
+                        {ayah.numberInSurah}
+                      </span>
+                    </div>
+                    <p className="text-foreground leading-relaxed pt-1 flex-1">{ayah.translation}</p>
+                  </div>
+
+                  {/* Inline popup — appears below the tapped verse */}
+                  {popupOpen && (
+                    <div
+                      onClick={e => e.stopPropagation()}
+                      className="mx-3 mb-2 flex items-center gap-2 bg-card border border-primary/20 rounded-xl px-3 py-2 shadow-lg"
+                    >
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleBookmark({
+                            surahNumber,
+                            surahName: surah.name,
+                            surahEnglishName: surah.englishName,
+                            ayahNumber: ayah.numberInSurah,
+                            text: ayah.text,
+                            translation: ayah.translation,
+                          });
+                          setSelectedAyah(null);
+                        }}
+                        className="flex-1 flex items-center gap-2 text-sm font-semibold text-primary hover:text-primary/80 transition-colors py-1"
+                      >
+                        {bookmarked ? (
+                          <>
+                            <BookmarkCheck className="w-4 h-4 fill-primary/20" />
+                            Remove bookmark
+                          </>
+                        ) : (
+                          <>
+                            <Bookmark className="w-4 h-4" />
+                            Bookmark this verse
+                          </>
+                        )}
+                      </button>
+                      <div className="w-px h-5 bg-border/60 shrink-0" />
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedAyah(null);
+                        }}
+                        className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors py-1 px-1"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                        Cancel
+                      </button>
+                    </div>
+                  )}
                 </div>
               );
             })}
