@@ -1,7 +1,7 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
-import { createElement } from "react";
+import { createContext, useContext, useState, useEffect, type ReactNode, createElement } from "react";
 
 export type Language = "en" | "ar" | "fr" | "de";
+export type Theme = "dark" | "light" | "system";
 
 export const translations: Record<string, Record<Language, string>> = {
   home: { en: "Home", ar: "الرئيسية", fr: "Accueil", de: "Startseite" },
@@ -30,13 +30,39 @@ export const translations: Record<string, Record<Language, string>> = {
   language: { en: "Language", ar: "اللغة", fr: "Langue", de: "Sprache" },
   addEvent: { en: "Add Event", ar: "إضافة حدث", fr: "Ajouter un événement", de: "Ereignis hinzufügen" },
   islamicCalendar: { en: "Islamic Calendar", ar: "التقويم الإسلامي", fr: "Calendrier Islamique", de: "Islamischer Kalender" },
+  appearance: { en: "Appearance", ar: "المظهر", fr: "Apparence", de: "Erscheinungsbild" },
+  darkMode: { en: "Dark", ar: "داكن", fr: "Sombre", de: "Dunkel" },
+  lightMode: { en: "Light", ar: "فاتح", fr: "Clair", de: "Hell" },
+  systemMode: { en: "System", ar: "النظام", fr: "Système", de: "System" },
+  quickAccess: { en: "Quick Access", ar: "وصول سريع", fr: "Accès rapide", de: "Schnellzugriff" },
+  backToSurahs: { en: "Back to Surahs", ar: "العودة للسور", fr: "Retour aux sourates", de: "Zurück zu Suren" },
+  notLoggedIn: { en: "Not logged in", ar: "غير مسجل", fr: "Non connecté", de: "Nicht angemeldet" },
+  loginToSync: { en: "Login to sync your progress", ar: "سجّل دخولك لمزامنة تقدمك", fr: "Connectez-vous pour synchroniser", de: "Anmelden zum Synchronisieren" },
+  prayerNotifications: { en: "Prayer Notifications", ar: "إشعارات الصلاة", fr: "Notifications de Prière", de: "Gebetsbenachrichtigungen" },
+  comingSoon: { en: "Coming soon", ar: "قريباً", fr: "Bientôt disponible", de: "Demnächst" },
+  mosqueFinder: { en: "Mosque Finder", ar: "البحث عن مسجد", fr: "Chercher mosquée", de: "Moschee finden" },
+  findNearbyMosques: { en: "Find nearby mosques", ar: "ابحث عن مساجد قريبة", fr: "Trouver des mosquées proches", de: "Nahe Moscheen finden" },
 };
+
+function applyTheme(theme: Theme) {
+  const root = document.documentElement;
+  if (theme === "system") {
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    root.classList.remove("light", "dark");
+    root.classList.add(prefersDark ? "dark" : "light");
+  } else {
+    root.classList.remove("light", "dark");
+    root.classList.add(theme);
+  }
+}
 
 interface I18nContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
   t: (key: string) => string;
   dir: "ltr" | "rtl";
+  theme: Theme;
+  setTheme: (theme: Theme) => void;
 }
 
 const I18nContext = createContext<I18nContextType>({
@@ -44,11 +70,16 @@ const I18nContext = createContext<I18nContextType>({
   setLanguage: () => {},
   t: (key) => key,
   dir: "ltr",
+  theme: "dark",
+  setTheme: () => {},
 });
 
 export function I18nProvider({ children }: { children: ReactNode }) {
   const [language, setLanguageState] = useState<Language>(
     () => (localStorage.getItem("noor_lang") as Language) || "en"
+  );
+  const [theme, setThemeState] = useState<Theme>(
+    () => (localStorage.getItem("noor_theme") as Theme) || "dark"
   );
 
   const setLanguage = (lang: Language) => {
@@ -58,16 +89,35 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     setLanguageState(lang);
   };
 
+  const setTheme = (t: Theme) => {
+    localStorage.setItem("noor_theme", t);
+    applyTheme(t);
+    setThemeState(t);
+  };
+
   useEffect(() => {
     document.documentElement.dir = language === "ar" ? "rtl" : "ltr";
     document.documentElement.lang = language;
+    applyTheme(theme);
+
+    if (theme === "system") {
+      const mq = window.matchMedia("(prefers-color-scheme: dark)");
+      const handler = () => applyTheme("system");
+      mq.addEventListener("change", handler);
+      return () => mq.removeEventListener("change", handler);
+    }
+    return undefined;
   }, []);
 
   const t = (key: string): string => {
     return translations[key]?.[language] ?? key;
   };
 
-  return createElement(I18nContext.Provider, { value: { language, setLanguage, t, dir: language === "ar" ? "rtl" : "ltr" } }, children);
+  return createElement(
+    I18nContext.Provider,
+    { value: { language, setLanguage, t, dir: language === "ar" ? "rtl" : "ltr", theme, setTheme } },
+    children
+  );
 }
 
 export function useI18n() {

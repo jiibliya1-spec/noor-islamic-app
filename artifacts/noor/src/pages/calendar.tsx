@@ -2,7 +2,6 @@ import { useState } from "react";
 import { ChevronLeft, ChevronRight, Plus, X, Trash2 } from "lucide-react";
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, getDay } from "date-fns";
 import { useI18n } from "@/lib/i18n";
-import { useGetEvents, useCreateEvent, useDeleteEvent } from "@workspace/api-client-react";
 
 // Compute Hijri info for a date
 function getHijriInfo(date: Date) {
@@ -53,9 +52,9 @@ export default function IslamicCalendar() {
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState<EventForm>({ title: "", description: "", type: "personal" });
 
-  const { data: events = [], refetch } = useGetEvents();
-  const createEvent = useCreateEvent();
-  const deleteEvent = useDeleteEvent();
+  const [events, setEvents] = useState<Array<{ id: number; title: string; description: string; date: string; hijriDate: string; type: string }>>(() => {
+    try { return JSON.parse(localStorage.getItem("noor_calendar_events") || "[]"); } catch { return []; }
+  });
 
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);
@@ -69,26 +68,29 @@ export default function IslamicCalendar() {
     setShowForm(false);
   };
 
-  const handleAddEvent = async () => {
-    if (!selectedDay || !form.title.trim()) return;
-    const hi = getHijriInfo(selectedDay);
-    await createEvent.mutateAsync({
-      data: {
-        title: form.title,
-        description: form.description,
-        date: format(selectedDay, "yyyy-MM-dd"),
-        hijriDate: hi.display,
-        type: form.type,
-      },
-    });
-    setForm({ title: "", description: "", type: "personal" });
-    setShowForm(false);
-    refetch();
+  const saveEvents = (updated: typeof events) => {
+    setEvents(updated);
+    localStorage.setItem("noor_calendar_events", JSON.stringify(updated));
   };
 
-  const handleDeleteEvent = async (id: number) => {
-    await deleteEvent.mutateAsync({ id });
-    refetch();
+  const handleAddEvent = () => {
+    if (!selectedDay || !form.title.trim()) return;
+    const hi = getHijriInfo(selectedDay);
+    const newEvent = {
+      id: Date.now(),
+      title: form.title,
+      description: form.description,
+      date: format(selectedDay, "yyyy-MM-dd"),
+      hijriDate: hi.display,
+      type: form.type,
+    };
+    saveEvents([...events, newEvent]);
+    setForm({ title: "", description: "", type: "personal" });
+    setShowForm(false);
+  };
+
+  const handleDeleteEvent = (id: number) => {
+    saveEvents(events.filter(e => e.id !== id));
   };
 
   const eventsOnDay = (day: Date) =>
@@ -263,10 +265,10 @@ export default function IslamicCalendar() {
                   <div className="flex gap-2">
                     <button
                       onClick={handleAddEvent}
-                      disabled={!form.title.trim() || createEvent.isPending}
+                      disabled={!form.title.trim()}
                       className="flex-1 py-2.5 rounded-xl bg-primary text-primary-foreground font-semibold text-sm disabled:opacity-50 transition"
                     >
-                      {createEvent.isPending ? "Saving..." : "Save"}
+                      Save
                     </button>
                     <button
                       onClick={() => setShowForm(false)}

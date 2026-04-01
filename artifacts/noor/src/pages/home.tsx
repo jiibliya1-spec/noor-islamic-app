@@ -4,7 +4,7 @@ import { useI18n } from "@/lib/i18n";
 import { usePrayerTimesByCoords } from "@/hooks/use-external-api";
 import { BookOpen, Clock, Heart, CalendarDays, MapPin, LogIn, Sunrise, Sun, Cloud, Sunset, Moon } from "lucide-react";
 import { format } from "date-fns";
-import { useGetMe } from "@workspace/api-client-react";
+import { useAuth } from "@/lib/auth";
 
 const PRAYERS = ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"];
 
@@ -33,7 +33,7 @@ export default function Home() {
   const { t, language } = useI18n();
   const [time, setTime] = useState(new Date());
   const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);
-  const { data: user } = useGetMe({ query: { retry: false } });
+  const { user } = useAuth();
 
   useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 1000);
@@ -77,7 +77,7 @@ export default function Home() {
         {user ? (
           <Link href="/settings">
             <div className="w-9 h-9 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-sm">
-              {user.name.charAt(0).toUpperCase()}
+              {(user.user_metadata?.full_name || user.email || "U").charAt(0).toUpperCase()}
             </div>
           </Link>
         ) : (

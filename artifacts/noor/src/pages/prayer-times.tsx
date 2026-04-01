@@ -26,7 +26,6 @@ function PrayerIcon({ prayer, className = "w-5 h-5" }: { prayer: string; classNa
   }
 }
 
-/** Calculate bearing from user location to Kaaba (degrees, 0 = North, clockwise) */
 function calculateQibla(lat: number, lng: number): number {
   const kaabaLat = 21.4225 * (Math.PI / 180);
   const kaabaLng = 39.8262 * (Math.PI / 180);
@@ -61,6 +60,87 @@ function getNextPrayer(timings: Record<string, string>): string {
   return "Fajr";
 }
 
+/** SVG-based compass — needle rotates via SVG transform attribute (reliable, no CSS conflict) */
+function QiblaCompass({ angle, language }: { angle: number; language: string }) {
+  return (
+    <div className="flex flex-col items-center gap-4">
+      <svg viewBox="0 0 220 220" className="w-52 h-52" role="img" aria-label="Qibla compass">
+        {/* Outer ring */}
+        <circle cx="110" cy="110" r="105" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
+        <circle cx="110" cy="110" r="100" fill="url(#compassGrad)" stroke="rgba(255,255,255,0.15)" strokeWidth="2" />
+
+        <defs>
+          <radialGradient id="compassGrad" cx="40%" cy="30%">
+            <stop offset="0%" stopColor="hsl(156,45%,16%)" />
+            <stop offset="100%" stopColor="hsl(156,51%,8%)" />
+          </radialGradient>
+        </defs>
+
+        {/* Tick marks */}
+        {Array.from({ length: 36 }).map((_, i) => {
+          const deg = i * 10;
+          const isMajor = deg % 90 === 0;
+          const rad = (deg - 90) * (Math.PI / 180);
+          const r1 = 92, r2 = isMajor ? 78 : 84;
+          return (
+            <line
+              key={i}
+              x1={110 + r1 * Math.cos(rad)}
+              y1={110 + r1 * Math.sin(rad)}
+              x2={110 + r2 * Math.cos(rad)}
+              y2={110 + r2 * Math.sin(rad)}
+              stroke={isMajor ? "rgba(255,255,255,0.35)" : "rgba(255,255,255,0.12)"}
+              strokeWidth={isMajor ? 2 : 1}
+            />
+          );
+        })}
+
+        {/* Cardinal directions — fixed, never rotate */}
+        <text x="110" y="22" textAnchor="middle" fill="#ef4444" fontSize="15" fontWeight="bold" fontFamily="Inter,sans-serif">N</text>
+        <text x="110" y="208" textAnchor="middle" fill="rgba(255,255,255,0.4)" fontSize="13" fontFamily="Inter,sans-serif">S</text>
+        <text x="200" y="115" textAnchor="middle" fill="rgba(255,255,255,0.4)" fontSize="13" fontFamily="Inter,sans-serif">E</text>
+        <text x="20" y="115" textAnchor="middle" fill="rgba(255,255,255,0.4)" fontSize="13" fontFamily="Inter,sans-serif">W</text>
+
+        {/* Needle group — rotate around center (110,110) */}
+        <g
+          transform={`rotate(${angle}, 110, 110)`}
+          style={{ transition: "transform 1s ease" }}
+        >
+          {/* Gold tip — points to Qibla (upward in natural state = north = 0°) */}
+          <polygon
+            points="110,20 117,72 103,72"
+            fill="hsl(var(--primary))"
+            opacity="0.95"
+          />
+          <rect x="107" y="72" width="6" height="38" rx="3" fill="hsl(var(--primary))" opacity="0.8" />
+
+          {/* Gray tail — points away from Qibla */}
+          <rect x="107" y="110" width="6" height="38" rx="3" fill="rgba(255,255,255,0.2)" />
+          <polygon
+            points="110,200 117,148 103,148"
+            fill="rgba(255,255,255,0.2)"
+          />
+        </g>
+
+        {/* Center dot */}
+        <circle cx="110" cy="110" r="7" fill="hsl(var(--primary))" stroke="hsl(var(--background))" strokeWidth="3" />
+
+        {/* Kaaba icon at needle tip (tiny square) */}
+        <g transform={`rotate(${angle}, 110, 110)`}>
+          <rect x="105" y="12" width="10" height="10" rx="1" fill="hsl(var(--primary-foreground))" opacity="0.6" />
+        </g>
+      </svg>
+
+      <div className="text-center">
+        <p className="text-4xl font-bold text-primary">{Math.round(angle)}°</p>
+        <p className="text-sm text-muted-foreground mt-1">
+          {language === "ar" ? "من الشمال باتجاه القبلة" : "from North toward the Kaaba"}
+        </p>
+      </div>
+    </div>
+  );
+}
+
 export default function PrayerTimes() {
   const { language } = useI18n();
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
@@ -79,11 +159,22 @@ export default function PrayerTimes() {
   const isLoading = coords ? coordLoading : cityLoading;
   const timings = data?.timings || null;
 
+  // Set qibla from GPS coordinates
   useEffect(() => {
     if (coords) {
       setQiblaAngle(calculateQibla(coords.lat, coords.lng));
     }
   }, [coords]);
+
+  // Set qibla from city search result (uses meta lat/lng from API response)
+  useEffect(() => {
+    if (cityData?.meta?.latitude && cityData?.meta?.longitude) {
+      setQiblaAngle(calculateQibla(
+        parseFloat(cityData.meta.latitude),
+        parseFloat(cityData.meta.longitude)
+      ));
+    }
+  }, [cityData]);
 
   const handleDetectLocation = () => {
     setLoadingLoc(true);
@@ -95,6 +186,7 @@ export default function PrayerTimes() {
           setCoords(c);
           setLoadingLoc(false);
           setSubmittedCity("");
+          setSubmittedCountry("");
         },
         () => {
           setLoadingLoc(false);
@@ -129,7 +221,7 @@ export default function PrayerTimes() {
         {language === "ar" ? "مواقيت الصلاة" : "Prayer Times"}
       </h1>
 
-      {/* Controls */}
+      {/* Search controls */}
       <div className="flex flex-col sm:flex-row gap-4 mb-8">
         <form onSubmit={handleCitySearch} className="flex flex-1 gap-2">
           <div className="relative flex-1">
@@ -139,7 +231,7 @@ export default function PrayerTimes() {
               value={cityInput}
               onChange={e => setCityInput(e.target.value)}
               placeholder={language === "ar" ? "اسم المدينة، البلد (مثال: Mecca, SA)" : "City, Country (e.g. London, GB)"}
-              className="w-full pl-9 pr-4 py-3 rounded-xl bg-card border border-white/10 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary text-sm"
+              className="w-full pl-9 pr-4 py-3 rounded-xl bg-card border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary text-sm"
             />
           </div>
           <button type="submit" className="px-5 py-3 bg-primary text-primary-foreground rounded-xl font-semibold text-sm hover:bg-primary/90 transition">
@@ -150,7 +242,7 @@ export default function PrayerTimes() {
         <button
           onClick={handleDetectLocation}
           disabled={loadingLoc}
-          className="flex items-center gap-2 px-5 py-3 rounded-xl bg-card border border-white/10 text-foreground hover:bg-white/10 transition text-sm font-medium"
+          className="flex items-center gap-2 px-5 py-3 rounded-xl bg-card border border-border text-foreground hover:bg-white/10 transition text-sm font-medium"
         >
           {loadingLoc ? <Loader2 className="w-4 h-4 animate-spin" /> : <MapPin className="w-4 h-4 text-primary" />}
           {language === "ar" ? "موقعي" : "Use My Location"}
@@ -159,7 +251,7 @@ export default function PrayerTimes() {
         <select
           value={method}
           onChange={e => setMethod(e.target.value)}
-          className="px-4 py-3 rounded-xl bg-card border border-white/10 text-foreground text-sm focus:outline-none"
+          className="px-4 py-3 rounded-xl bg-card border border-border text-foreground text-sm focus:outline-none"
         >
           <option value="1">Karachi</option>
           <option value="2">ISNA</option>
@@ -170,7 +262,7 @@ export default function PrayerTimes() {
       </div>
 
       {locError && (
-        <div className="bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 mb-6 text-sm text-red-300">
+        <div className="bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 mb-6 text-sm text-red-400">
           {language === "ar"
             ? "تعذر تحديد موقعك. ابحث عن مدينة بدلاً من ذلك."
             : "Could not detect your location. Please search by city instead."}
@@ -207,6 +299,7 @@ export default function PrayerTimes() {
             </div>
           )}
 
+          {/* Prayer grid */}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {PRAYERS.map(prayer => {
               const isCurrent = prayer === currentPrayer;
@@ -243,78 +336,7 @@ export default function PrayerTimes() {
             </h3>
 
             {qiblaAngle !== null ? (
-              <div className="flex flex-col items-center gap-4">
-                {/* Compass dial */}
-                <div className="relative w-48 h-48">
-                  {/* Outer ring */}
-                  <div className="absolute inset-0 rounded-full border-2 border-white/20 bg-gradient-to-br from-card to-background" />
-
-                  {/* Cardinal directions */}
-                  {[
-                    { label: "N", deg: 0, top: "4px", left: "50%", translate: "-50%, 0" },
-                    { label: "S", deg: 180, bottom: "4px", left: "50%", translate: "-50%, 0" },
-                    { label: "E", deg: 90, right: "4px", top: "50%", translate: "0, -50%" },
-                    { label: "W", deg: 270, left: "4px", top: "50%", translate: "0, -50%" },
-                  ].map(d => (
-                    <span
-                      key={d.label}
-                      className="absolute text-xs font-bold text-muted-foreground select-none"
-                      style={{
-                        top: d.top,
-                        bottom: (d as any).bottom,
-                        left: d.left,
-                        right: (d as any).right,
-                        transform: `translate(${d.translate})`,
-                      }}
-                    >
-                      {d.label}
-                    </span>
-                  ))}
-
-                  {/* Tick marks */}
-                  {Array.from({ length: 36 }).map((_, i) => {
-                    const angle = i * 10;
-                    const isMain = angle % 90 === 0;
-                    const rad = (angle - 90) * (Math.PI / 180);
-                    const r = 86;
-                    const len = isMain ? 10 : 5;
-                    const x1 = 96 + r * Math.cos(rad);
-                    const y1 = 96 + r * Math.sin(rad);
-                    const x2 = 96 + (r - len) * Math.cos(rad);
-                    const y2 = 96 + (r - len) * Math.sin(rad);
-                    return (
-                      <svg key={i} className="absolute inset-0 w-full h-full overflow-visible" viewBox="0 0 192 192">
-                        <line x1={x1} y1={y1} x2={x2} y2={y2} stroke={isMain ? "rgba(255,255,255,0.4)" : "rgba(255,255,255,0.15)"} strokeWidth={isMain ? 2 : 1} />
-                      </svg>
-                    );
-                  })}
-
-                  {/* Needle pointing to Qibla */}
-                  <div
-                    className="absolute inset-0 flex items-center justify-center"
-                    style={{ transform: `rotate(${qiblaAngle}deg)`, transition: "transform 0.8s ease" }}
-                  >
-                    <svg viewBox="0 0 40 192" className="absolute w-5 h-24" style={{ top: "0", left: "50%", transform: "translateX(-50%)" }}>
-                      {/* Kaaba symbol at tip */}
-                      <polygon points="20,2 28,48 12,48" fill="hsl(var(--primary))" />
-                      <polygon points="20,190 28,144 12,144" fill="rgba(255,255,255,0.3)" />
-                      <rect x="16" y="48" width="8" height="96" fill="rgba(255,255,255,0.15)" />
-                    </svg>
-                  </div>
-
-                  {/* Center dot */}
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-3 h-3 rounded-full bg-primary border-2 border-background z-10" />
-                  </div>
-                </div>
-
-                <div className="text-center">
-                  <p className="text-3xl font-bold text-primary">{Math.round(qiblaAngle)}°</p>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    {language === "ar" ? "من الشمال باتجاه القبلة" : "from North toward the Kaaba"}
-                  </p>
-                </div>
-              </div>
+              <QiblaCompass angle={qiblaAngle} language={language} />
             ) : (
               <div className="flex flex-col items-center gap-4 text-center">
                 <div className="w-20 h-20 rounded-full bg-primary/20 flex items-center justify-center">
@@ -322,17 +344,15 @@ export default function PrayerTimes() {
                 </div>
                 <p className="text-muted-foreground text-sm max-w-xs">
                   {language === "ar"
-                    ? "استخدم تحديد الموقع للحصول على اتجاه القبلة بدقة"
-                    : "Use location detection to get the exact Qibla direction toward the Kaaba in Makkah."}
+                    ? "ابحث عن مدينة أو استخدم موقعك لمعرفة اتجاه القبلة"
+                    : "Search for a city or use your location to see the Qibla direction toward the Kaaba."}
                 </p>
                 <button
                   onClick={handleDetectLocation}
                   disabled={loadingLoc}
                   className="px-5 py-2.5 bg-primary/20 text-primary rounded-xl text-sm font-semibold hover:bg-primary/30 transition border border-primary/30"
                 >
-                  {loadingLoc
-                    ? <Loader2 className="w-4 h-4 animate-spin inline mr-2" />
-                    : null}
+                  {loadingLoc ? <Loader2 className="w-4 h-4 animate-spin inline mr-2" /> : null}
                   {language === "ar" ? "تحديد موقعي" : "Detect My Location"}
                 </button>
               </div>

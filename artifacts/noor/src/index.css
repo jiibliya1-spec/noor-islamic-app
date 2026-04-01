@@ -53,29 +53,29 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
-:root {
-  /* Deep dark green and gold premium theme */
-  --background: 156 51% 10%; /* #0c261c */
+/* ── DARK THEME (default) ──────────────────────────────── */
+:root, .dark {
+  --background: 156 51% 10%;
   --foreground: 0 0% 98%;
-  
-  --card: 156 45% 14%; /* slightly lighter */
+
+  --card: 156 45% 14%;
   --card-foreground: 0 0% 98%;
-  
+
   --popover: 156 51% 10%;
   --popover-foreground: 0 0% 98%;
-  
-  --primary: 46 65% 52%; /* Gold #d4af37 */
+
+  --primary: 46 65% 52%;
   --primary-foreground: 156 51% 10%;
-  
+
   --secondary: 156 40% 20%;
   --secondary-foreground: 0 0% 98%;
-  
+
   --muted: 156 30% 18%;
   --muted-foreground: 156 10% 70%;
-  
+
   --accent: 46 65% 52%;
   --accent-foreground: 156 51% 10%;
-  
+
   --destructive: 0 62.8% 50.6%;
   --destructive-foreground: 0 0% 98%;
 
@@ -94,6 +94,47 @@
   --radius: 1rem;
 }
 
+/* ── LIGHT THEME ────────────────────────────────────────── */
+.light {
+  --background: 40 60% 97%;
+  --foreground: 156 51% 12%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 156 51% 12%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 156 51% 12%;
+
+  --primary: 46 65% 44%;
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 156 30% 92%;
+  --secondary-foreground: 156 51% 12%;
+
+  --muted: 156 20% 94%;
+  --muted-foreground: 156 20% 40%;
+
+  --accent: 46 65% 44%;
+  --accent-foreground: 0 0% 100%;
+
+  --destructive: 0 62.8% 50.6%;
+  --destructive-foreground: 0 0% 98%;
+
+  --border: 156 20% 82%;
+  --input: 156 20% 88%;
+  --ring: 46 65% 44%;
+
+  --sidebar: 156 30% 95%;
+  --sidebar-foreground: 156 51% 12%;
+  --sidebar-border: 156 20% 85%;
+  --sidebar-primary: 46 65% 44%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 156 20% 90%;
+  --sidebar-accent-foreground: 156 51% 12%;
+
+  --radius: 1rem;
+}
+
 @layer base {
   * {
     @apply border-border;
@@ -101,10 +142,16 @@
 
   body {
     @apply font-sans antialiased bg-background text-foreground;
-    background-image: 
+    background-image:
       radial-gradient(circle at 100% 0%, hsla(46, 65%, 52%, 0.08) 0%, transparent 40%),
       radial-gradient(circle at 0% 100%, hsla(156, 100%, 25%, 0.08) 0%, transparent 40%);
     background-attachment: fixed;
+  }
+
+  .light body {
+    background-image:
+      radial-gradient(circle at 100% 0%, hsla(46, 65%, 52%, 0.06) 0%, transparent 40%),
+      radial-gradient(circle at 0% 100%, hsla(156, 50%, 80%, 0.08) 0%, transparent 40%);
   }
 
   html[dir="rtl"] {
@@ -116,11 +163,15 @@
   .glass-card {
     @apply bg-card/80 backdrop-blur-xl border border-white/10 shadow-xl shadow-black/20;
   }
-  
+
+  .light .glass-card {
+    @apply bg-card/95 border-border/60 shadow-black/5;
+  }
+
   .text-gradient {
     @apply bg-gradient-to-r from-primary via-[#e6c86a] to-primary bg-clip-text text-transparent;
   }
-  
+
   .font-quran {
     font-family: var(--font-quran);
     line-height: 2.2;

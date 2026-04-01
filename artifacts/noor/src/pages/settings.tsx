@@ -1,8 +1,7 @@
 import { useI18n } from "@/lib/i18n";
-import { useGetMe, useLogout } from "@workspace/api-client-react";
-import { Globe, Bell, LogIn, LogOut, LayoutDashboard, MapPin, User } from "lucide-react";
+import { useAuth } from "@/lib/auth";
+import { Globe, Bell, LogIn, LogOut, LayoutDashboard, MapPin, User, Sun, Moon, Monitor } from "lucide-react";
 import { Link } from "wouter";
-import { useQueryClient } from "@tanstack/react-query";
 
 const LANGUAGES = [
   { code: "en", label: "English",  short: "EN" },
@@ -11,16 +10,18 @@ const LANGUAGES = [
   { code: "de", label: "Deutsch",  short: "DE" },
 ] as const;
 
+const THEMES = [
+  { value: "dark",   labelKey: "darkMode",   icon: Moon },
+  { value: "light",  labelKey: "lightMode",  icon: Sun },
+  { value: "system", labelKey: "systemMode", icon: Monitor },
+] as const;
+
 export default function Settings() {
-  const { language, setLanguage, t, dir } = useI18n();
-  const { data: user } = useGetMe({ query: { retry: false } });
-  const logout = useLogout();
-  const queryClient = useQueryClient();
+  const { language, setLanguage, t, dir, theme, setTheme } = useI18n();
+  const { user, signOut } = useAuth();
 
   const handleLogout = async () => {
-    try { await logout.mutateAsync(); } catch {}
-    localStorage.removeItem("noor_token");
-    queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
+    await signOut();
     window.location.href = "/";
   };
 
@@ -33,10 +34,12 @@ export default function Settings() {
         {user ? (
           <div className="flex items-center gap-4">
             <div className="w-14 h-14 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-xl shrink-0">
-              {user.name.charAt(0).toUpperCase()}
+              {(user.user_metadata?.full_name || user.email || "U").charAt(0).toUpperCase()}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="font-bold text-lg text-foreground truncate">{user.name}</p>
+              <p className="font-bold text-lg text-foreground truncate">
+                {user.user_metadata?.full_name || "User"}
+              </p>
               <p className="text-muted-foreground text-sm truncate">{user.email}</p>
             </div>
           </div>
@@ -46,14 +49,14 @@ export default function Settings() {
               <User className="w-7 h-7 text-muted-foreground" />
             </div>
             <div>
-              <p className="font-bold text-foreground">Not logged in</p>
-              <p className="text-muted-foreground text-sm">Login to sync your progress</p>
+              <p className="font-bold text-foreground">{t("notLoggedIn")}</p>
+              <p className="text-muted-foreground text-sm">{t("loginToSync")}</p>
             </div>
           </div>
         )}
       </div>
 
-      {/* Auth buttons — mobile prominent (hidden in sidebar on desktop) */}
+      {/* Auth buttons — mobile (hidden on desktop where sidebar shows them) */}
       <div className="grid grid-cols-2 gap-3 mb-6 lg:hidden">
         {user ? (
           <>
@@ -63,7 +66,6 @@ export default function Settings() {
             </Link>
             <button
               onClick={handleLogout}
-              disabled={logout.isPending}
               className="glass-card rounded-2xl p-4 flex flex-col items-center gap-2 active:scale-95 transition-transform text-red-400"
             >
               <LogOut className="w-6 h-6" />
@@ -84,6 +86,35 @@ export default function Settings() {
         )}
       </div>
 
+      {/* Appearance / Theme */}
+      <div className="glass-card rounded-2xl p-5 mb-4">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 bg-primary/20 rounded-xl flex items-center justify-center">
+            {theme === "light" ? <Sun className="w-5 h-5 text-primary" /> : theme === "dark" ? <Moon className="w-5 h-5 text-primary" /> : <Monitor className="w-5 h-5 text-primary" />}
+          </div>
+          <div>
+            <h3 className="font-bold text-foreground">{t("appearance")}</h3>
+            <p className="text-muted-foreground text-xs">Choose your display theme</p>
+          </div>
+        </div>
+        <div className="grid grid-cols-3 gap-2">
+          {THEMES.map(({ value, labelKey, icon: Icon }) => (
+            <button
+              key={value}
+              onClick={() => setTheme(value)}
+              className={`flex flex-col items-center gap-2 px-3 py-4 rounded-xl text-sm font-medium transition-all ${
+                theme === value
+                  ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
+                  : "bg-background/50 text-foreground hover:bg-white/10 border border-border/50"
+              }`}
+            >
+              <Icon className="w-5 h-5" />
+              <span className="text-xs font-semibold">{t(labelKey)}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* Language */}
       <div className="glass-card rounded-2xl p-5 mb-4">
         <div className="flex items-center gap-3 mb-4">
@@ -102,8 +133,8 @@ export default function Settings() {
               onClick={() => setLanguage(lang.code)}
               className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
                 language === lang.code
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-background/50 text-foreground hover:bg-white/10 border border-white/10"
+                  ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
+                  : "bg-background/50 text-foreground hover:bg-white/10 border border-border/50"
               }`}
             >
               <span className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs shrink-0 ${
@@ -124,10 +155,10 @@ export default function Settings() {
             <Bell className="w-5 h-5 text-primary" />
           </div>
           <div className="flex-1">
-            <h3 className="font-bold text-foreground">Prayer Notifications</h3>
-            <p className="text-muted-foreground text-xs">Coming soon</p>
+            <h3 className="font-bold text-foreground">{t("prayerNotifications")}</h3>
+            <p className="text-muted-foreground text-xs">{t("comingSoon")}</p>
           </div>
-          <div className="w-10 h-6 rounded-full bg-white/10 relative">
+          <div className="w-10 h-6 rounded-full bg-border relative">
             <div className="w-4 h-4 rounded-full bg-muted-foreground absolute top-1 left-1" />
           </div>
         </div>
@@ -140,8 +171,8 @@ export default function Settings() {
             <MapPin className="w-5 h-5 text-primary" />
           </div>
           <div className="flex-1">
-            <h3 className="font-bold text-foreground">Mosque Finder</h3>
-            <p className="text-muted-foreground text-xs">Find nearby mosques</p>
+            <h3 className="font-bold text-foreground">{t("mosqueFinder")}</h3>
+            <p className="text-muted-foreground text-xs">{t("findNearbyMosques")}</p>
           </div>
           <span className="text-muted-foreground text-lg">›</span>
         </Link>

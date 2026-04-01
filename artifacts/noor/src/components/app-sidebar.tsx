@@ -1,8 +1,9 @@
 import { Link, useLocation } from "wouter";
 import { useI18n } from "@/lib/i18n";
-import { 
-  Home, BookOpen, Clock, Heart, CalendarDays, 
-  MapPin, LayoutDashboard, Settings, LogIn, LogOut 
+import { useAuth } from "@/lib/auth";
+import {
+  Home, BookOpen, Clock, Heart, CalendarDays,
+  MapPin, LayoutDashboard, Settings, LogIn, LogOut
 } from "lucide-react";
 import {
   Sidebar,
@@ -15,21 +16,15 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { useGetMe, useLogout } from "@workspace/api-client-react";
-import { useQueryClient } from "@tanstack/react-query";
 
 export function AppSidebar() {
   const { t, language } = useI18n();
   const [location] = useLocation();
-  const { data: user } = useGetMe({ query: { retry: false }});
-  const logoutMutation = useLogout();
-  const queryClient = useQueryClient();
+  const { user, signOut } = useAuth();
 
   const handleLogout = async () => {
-    await logoutMutation.mutateAsync();
-    localStorage.removeItem("noor_token");
-    queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
-    window.location.href = "/login";
+    await signOut();
+    window.location.href = "/";
   };
 
   const menuItems = [
@@ -62,7 +57,7 @@ export function AppSidebar() {
                 if (item.auth && !user) return null;
                 const isActive = location === item.url || (item.url !== "/" && location.startsWith(item.url));
                 return (
-                  <SidebarMenuItem key={item.title}>
+                  <SidebarMenuItem key={item.url}>
                     <SidebarMenuButton asChild isActive={isActive} tooltip={item.title}>
                       <Link href={item.url} className={`
                         flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300
@@ -85,14 +80,16 @@ export function AppSidebar() {
           <div className="flex flex-col gap-3">
             <div className="flex items-center gap-3 px-2">
               <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">
-                {user.name.charAt(0).toUpperCase()}
+                {(user.user_metadata?.full_name || user.email || "U").charAt(0).toUpperCase()}
               </div>
               <div className="flex flex-col overflow-hidden">
-                <span className="text-sm font-semibold truncate">{user.name}</span>
+                <span className="text-sm font-semibold truncate">
+                  {user.user_metadata?.full_name || "User"}
+                </span>
                 <span className="text-xs text-muted-foreground truncate">{user.email}</span>
               </div>
             </div>
-            <button 
+            <button
               onClick={handleLogout}
               className="flex items-center gap-2 px-4 py-2 w-full text-left text-sm text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
             >

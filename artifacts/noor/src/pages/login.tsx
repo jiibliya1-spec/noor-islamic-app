@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "wouter";
 import { Loader2, Mail, Lock, AlertCircle } from "lucide-react";
+import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -11,28 +12,31 @@ export default function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    setLoading(true);
 
+    if (!isSupabaseConfigured || !supabase) {
+      setError("Authentication is not configured yet. Please add your Supabase project credentials (VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY) to enable login.");
+      return;
+    }
+
+    setLoading(true);
     try {
-      const res = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim().toLowerCase(), password }),
+      const { error: authError } = await supabase.auth.signInWithPassword({
+        email: email.trim().toLowerCase(),
+        password,
       });
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        setError(data.message || "Login failed. Please check your credentials.");
+      if (authError) {
+        if (authError.message.includes("Invalid login credentials")) {
+          setError("Invalid email or password. Please try again.");
+        } else if (authError.message.includes("Email not confirmed")) {
+          setError("Please confirm your email address before logging in. Check your inbox.");
+        } else {
+          setError(authError.message || "Login failed. Please try again.");
+        }
         return;
       }
 
-      if (data.token) {
-        localStorage.setItem("noor_token", data.token);
-        window.location.href = "/";
-      } else {
-        setError("Unexpected response from server. Please try again.");
-      }
+      window.location.href = "/";
     } catch {
       setError("Network error. Please check your connection and try again.");
     } finally {
@@ -61,7 +65,7 @@ export default function Login() {
         </div>
 
         {error && (
-          <div className="flex items-start gap-3 bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3 mb-5 text-red-300 text-sm">
+          <div className="flex items-start gap-3 bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3 mb-5 text-red-400 text-sm">
             <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
             <span>{error}</span>
           </div>
@@ -76,7 +80,7 @@ export default function Login() {
                 type="email"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 bg-background/50 border border-white/10 rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition"
+                className="w-full pl-10 pr-4 py-3 bg-background/50 border border-border rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition"
                 placeholder="you@example.com"
                 required
                 autoComplete="email"
@@ -92,7 +96,7 @@ export default function Login() {
                 type="password"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 bg-background/50 border border-white/10 rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition"
+                className="w-full pl-10 pr-4 py-3 bg-background/50 border border-border rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition"
                 placeholder="••••••••"
                 required
                 autoComplete="current-password"

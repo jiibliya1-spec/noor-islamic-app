@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "wouter";
-import { Loader2, User, Mail, Lock, AlertCircle } from "lucide-react";
+import { Loader2, User, Mail, Lock, AlertCircle, CheckCircle } from "lucide-react";
+import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 
 export default function Register() {
   const [name, setName] = useState("");
@@ -8,32 +9,43 @@ export default function Register() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    setLoading(true);
+    setSuccess("");
 
+    if (!isSupabaseConfigured || !supabase) {
+      setError("Authentication is not configured yet. Please add your Supabase project credentials (VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY) to enable registration.");
+      return;
+    }
+
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters.");
+      return;
+    }
+
+    setLoading(true);
     try {
-      const res = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: name.trim(), email: email.trim().toLowerCase(), password }),
+      const { error: authError } = await supabase.auth.signUp({
+        email: email.trim().toLowerCase(),
+        password,
+        options: {
+          data: { full_name: name.trim() },
+        },
       });
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        setError(data.message || "Registration failed. Please try again.");
+      if (authError) {
+        if (authError.message.includes("already registered") || authError.message.includes("User already registered")) {
+          setError("This email is already registered. Try logging in instead.");
+        } else {
+          setError(authError.message || "Registration failed. Please try again.");
+        }
         return;
       }
 
-      if (data.token) {
-        localStorage.setItem("noor_token", data.token);
-        window.location.href = "/";
-      } else {
-        setError("Unexpected response from server. Please try again.");
-      }
+      setSuccess("Account created! Please check your email to confirm your address, then log in.");
     } catch {
       setError("Network error. Please check your connection and try again.");
     } finally {
@@ -62,72 +74,90 @@ export default function Register() {
         </div>
 
         {error && (
-          <div className="flex items-start gap-3 bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3 mb-5 text-red-300 text-sm">
+          <div className="flex items-start gap-3 bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3 mb-5 text-red-400 text-sm">
             <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
             <span>{error}</span>
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-foreground">Full Name</label>
-            <div className="relative">
-              <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-              <input
-                type="text"
-                value={name}
-                onChange={e => setName(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 bg-background/50 border border-white/10 rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition"
-                placeholder="John Doe"
-                required
-                autoComplete="name"
-              />
-            </div>
+        {success && (
+          <div className="flex items-start gap-3 bg-green-500/10 border border-green-500/30 rounded-xl px-4 py-3 mb-5 text-green-400 text-sm">
+            <CheckCircle className="w-4 h-4 mt-0.5 shrink-0" />
+            <span>{success}</span>
           </div>
+        )}
 
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-foreground">Email</label>
-            <div className="relative">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-              <input
-                type="email"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 bg-background/50 border border-white/10 rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition"
-                placeholder="you@example.com"
-                required
-                autoComplete="email"
-              />
+        {!success && (
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">Full Name</label>
+              <div className="relative">
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                <input
+                  type="text"
+                  value={name}
+                  onChange={e => setName(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 bg-background/50 border border-border rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition"
+                  placeholder="John Doe"
+                  required
+                  autoComplete="name"
+                />
+              </div>
             </div>
-          </div>
 
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-foreground">Password</label>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-              <input
-                type="password"
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 bg-background/50 border border-white/10 rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition"
-                placeholder="••••••••"
-                required
-                minLength={6}
-                autoComplete="new-password"
-              />
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">Email</label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                <input
+                  type="email"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 bg-background/50 border border-border rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition"
+                  placeholder="you@example.com"
+                  required
+                  autoComplete="email"
+                />
+              </div>
             </div>
-            <p className="text-xs text-muted-foreground">Minimum 6 characters</p>
-          </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-3 text-base font-semibold bg-gradient-to-r from-primary to-primary/80 text-primary-foreground rounded-xl mt-4 hover:shadow-lg hover:shadow-primary/25 transition-all disabled:opacity-60 flex items-center justify-center gap-2"
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">Password</label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                <input
+                  type="password"
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 bg-background/50 border border-border rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition"
+                  placeholder="••••••••"
+                  required
+                  minLength={6}
+                  autoComplete="new-password"
+                />
+              </div>
+              <p className="text-xs text-muted-foreground">Minimum 6 characters</p>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3 text-base font-semibold bg-gradient-to-r from-primary to-primary/80 text-primary-foreground rounded-xl mt-4 hover:shadow-lg hover:shadow-primary/25 transition-all disabled:opacity-60 flex items-center justify-center gap-2"
+            >
+              {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : null}
+              {loading ? "Creating Account..." : "Create Account"}
+            </button>
+          </form>
+        )}
+
+        {success && (
+          <Link
+            href="/login"
+            className="block w-full text-center py-3 font-semibold bg-gradient-to-r from-primary to-primary/80 text-primary-foreground rounded-xl hover:shadow-lg transition-all"
           >
-            {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : null}
-            {loading ? "Creating Account..." : "Create Account"}
-          </button>
-        </form>
+            Go to Login
+          </Link>
+        )}
 
         <p className="text-center text-muted-foreground mt-8 text-sm">
           Already have an account?{" "}
