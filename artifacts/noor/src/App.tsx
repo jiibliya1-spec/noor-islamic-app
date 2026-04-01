@@ -12,6 +12,7 @@ import { AppSidebar } from "@/components/app-sidebar";
 import Home from "@/pages/home";
 import QuranList from "@/pages/quran/index";
 import SurahDetail from "@/pages/quran/surah";
+import QuranDuas from "@/pages/quran/duas";
 import PrayerTimes from "@/pages/prayer-times";
 import Adhkar from "@/pages/adhkar";
 import Quiz from "@/pages/quiz";
@@ -46,6 +47,7 @@ function AppLayout() {
             <Switch key={language}>
               <Route path="/" component={Home} />
               <Route path="/quran" component={QuranList} />
+              <Route path="/quran/duas" component={QuranDuas} />
               <Route path="/quran/:id" component={SurahDetail} />
               <Route path="/prayer-times" component={PrayerTimes} />
               <Route path="/adhkar" component={Adhkar} />

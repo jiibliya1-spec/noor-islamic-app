@@ -37,25 +37,73 @@ export function useSurahDetail(surahNumber: number) {
   return useQuery({
     queryKey: ["quran", "surah", surahNumber],
     queryFn: async () => {
-      // Fetch Arabic and English parallel
       const [arRes, enRes] = await Promise.all([
         fetch(`https://api.alquran.cloud/v1/surah/${surahNumber}`),
         fetch(`https://api.alquran.cloud/v1/surah/${surahNumber}/en.asad`)
       ]);
       const arData = await arRes.json();
       const enData = await enRes.json();
-      
       const ayahs = arData.data.ayahs.map((ayah: Ayah, index: number) => ({
         ...ayah,
         translation: enData.data.ayahs[index].text
       }));
-      
-      return {
-        ...arData.data,
-        ayahs
-      };
+      return { ...arData.data, ayahs };
     },
     enabled: !!surahNumber,
+  });
+}
+
+// Tafsir — uses alquran.cloud editions:
+//   ar.muyassar  = التفسير الميسر  (simplified Arabic tafsir, Saudi Ministry of Religious Affairs)
+//   en.maududi   = Tafhim al-Quran (Sayyid Abul Ala Maududi, English)
+export function useTafsir(
+  surahNumber: number,
+  ayahNumber: number,
+  language: string,
+  enabled: boolean
+) {
+  const edition = language === "ar" ? "ar.muyassar" : "en.maududi";
+  return useQuery({
+    queryKey: ["tafsir", surahNumber, ayahNumber, edition],
+    queryFn: async () => {
+      const ref = `${surahNumber}:${ayahNumber}`;
+      const res = await fetch(`https://api.alquran.cloud/v1/ayah/${ref}/${edition}`);
+      const data = await res.json();
+      return (data.data?.text || "") as string;
+    },
+    enabled: enabled && surahNumber > 0 && ayahNumber > 0,
+    staleTime: 1000 * 60 * 30,
+  });
+}
+
+// Word-by-word meanings via Quran.com v4 (CORS-enabled public API)
+export interface WordData {
+  id: number;
+  position: number;
+  text_uthmani: string;
+  char_type_name: string;
+  transliteration?: { text: string };
+  translation?: { text: string };
+}
+
+export function useWordMeanings(
+  surahNumber: number,
+  ayahNumber: number,
+  enabled: boolean
+) {
+  return useQuery({
+    queryKey: ["words", surahNumber, ayahNumber],
+    queryFn: async () => {
+      const key = `${surahNumber}:${ayahNumber}`;
+      const res = await fetch(
+        `https://api.quran.com/api/v4/verses/by_key/${key}?words=true&word_translations=true&word_transliteration=true`
+      );
+      const data = await res.json();
+      const words: WordData[] = data.verse?.words || [];
+      return words.filter(w => w.char_type_name === "word");
+    },
+    enabled: enabled && surahNumber > 0 && ayahNumber > 0,
+    staleTime: 1000 * 60 * 60,
   });
 }
 

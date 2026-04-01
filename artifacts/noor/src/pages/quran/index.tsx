@@ -4,7 +4,7 @@ import { useSurahList } from "@/hooks/use-external-api";
 import { useBookmarks } from "@/hooks/use-bookmarks";
 import { loadProgress, clearProgress } from "@/hooks/use-reading-progress";
 import type { ReadingProgress } from "@/hooks/use-reading-progress";
-import { Search, Loader2, Bookmark, BookmarkCheck, Trash2, ChevronDown, ChevronUp, BookOpen, ChevronRight, X } from "lucide-react";
+import { Search, Loader2, Bookmark, BookmarkCheck, Trash2, ChevronDown, ChevronUp, BookOpen, ChevronRight, X, Star } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 
 export default function QuranList() {
@@ -29,12 +29,14 @@ export default function QuranList() {
   const lang = (["en", "ar", "fr", "de"].includes(language) ? language : "en") as Lang;
 
   const t = {
-    quran:         { en: "The Holy Quran",                   ar: "القرآن الكريم",         fr: "Le Saint Coran",               de: "Der Heilige Koran" },
-    continueReading:{ en: "Continue reading",                ar: "متابعة القراءة",         fr: "Continuer la lecture",         de: "Weiterlesen" },
-    verse:         { en: "Verse",                            ar: "الآية",                  fr: "Verset",                       de: "Vers" },
-    myBookmarks:   { en: "My Bookmarks",                     ar: "إشاراتي",               fr: "Mes signets",                  de: "Lesezeichen" },
-    noBookmarks:   { en: "No bookmarks yet — tap any verse", ar: "لا توجد إشارات بعد",   fr: "Aucun signet — appuyez sur un verset", de: "Noch keine Lesezeichen" },
-    search:        { en: "Search surah name...",             ar: "ابحث عن سورة...",       fr: "Rechercher une sourate...",    de: "Sure suchen..." },
+    quran:           { en: "The Holy Quran",                   ar: "القرآن الكريم",         fr: "Le Saint Coran",               de: "Der Heilige Koran" },
+    continueReading: { en: "Continue reading",                 ar: "متابعة القراءة",         fr: "Continuer la lecture",         de: "Weiterlesen" },
+    verse:           { en: "Verse",                            ar: "الآية",                  fr: "Verset",                       de: "Vers" },
+    myBookmarks:     { en: "My Bookmarks",                     ar: "إشاراتي",               fr: "Mes signets",                  de: "Lesezeichen" },
+    noBookmarks:     { en: "No bookmarks yet — tap any verse", ar: "لا توجد إشارات بعد",   fr: "Aucun signet — appuyez sur un verset", de: "Noch keine Lesezeichen" },
+    search:          { en: "Search surah name...",             ar: "ابحث عن سورة...",       fr: "Rechercher une sourate...",    de: "Sure suchen..." },
+    duasTitle:       { en: "Quranic Duas & Completion Duas",   ar: "أدعية من القرآن وأدعية الختم", fr: "Duas Coraniques & Complétion", de: "Koranische Duas & Abschluss" },
+    duasDesc:        { en: "12 Quranic duas · 6 Khatm duas",   ar: "١٢ دعاء قرآني · ٦ أدعية خت", fr: "12 duas coraniques · 6 duas de clôture", de: "12 Koranische Duas · 6 Khatm Duas" },
   } as const;
 
   return (
@@ -88,6 +90,21 @@ export default function QuranList() {
             </button>
           </div>
         )}
+
+        {/* ── Duas entry card ── */}
+        <Link
+          href="/quran/duas"
+          className="mb-5 glass-card rounded-2xl p-4 flex items-center gap-4 border border-primary/15 hover:border-primary/30 active:scale-[0.98] transition-all cursor-pointer"
+        >
+          <div className="w-11 h-11 bg-primary/15 rounded-xl flex items-center justify-center shrink-0">
+            <Star className="w-5 h-5 text-primary fill-primary/30" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="font-bold text-sm text-foreground">{t.duasTitle[lang]}</p>
+            <p className="text-xs text-muted-foreground mt-0.5">{t.duasDesc[lang]}</p>
+          </div>
+          <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
+        </Link>
 
         {/* ── My Bookmarks section ── */}
         <div className="mb-5">
