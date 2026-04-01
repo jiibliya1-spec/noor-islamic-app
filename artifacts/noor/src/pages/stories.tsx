@@ -40,13 +40,13 @@ export default function Stories() {
           <div className="flex items-start justify-between gap-4 mb-4">
             <div>
               <span className="text-xs font-medium text-primary uppercase tracking-wider mb-2 block">
-                {STORY_CATEGORIES.find(c => c.id === selected.category)?.[language === "ar" ? "ar" : "label"]}
+                {(() => { const cat = STORY_CATEGORIES.find(c => c.id === selected.category); return cat ? ((cat as Record<string, string>)[language] ?? cat.label) : ""; })()}
               </span>
               <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-1">
-                {language === "ar" ? selected.titleAr : selected.titleEn}
+                {(selected.title as Record<string, string>)[language] ?? selected.title.en}
               </h1>
               {language !== "ar" && (
-                <p className="text-base text-muted-foreground font-quran" dir="rtl">{selected.titleAr}</p>
+                <p className="text-base text-muted-foreground font-quran" dir="rtl">{selected.title.ar}</p>
               )}
             </div>
             <div className="flex items-center gap-1.5 bg-card px-3 py-1.5 rounded-full text-xs text-muted-foreground shrink-0 border border-border/40">
@@ -66,7 +66,7 @@ export default function Stories() {
         {/* Story content */}
         <div className="glass-card rounded-3xl p-6 md:p-8 mb-5">
           <div className="prose prose-sm max-w-none">
-            {selected.content.split("\n\n").map((para, i) => (
+            {((selected.content as Record<string, string>)[language] ?? selected.content.en).split("\n\n").map((para, i) => (
               <p key={i} className="text-foreground/90 leading-relaxed mb-4 last:mb-0 text-sm md:text-base">
                 {para}
               </p>
@@ -84,7 +84,7 @@ export default function Stories() {
               <p className="font-bold text-sm text-primary mb-1">
                 {language === "ar" ? "العبرة" : "Moral of the Story"}
               </p>
-              <p className="text-sm text-muted-foreground leading-relaxed">{selected.moral}</p>
+              <p className="text-sm text-muted-foreground leading-relaxed">{(selected.moral as Record<string, string>)[language] ?? selected.moral.en}</p>
             </div>
           </div>
         </div>
@@ -138,7 +138,7 @@ export default function Stories() {
             }`}
           >
             <span>{CATEGORY_ICON[cat.id]}</span>
-            {language === "ar" ? cat.ar : cat.label}
+            {(cat as Record<string, string>)[language] ?? cat.label}
             <span className={`text-xs rounded-full px-2 py-0.5 ${
               category === cat.id ? "bg-white/20" : "bg-white/10"
             }`}>
@@ -160,7 +160,7 @@ export default function Stories() {
             <div className="flex items-center justify-between mb-3">
               <span className="flex items-center gap-1.5 text-xs font-medium text-primary">
                 <span>{CATEGORY_ICON[story.category]}</span>
-                {STORY_CATEGORIES.find(c => c.id === story.category)?.[language === "ar" ? "ar" : "label"]}
+                {(() => { const cat = STORY_CATEGORIES.find(c => c.id === story.category); return cat ? ((cat as Record<string, string>)[language] ?? cat.label) : ""; })()}
               </span>
               <span className="flex items-center gap-1 text-xs text-muted-foreground">
                 <Clock className="w-3 h-3" />
@@ -170,10 +170,10 @@ export default function Stories() {
 
             {/* Title */}
             <h3 className="font-bold text-base text-foreground mb-1 group-hover:text-primary transition-colors">
-              {language === "ar" ? story.titleAr : story.titleEn}
+              {(story.title as Record<string, string>)[language] ?? story.title.en}
             </h3>
             {language !== "ar" && (
-              <p className="text-sm text-muted-foreground font-quran mb-3" dir="rtl">{story.titleAr}</p>
+              <p className="text-sm text-muted-foreground font-quran mb-3" dir="rtl">{story.title.ar}</p>
             )}
 
             {/* Arabic opening snippet */}
@@ -183,7 +183,7 @@ export default function Stories() {
 
             {/* Content preview */}
             <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">
-              {story.content.split("\n\n")[0].slice(0, 120)}…
+              {((story.content as Record<string, string>)[language] ?? story.content.en).split("\n\n")[0].slice(0, 120)}…
             </p>
 
             <div className="flex items-center gap-1.5 mt-3 text-xs text-primary font-semibold">

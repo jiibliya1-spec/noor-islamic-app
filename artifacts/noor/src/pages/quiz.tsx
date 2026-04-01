@@ -102,7 +102,7 @@ export default function Quiz() {
                 }`}
               >
                 <div className="font-semibold text-sm mb-1">
-                  {language === "ar" ? cat.ar : cat.label}
+                  {(cat as Record<string, string>)[language] ?? cat.label}
                 </div>
                 <div className="text-xs text-muted-foreground">
                   {categoryCounts[cat.id] || QUIZ_QUESTIONS.length}{" "}
@@ -223,19 +223,19 @@ export default function Quiz() {
       {/* Category badge */}
       <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-card border border-border/40 text-xs text-muted-foreground mb-4">
         <BookOpen className="w-3 h-3" />
-        {QUIZ_CATEGORIES.find(c => c.id === q.category)?.[language === "ar" ? "ar" : "label"]}
+        {(() => { const cat = QUIZ_CATEGORIES.find(c => c.id === q.category); return cat ? ((cat as Record<string, string>)[language] ?? cat.label) : ""; })()}
       </div>
 
       {/* Question */}
       <div className="glass-card rounded-3xl p-6 mb-5">
         <p className="text-lg md:text-xl font-semibold text-foreground leading-snug">
-          {q.question}
+          {(q.question as Record<string, string>)[language] ?? q.question.en}
         </p>
       </div>
 
       {/* Options */}
       <div className="space-y-3 mb-5">
-        {q.options.map((opt, i) => {
+        {((q.options as Record<string, string[]>)[language] ?? q.options.en).map((opt, i) => {
           const isCorrect = i === q.answer;
           const isSelected = i === selected;
           let cls = "w-full p-4 rounded-2xl border text-left font-medium transition-all text-sm md:text-base ";
@@ -281,7 +281,7 @@ export default function Quiz() {
               <div className="font-semibold text-sm text-primary mb-1">
                 {language === "ar" ? "الشرح" : "Explanation"}
               </div>
-              <p className="text-sm text-muted-foreground leading-relaxed">{q.explanation}</p>
+              <p className="text-sm text-muted-foreground leading-relaxed">{(q.explanation as Record<string, string>)[language] ?? q.explanation.en}</p>
             </div>
           </div>
         </div>

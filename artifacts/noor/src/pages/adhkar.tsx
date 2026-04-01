@@ -127,7 +127,7 @@ export default function Adhkar() {
 
             {/* Translation */}
             <p className="text-muted-foreground text-sm md:text-base leading-relaxed mb-2 max-w-lg">
-              {dhikr.translation}
+              {dhikr.translation[language as keyof typeof dhikr.translation] ?? dhikr.translation.en}
             </p>
 
             {/* Source */}
