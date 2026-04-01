@@ -3,12 +3,18 @@ import { useSurahDetail } from "@/hooks/use-external-api";
 import { useBookmarks } from "@/hooks/use-bookmarks";
 import { saveProgress } from "@/hooks/use-reading-progress";
 import { AudioPlayer } from "@/components/audio-player";
-import { Loader2, ArrowLeft, Bookmark, BookmarkCheck, X } from "lucide-react";
+import { Loader2, ArrowLeft, Bookmark, BookmarkCheck } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
-/** Convert western digits to Arabic-Indic numerals */
 function toArabicNumeral(n: number): string {
   return n.toString().replace(/\d/g, d => "٠١٢٣٤٥٦٧٨٩"[parseInt(d)]);
+}
+
+interface AyahData {
+  number: number;
+  numberInSurah: number;
+  text: string;
+  translation: string;
 }
 
 export default function SurahDetail() {
@@ -16,31 +22,27 @@ export default function SurahDetail() {
   const surahNumber = parseInt(params.id || "1", 10);
   const { data: surah, isLoading } = useSurahDetail(surahNumber);
   const { isBookmarked, toggleBookmark } = useBookmarks();
-  const [selectedAyah, setSelectedAyah] = useState<number | null>(null);
+
+  // Which verse is selected — drives the bottom sheet
+  const [sheetAyah, setSheetAyah] = useState<AyahData | null>(null);
+
   const translationRef = useRef<HTMLDivElement>(null);
 
-  // Close popup when clicking outside the translation section
-  useEffect(() => {
-    if (selectedAyah === null) return;
-    const close = () => setSelectedAyah(null);
-    document.addEventListener("click", close);
-    return () => document.removeEventListener("click", close);
-  }, [selectedAyah]);
-
-  // Scroll to a specific ayah if ?ayah=N is in the URL
+  // Scroll to a specific ayah if ?ayah=N is in the URL (from bookmarks / continue reading)
   useEffect(() => {
     if (!surah) return;
     const target = new URLSearchParams(window.location.search).get("ayah");
     if (!target) return;
     const el = document.getElementById(`ayah-${target}`);
     if (el) {
-      setTimeout(() => el.scrollIntoView({ behavior: "smooth", block: "center" }), 200);
+      setTimeout(() => el.scrollIntoView({ behavior: "smooth", block: "center" }), 300);
     }
   }, [surah]);
 
-  // Track reading progress — save the last ayah that enters the viewport
+  // Reading progress — observe each verse as it enters the viewport
   useEffect(() => {
-    if (!surah) return;
+    if (!surah || !translationRef.current) return;
+
     const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
@@ -57,10 +59,11 @@ export default function SurahDetail() {
           }
         }
       },
-      { threshold: 0.4 }
+      { threshold: 0.5, rootMargin: "0px 0px -10% 0px" }
     );
-    const els = translationRef.current?.querySelectorAll("[id^='ayah-']");
-    els?.forEach(el => observer.observe(el));
+
+    const els = translationRef.current.querySelectorAll("[id^='ayah-']");
+    els.forEach(el => observer.observe(el));
     return () => observer.disconnect();
   }, [surah, surahNumber]);
 
@@ -74,12 +77,17 @@ export default function SurahDetail() {
 
   if (!surah) return <div className="p-8 text-center text-red-500">Surah not found</div>;
 
+  const sheetBookmarked = sheetAyah ? isBookmarked(surahNumber, sheetAyah.numberInSurah) : false;
+
   return (
     <div className="min-h-screen pb-24">
       <AudioPlayer surahNumber={surahNumber} surahName={surah.englishName} />
 
       <div className="p-4 md:p-8 max-w-4xl mx-auto">
-        <Link href="/quran" className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary mb-8 transition-colors">
+        <Link
+          href="/quran"
+          className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary mb-8 transition-colors"
+        >
           <ArrowLeft className="w-5 h-5" /> Back to Surahs
         </Link>
 
@@ -111,7 +119,7 @@ export default function SurahDetail() {
             dir="rtl"
             lang="ar"
           >
-            {surah.ayahs.map((ayah: any) => (
+            {surah.ayahs.map((ayah: AyahData) => (
               <span key={ayah.number}>
                 {ayah.text}
                 <span
@@ -127,98 +135,116 @@ export default function SurahDetail() {
           </p>
         </div>
 
-        {/* Translations — tap a verse to bookmark */}
+        {/* Translation section — tap a verse to open the bookmark sheet */}
         <div className="glass-card rounded-3xl p-6 md:p-8" ref={translationRef}>
-          <h3 className="text-lg font-bold text-foreground mb-1 pb-3 border-b border-border/50">
-            Translation
-          </h3>
-          <p className="text-xs text-muted-foreground mb-5 pt-1">Tap any verse to bookmark it</p>
+          <div className="flex items-center justify-between mb-5 pb-3 border-b border-border/50">
+            <h3 className="text-lg font-bold text-foreground">Translation</h3>
+            <span className="text-xs text-muted-foreground">Tap a verse to bookmark</span>
+          </div>
 
           <div className="space-y-1">
-            {surah.ayahs.map((ayah: any) => {
+            {surah.ayahs.map((ayah: AyahData) => {
               const bookmarked = isBookmarked(surahNumber, ayah.numberInSurah);
-              const popupOpen = selectedAyah === ayah.numberInSurah;
-
               return (
-                <div key={ayah.number} id={`ayah-${ayah.numberInSurah}`}>
-                  {/* Verse row — tappable */}
-                  <div
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setSelectedAyah(prev => prev === ayah.numberInSurah ? null : ayah.numberInSurah);
-                    }}
-                    className={`flex gap-3 rounded-2xl p-3 transition-colors cursor-pointer select-none ${
-                      bookmarked
-                        ? "bg-primary/8 border border-primary/20"
-                        : popupOpen
-                        ? "bg-white/5 border border-white/10"
-                        : "hover:bg-white/5"
-                    }`}
-                  >
-                    {/* Verse number + bookmark indicator */}
-                    <div className="shrink-0 flex items-start gap-1 mt-0.5">
-                      {bookmarked && (
-                        <Bookmark className="w-3 h-3 text-primary fill-primary mt-2 shrink-0" />
-                      )}
-                      <span className="w-8 h-8 rounded-full bg-primary/15 flex items-center justify-center text-primary text-sm font-bold shrink-0">
-                        {ayah.numberInSurah}
-                      </span>
-                    </div>
-                    <p className="text-foreground leading-relaxed pt-1 flex-1">{ayah.translation}</p>
+                <button
+                  key={ayah.number}
+                  id={`ayah-${ayah.numberInSurah}`}
+                  type="button"
+                  onClick={() => setSheetAyah(ayah)}
+                  className={`w-full text-left flex gap-3 rounded-2xl p-3 transition-colors active:scale-[0.99] ${
+                    bookmarked
+                      ? "bg-primary/10 border border-primary/25"
+                      : "hover:bg-white/5 active:bg-white/5"
+                  }`}
+                >
+                  {/* Verse number circle — gold bookmark icon when saved */}
+                  <div className="shrink-0 flex flex-col items-center gap-0.5 mt-0.5">
+                    <span className="w-8 h-8 rounded-full bg-primary/15 flex items-center justify-center text-primary text-sm font-bold">
+                      {ayah.numberInSurah}
+                    </span>
+                    {bookmarked && (
+                      <Bookmark className="w-3 h-3 text-primary fill-primary" />
+                    )}
                   </div>
-
-                  {/* Inline popup — appears below the tapped verse */}
-                  {popupOpen && (
-                    <div
-                      onClick={e => e.stopPropagation()}
-                      className="mx-3 mb-2 flex items-center gap-2 bg-card border border-primary/20 rounded-xl px-3 py-2 shadow-lg"
-                    >
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          toggleBookmark({
-                            surahNumber,
-                            surahName: surah.name,
-                            surahEnglishName: surah.englishName,
-                            ayahNumber: ayah.numberInSurah,
-                            text: ayah.text,
-                            translation: ayah.translation,
-                          });
-                          setSelectedAyah(null);
-                        }}
-                        className="flex-1 flex items-center gap-2 text-sm font-semibold text-primary hover:text-primary/80 transition-colors py-1"
-                      >
-                        {bookmarked ? (
-                          <>
-                            <BookmarkCheck className="w-4 h-4 fill-primary/20" />
-                            Remove bookmark
-                          </>
-                        ) : (
-                          <>
-                            <Bookmark className="w-4 h-4" />
-                            Bookmark this verse
-                          </>
-                        )}
-                      </button>
-                      <div className="w-px h-5 bg-border/60 shrink-0" />
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedAyah(null);
-                        }}
-                        className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors py-1 px-1"
-                      >
-                        <X className="w-3.5 h-3.5" />
-                        Cancel
-                      </button>
-                    </div>
-                  )}
-                </div>
+                  <p className="text-foreground leading-relaxed pt-1 flex-1 text-sm">{ayah.translation}</p>
+                </button>
               );
             })}
           </div>
         </div>
       </div>
+
+      {/* ── Bookmark bottom sheet ── */}
+      {sheetAyah && (
+        <>
+          {/* Backdrop — tap to dismiss */}
+          <div
+            className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm"
+            onClick={() => setSheetAyah(null)}
+          />
+
+          {/* Sheet */}
+          <div className="fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-white/10 rounded-t-3xl shadow-2xl">
+            {/* Handle bar */}
+            <div className="flex justify-center pt-4 pb-2">
+              <div className="w-10 h-1 bg-white/20 rounded-full" />
+            </div>
+
+            {/* Verse preview */}
+            <div className="px-6 pt-2 pb-4">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="w-7 h-7 rounded-full bg-primary/15 flex items-center justify-center text-primary text-xs font-bold shrink-0">
+                  {sheetAyah.numberInSurah}
+                </span>
+                <span className="text-xs text-muted-foreground font-medium">{surah.englishName} · Verse {sheetAyah.numberInSurah}</span>
+              </div>
+              <p className="text-sm text-foreground/80 leading-relaxed line-clamp-2">{sheetAyah.translation}</p>
+            </div>
+
+            {/* Divider */}
+            <div className="border-t border-white/5 mx-6" />
+
+            {/* Actions */}
+            <div className="p-4 space-y-2 pb-8">
+              <button
+                type="button"
+                onClick={() => {
+                  toggleBookmark({
+                    surahNumber,
+                    surahName: surah.name,
+                    surahEnglishName: surah.englishName,
+                    ayahNumber: sheetAyah.numberInSurah,
+                    text: sheetAyah.text,
+                    translation: sheetAyah.translation,
+                  });
+                  setSheetAyah(null);
+                }}
+                className="w-full flex items-center gap-3 p-4 rounded-2xl bg-primary/10 border border-primary/20 hover:bg-primary/15 active:bg-primary/20 transition-colors"
+              >
+                {sheetBookmarked ? (
+                  <>
+                    <BookmarkCheck className="w-5 h-5 text-primary fill-primary/30 shrink-0" />
+                    <span className="text-sm font-semibold text-primary">Remove bookmark</span>
+                  </>
+                ) : (
+                  <>
+                    <Bookmark className="w-5 h-5 text-primary shrink-0" />
+                    <span className="text-sm font-semibold text-primary">Bookmark this verse</span>
+                  </>
+                )}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setSheetAyah(null)}
+                className="w-full p-4 rounded-2xl text-sm text-muted-foreground hover:bg-white/5 active:bg-white/5 transition-colors font-medium"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
