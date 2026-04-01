@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "wouter";
 import { useI18n } from "@/lib/i18n";
 import { usePrayerTimesByCoords } from "@/hooks/use-external-api";
-import { BookOpen, Clock, Heart, CalendarDays, MapPin, LogIn, Sunrise, Sun, Cloud, Sunset, Moon } from "lucide-react";
+import { BookOpen, Clock, Heart, CalendarDays, MapPin, LogIn, Sunrise, Sun, Cloud, Sunset, Moon, HelpCircle, BookMarked } from "lucide-react";
 import { format } from "date-fns";
 import { useAuth } from "@/lib/auth";
 
@@ -62,6 +62,8 @@ export default function Home() {
     { label: t("quran"),       url: "/quran",         icon: BookOpen  },
     { label: t("prayerTimes"), url: "/prayer-times",  icon: Clock     },
     { label: t("adhkar"),      url: "/adhkar",        icon: Heart     },
+    { label: t("quiz"),        url: "/quiz",          icon: HelpCircle },
+    { label: t("stories"),     url: "/stories",       icon: BookMarked },
     { label: t("calendar"),    url: "/calendar",      icon: CalendarDays },
     { label: t("mosques"),     url: "/mosques",       icon: MapPin    },
   ];

@@ -14,6 +14,8 @@ import QuranList from "@/pages/quran/index";
 import SurahDetail from "@/pages/quran/surah";
 import PrayerTimes from "@/pages/prayer-times";
 import Adhkar from "@/pages/adhkar";
+import Quiz from "@/pages/quiz";
+import Stories from "@/pages/stories";
 import Mosques from "@/pages/mosques";
 import IslamicCalendar from "@/pages/calendar";
 import Dashboard from "@/pages/dashboard";
@@ -47,6 +49,8 @@ function AppLayout() {
               <Route path="/quran/:id" component={SurahDetail} />
               <Route path="/prayer-times" component={PrayerTimes} />
               <Route path="/adhkar" component={Adhkar} />
+              <Route path="/quiz" component={Quiz} />
+              <Route path="/stories" component={Stories} />
               <Route path="/calendar" component={IslamicCalendar} />
               <Route path="/mosques" component={Mosques} />
               <Route path="/dashboard" component={Dashboard} />

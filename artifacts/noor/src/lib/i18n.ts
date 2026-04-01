@@ -42,6 +42,8 @@ export const translations: Record<string, Record<Language, string>> = {
   comingSoon: { en: "Coming soon", ar: "قريباً", fr: "Bientôt disponible", de: "Demnächst" },
   mosqueFinder: { en: "Mosque Finder", ar: "البحث عن مسجد", fr: "Chercher mosquée", de: "Moschee finden" },
   findNearbyMosques: { en: "Find nearby mosques", ar: "ابحث عن مساجد قريبة", fr: "Trouver des mosquées proches", de: "Nahe Moscheen finden" },
+  quiz: { en: "Islamic Quiz", ar: "الاختبار الإسلامي", fr: "Quiz Islamique", de: "Islamisches Quiz" },
+  stories: { en: "Islamic Stories", ar: "القصص الإسلامية", fr: "Histoires Islamiques", de: "Islamische Geschichten" },
 };
 
 function applyTheme(theme: Theme) {
