@@ -130,8 +130,9 @@ export function usePrayerTimesByCoords(lat: number, lng: number, method: string 
     queryKey: ["prayer-times-coords", lat, lng, method],
     queryFn: async () => {
       if (!lat || !lng) return null;
+      const timestamp = Math.floor(Date.now() / 1000);
       const res = await fetch(
-        `https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lng}&method=${method}&school=0`
+        `https://api.aladhan.com/v1/timings/${timestamp}?latitude=${lat}&longitude=${lng}&method=${method}&school=0`
       );
       const data = await res.json();
       if (data.code !== 200) throw new Error(data.status || "API error");

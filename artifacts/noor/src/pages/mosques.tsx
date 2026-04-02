@@ -1,105 +1,321 @@
-import { useState } from "react";
-import { useMosquesNearBy, useGeocodeCity } from "@/hooks/use-external-api";
-import { MapPin, Search, Navigation } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { useState, useEffect, useRef } from "react";
+import { MapPin, Search, Navigation2, Loader2, ExternalLink, AlertCircle, X } from "lucide-react";
+import { useI18n } from "@/lib/i18n";
+
+const MOSQUE_LOC_KEY = "noor_mosque_location";
+
+interface SavedLoc { lat: number; lng: number; label: string; }
+interface Mosque {
+  id: number;
+  lat: number;
+  lon: number;
+  tags: Record<string, string>;
+  distanceKm?: number;
+}
+
+function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLng = (lng2 - lng1) * Math.PI / 180;
+  const a = Math.sin(dLat / 2) ** 2 +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLng / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+function formatDist(km: number): string {
+  if (km < 1) return `${Math.round(km * 1000)} m`;
+  return `${km.toFixed(1)} km`;
+}
+
+function getMosqueName(tags: Record<string, string>): string {
+  return tags["name"] || tags["name:en"] || tags["name:ar"] || "Unnamed Mosque";
+}
+
+function getAddress(tags: Record<string, string>): string {
+  const parts: string[] = [];
+  if (tags["addr:housenumber"]) parts.push(tags["addr:housenumber"]);
+  if (tags["addr:street"]) parts.push(tags["addr:street"]);
+  if (tags["addr:city"] || tags["addr:suburb"]) parts.push(tags["addr:city"] || tags["addr:suburb"]);
+  return parts.join(", ");
+}
 
 export default function Mosques() {
-  const [city, setCity] = useState("");
-  const [searchCity, setSearchCity] = useState("");
-  
-  const { data: geocode, isLoading: geocodeLoading } = useGeocodeCity(searchCity);
-  const [userLoc, setUserLoc] = useState<{lat: number, lng: number} | null>(null);
+  const { language } = useI18n();
+  const isRtl = language === "ar";
 
-  const finalLat = userLoc?.lat || geocode?.lat;
-  const finalLng = userLoc?.lng || geocode?.lon;
+  const [userLoc, setUserLoc] = useState<{ lat: number; lng: number; label: string } | null>(null);
+  const [loadingLoc, setLoadingLoc] = useState(false);
+  const [locError, setLocError] = useState<string | null>(null);
 
-  const { data: mosques, isLoading: mosquesLoading } = useMosquesNearBy(finalLat || null, finalLng || null);
+  const [cityInput, setCityInput] = useState("");
+  const [mosqueSearch, setMosqueSearch] = useState("");
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    setUserLoc(null);
-    setSearchCity(city);
-  };
+  const [mosques, setMosques] = useState<Mosque[]>([]);
+  const [loadingMosques, setLoadingMosques] = useState(false);
+  const [mosqueError, setMosqueError] = useState<string | null>(null);
 
-  const handleNearMe = () => {
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(pos => {
-        setCity("");
-        setSearchCity("");
-        setUserLoc({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Restore last location from localStorage
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(MOSQUE_LOC_KEY);
+      if (raw) {
+        const loc: SavedLoc = JSON.parse(raw);
+        setUserLoc(loc);
+      }
+    } catch { /* ignore */ }
+  }, []);
+
+  // Fetch mosques whenever userLoc changes
+  useEffect(() => {
+    if (!userLoc) return;
+    fetchMosques(userLoc.lat, userLoc.lng);
+  }, [userLoc]);
+
+  async function fetchMosques(lat: number, lng: number) {
+    setLoadingMosques(true);
+    setMosqueError(null);
+    try {
+      const query = `[out:json];node["amenity"="place_of_worship"]["religion"="muslim"](around:5000,${lat},${lng});out body;`;
+      const res = await fetch("https://overpass-api.de/api/interpreter", {
+        method: "POST",
+        body: `data=${encodeURIComponent(query)}`,
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
       });
+      if (!res.ok) throw new Error("Overpass API error");
+      const data = await res.json();
+      const results: Mosque[] = (data.elements || []).map((m: Mosque) => ({
+        ...m,
+        distanceKm: haversineKm(lat, lng, m.lat, m.lon),
+      }));
+      results.sort((a, b) => (a.distanceKm ?? 0) - (b.distanceKm ?? 0));
+      setMosques(results);
+    } catch {
+      setMosqueError(isRtl ? "تعذر تحميل المساجد. حاول مرة أخرى." : "Could not load mosques. Please try again.");
+    } finally {
+      setLoadingMosques(false);
     }
+  }
+
+  function persistLoc(loc: SavedLoc) {
+    try { localStorage.setItem(MOSQUE_LOC_KEY, JSON.stringify(loc)); } catch { /* ignore */ }
+    setUserLoc(loc);
+  }
+
+  function handleDetectLocation() {
+    setLoadingLoc(true); setLocError(null);
+    if (!("geolocation" in navigator)) {
+      setLoadingLoc(false);
+      setLocError(isRtl ? "الموقع الجغرافي غير متاح." : "Geolocation not available.");
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      pos => {
+        setLoadingLoc(false);
+        persistLoc({ lat: pos.coords.latitude, lng: pos.coords.longitude, label: isRtl ? "موقعي الحالي" : "My Location" });
+        setCityInput("");
+      },
+      () => {
+        setLoadingLoc(false);
+        setLocError(isRtl ? "تعذر تحديد موقعك." : "Could not detect your location.");
+      },
+      { timeout: 8000 }
+    );
+  }
+
+  async function handleCitySearch(e: React.FormEvent) {
+    e.preventDefault();
+    const q = cityInput.trim();
+    if (!q) return;
+    setLoadingLoc(true); setLocError(null);
+    try {
+      const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=1`);
+      const data = await res.json();
+      if (data && data.length > 0) {
+        persistLoc({ lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon), label: data[0].display_name.split(",")[0] });
+      } else {
+        setLocError(isRtl ? "لم يتم العثور على المدينة." : "City not found.");
+      }
+    } catch {
+      setLocError(isRtl ? "خطأ في البحث." : "Search error. Try again.");
+    } finally {
+      setLoadingLoc(false);
+    }
+  }
+
+  // Filter mosques by name search
+  const filtered = mosqueSearch.trim()
+    ? mosques.filter(m => {
+        const name = getMosqueName(m.tags).toLowerCase();
+        const arName = (m.tags["name:ar"] || "").toLowerCase();
+        const q = mosqueSearch.toLowerCase();
+        return name.includes(q) || arName.includes(q);
+      })
+    : mosques;
+
+  const t = {
+    title: { en: "Mosque Finder", ar: "البحث عن مساجد" },
+    detectBtn: { en: "Near Me", ar: "بالقرب مني" },
+    searchPlaceholder: { en: "City or address...", ar: "المدينة أو العنوان..." },
+    mosquePlaceholder: { en: "Filter by mosque name...", ar: "ابحث باسم المسجد..." },
+    directions: { en: "Directions", ar: "الاتجاهات" },
+    noMosques: { en: "No mosques found within 5 km.", ar: "لم يتم العثور على مساجد في نطاق 5 كم." },
+    results: { en: "mosques found", ar: "مسجد وُجد" },
+    loading: { en: "Searching for mosques...", ar: "جارٍ البحث عن مساجد..." },
+    prompt: { en: "Enter a city or use your location to find nearby mosques.", ar: "أدخل مدينة أو استخدم موقعك للعثور على المساجد القريبة." },
+    getDir: { en: "Get Directions", ar: "الحصول على الاتجاهات" },
   };
+  const lang = (["en", "ar"].includes(language) ? language : "en") as "en" | "ar";
 
   return (
-    <div className="p-4 md:p-8 max-w-7xl mx-auto min-h-screen flex flex-col">
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold text-foreground mb-4">Nearby Mosques</h1>
-        
-        <div className="flex flex-col md:flex-row gap-4 max-w-2xl">
-          <form onSubmit={handleSearch} className="relative flex-1">
-            <Search className="absolute left-4 top-3.5 w-5 h-5 text-muted-foreground" />
-            <Input 
-              value={city}
-              onChange={e => setCity(e.target.value)}
-              placeholder="Search by city..." 
-              className="pl-12 py-6 bg-card/50 border-white/10"
+    <div className="p-4 md:p-8 max-w-3xl mx-auto min-h-full pb-24" dir={isRtl ? "rtl" : "ltr"}>
+      <h1 className="text-4xl font-bold text-foreground mb-6">{t.title[lang]}</h1>
+
+      {/* Location search */}
+      <div className="flex flex-col sm:flex-row gap-3 mb-4">
+        <form onSubmit={handleCitySearch} className="flex flex-1 gap-2">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <input
+              ref={inputRef}
+              type="text"
+              value={cityInput}
+              onChange={e => setCityInput(e.target.value)}
+              placeholder={t.searchPlaceholder[lang]}
+              className="w-full pl-9 pr-4 py-3 rounded-xl bg-card border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary text-sm"
             />
-          </form>
-          <Button onClick={handleNearMe} className="py-6 px-6 bg-primary text-primary-foreground font-bold text-lg rounded-xl flex items-center gap-2">
-            <Navigation className="w-5 h-5" /> Find Near Me
-          </Button>
-        </div>
+          </div>
+          <button type="submit" className="px-5 py-3 bg-primary text-primary-foreground rounded-xl font-semibold text-sm hover:bg-primary/90 transition">
+            {lang === "ar" ? "بحث" : "Search"}
+          </button>
+        </form>
+        <button
+          onClick={handleDetectLocation}
+          disabled={loadingLoc}
+          className="flex items-center gap-2 px-4 py-3 rounded-xl bg-card border border-border text-foreground hover:bg-white/10 transition text-sm font-medium"
+        >
+          {loadingLoc ? <Loader2 className="w-4 h-4 animate-spin" /> : <Navigation2 className="w-4 h-4 text-primary" />}
+          {t.detectBtn[lang]}
+        </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 flex-1">
-        <div className="lg:col-span-2 glass-card rounded-3xl overflow-hidden h-[500px] lg:h-auto border-white/10 relative">
-          {finalLat && finalLng ? (
-            <iframe 
-              width="100%" 
-              height="100%" 
-              frameBorder="0" 
-              src={`https://www.openstreetmap.org/export/embed.html?bbox=${finalLng-0.05},${finalLat-0.05},${finalLng+0.05},${finalLat+0.05}&layer=mapnik&marker=${finalLat},${finalLng}`}
-              className="absolute inset-0 grayscale-[0.2] contrast-[0.9] invert-[0.9]" // CSS hack for dark mode map
-            ></iframe>
-          ) : (
-            <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
-              <MapPin className="w-16 h-16 mb-4 opacity-50" />
-              <p>Search or use location to view map</p>
-            </div>
+      {/* Errors */}
+      {locError && (
+        <div className="flex items-center gap-2 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 mb-4 text-sm text-red-400">
+          <AlertCircle className="w-4 h-4 shrink-0" />{locError}
+          <button onClick={() => setLocError(null)} className="ml-auto"><X className="w-3.5 h-3.5" /></button>
+        </div>
+      )}
+
+      {/* Current location badge */}
+      {userLoc && (
+        <div className="flex items-center gap-2 mb-4">
+          <MapPin className="w-4 h-4 text-primary shrink-0" />
+          <span className="text-sm font-semibold text-foreground truncate">{userLoc.label}</span>
+          {!loadingMosques && mosques.length > 0 && (
+            <span className="ml-auto text-xs text-muted-foreground shrink-0">{mosques.length} {t.results[lang]}</span>
           )}
         </div>
+      )}
 
-        <div className="glass-card rounded-3xl p-6 overflow-y-auto max-h-[500px] lg:max-h-full">
-          <h2 className="text-xl font-bold mb-4">Results</h2>
-          
-          {(geocodeLoading || mosquesLoading) && <p className="text-primary animate-pulse">Searching...</p>}
-          
-          {!mosquesLoading && mosques && mosques.length === 0 && finalLat && (
-            <p className="text-muted-foreground">No mosques found nearby.</p>
-          )}
+      {/* Mosque name filter (only shown when results exist) */}
+      {mosques.length > 0 && (
+        <div className="relative mb-5">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <input
+            type="search"
+            value={mosqueSearch}
+            onChange={e => setMosqueSearch(e.target.value)}
+            placeholder={t.mosquePlaceholder[lang]}
+            className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-card border border-border/50 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary text-sm"
+          />
+        </div>
+      )}
 
-          <div className="space-y-4">
-            {mosques?.map((m: any) => (
-              <div key={m.id} className="p-4 bg-background/50 rounded-2xl border border-white/5 hover:border-primary/30 transition-colors">
-                <h3 className="font-bold text-foreground text-lg">{m.tags.name || "Unknown Mosque"}</h3>
-                {m.tags["name:ar"] && <p className="text-primary font-quran text-right my-1" dir="rtl">{m.tags["name:ar"]}</p>}
-                <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
-                  {m.tags.addr_street || ""} {m.tags.addr_city || ""}
-                </p>
-                <a 
-                  href={`https://www.google.com/maps/dir/?api=1&destination=${m.lat},${m.lon}`}
-                  target="_blank" rel="noreferrer"
-                  className="text-primary text-sm font-semibold hover:underline mt-3 inline-block"
+      {/* Loading */}
+      {loadingMosques && (
+        <div className="flex flex-col items-center justify-center py-16 gap-3 text-muted-foreground">
+          <Loader2 className="w-10 h-10 text-primary animate-spin" />
+          <p className="text-sm">{t.loading[lang]}</p>
+        </div>
+      )}
+
+      {/* Error */}
+      {mosqueError && !loadingMosques && (
+        <div className="flex items-center gap-2 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 mb-4 text-sm text-red-400">
+          <AlertCircle className="w-4 h-4 shrink-0" />{mosqueError}
+        </div>
+      )}
+
+      {/* Prompt */}
+      {!userLoc && !loadingLoc && (
+        <div className="flex flex-col items-center justify-center py-20 text-center gap-4 text-muted-foreground">
+          <div className="w-20 h-20 rounded-full bg-primary/15 flex items-center justify-center">
+            <MapPin className="w-10 h-10 text-primary" />
+          </div>
+          <p className="text-sm max-w-xs">{t.prompt[lang]}</p>
+          <button onClick={handleDetectLocation} className="px-6 py-3 bg-primary text-primary-foreground rounded-xl font-semibold text-sm">
+            {t.detectBtn[lang]}
+          </button>
+        </div>
+      )}
+
+      {/* No results */}
+      {!loadingMosques && userLoc && mosques.length === 0 && !mosqueError && (
+        <div className="text-center py-12 text-muted-foreground">
+          <MapPin className="w-12 h-12 mx-auto mb-3 opacity-30" />
+          <p className="text-sm">{t.noMosques[lang]}</p>
+        </div>
+      )}
+
+      {/* Mosque list */}
+      {!loadingMosques && filtered.length > 0 && (
+        <div className="space-y-3">
+          {filtered.map(m => {
+            const name = getMosqueName(m.tags);
+            const arName = m.tags["name:ar"];
+            const address = getAddress(m.tags);
+            const dist = m.distanceKm !== undefined ? formatDist(m.distanceKm) : null;
+            const gmapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${m.lat},${m.lon}`;
+
+            return (
+              <div key={m.id} className="glass-card rounded-2xl p-4 border border-white/5 hover:border-primary/20 transition-colors">
+                <div className="flex items-start gap-3">
+                  {/* Distance badge */}
+                  <div className="shrink-0 w-12 h-12 rounded-xl bg-primary/15 flex flex-col items-center justify-center">
+                    <MapPin className="w-4 h-4 text-primary" />
+                    {dist && <span className="text-[10px] text-primary font-bold leading-tight">{dist}</span>}
+                  </div>
+
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-bold text-foreground text-sm leading-snug truncate">{name}</h3>
+                    {arName && arName !== name && (
+                      <p className="text-primary font-quran text-base text-right leading-relaxed" dir="rtl">{arName}</p>
+                    )}
+                    {address && (
+                      <p className="text-xs text-muted-foreground mt-1 truncate">{address}</p>
+                    )}
+                    {!address && m.tags["addr:postcode"] && (
+                      <p className="text-xs text-muted-foreground mt-1">{m.tags["addr:postcode"]}</p>
+                    )}
+                  </div>
+                </div>
+
+                <a
+                  href={gmapsUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-3 flex items-center justify-center gap-2 w-full py-2 rounded-xl bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 transition text-sm font-semibold"
                 >
-                  Get Directions
+                  <ExternalLink className="w-3.5 h-3.5" />
+                  {t.getDir[lang]}
                 </a>
               </div>
-            ))}
-          </div>
+            );
+          })}
         </div>
-      </div>
+      )}
     </div>
   );
 }
