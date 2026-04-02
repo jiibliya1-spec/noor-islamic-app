@@ -107,56 +107,37 @@ export function useWordMeanings(
   });
 }
 
-// 2. Prayer Times API — method param included in cache key + request
-export function usePrayerTimes(city: string, country: string, method: string = "2") {
+// 2. Prayer Times API — method + school=0 (Shafi'i) params in cache key + request
+export function usePrayerTimes(city: string, country: string, method: string = "3") {
   return useQuery({
     queryKey: ["prayer-times", city, country, method],
     queryFn: async () => {
       if (!city || !country) return null;
       const res = await fetch(
-        `https://api.aladhan.com/v1/timingsByCity?city=${encodeURIComponent(city)}&country=${encodeURIComponent(country)}&method=${method}`
+        `https://api.aladhan.com/v1/timingsByCity?city=${encodeURIComponent(city)}&country=${encodeURIComponent(country)}&method=${method}&school=0`
       );
       const data = await res.json();
+      if (data.code !== 200) throw new Error(data.status || "API error");
       return data.data;
     },
     enabled: !!city && !!country,
+    retry: 1,
   });
 }
 
-export function usePrayerTimesByCoords(lat: number, lng: number, method: string = "2") {
+export function usePrayerTimesByCoords(lat: number, lng: number, method: string = "3") {
   return useQuery({
     queryKey: ["prayer-times-coords", lat, lng, method],
     queryFn: async () => {
       if (!lat || !lng) return null;
       const res = await fetch(
-        `https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lng}&method=${method}`
+        `https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lng}&method=${method}&school=0`
       );
       const data = await res.json();
+      if (data.code !== 200) throw new Error(data.status || "API error");
       return data.data;
     },
     enabled: !!lat && !!lng,
-  });
-}
-
-// City timezone lookup via timeapi.io (free, CORS-enabled)
-// Returns the IANA timezone string for the given coordinates, e.g. "Europe/Berlin"
-export function useCityTimezone(lat: number | null, lng: number | null, enabled: boolean = true) {
-  return useQuery({
-    queryKey: ["timezone", lat, lng],
-    queryFn: async () => {
-      if (lat === null || lng === null) return null;
-      try {
-        const res = await fetch(
-          `https://timeapi.io/api/Time/current/coordinate?latitude=${lat}&longitude=${lng}`
-        );
-        const data = await res.json();
-        return (data.timeZone || null) as string | null;
-      } catch {
-        return null;
-      }
-    },
-    enabled: enabled && lat !== null && lng !== null,
-    staleTime: 1000 * 60 * 60 * 24, // timezone data valid for 24 hours
     retry: 1,
   });
 }
