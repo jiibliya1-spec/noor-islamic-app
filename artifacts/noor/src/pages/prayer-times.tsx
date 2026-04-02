@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { usePrayerTimesByCoords, usePrayerTimes } from "@/hooks/use-external-api";
+import { usePrayerTimesByCoords, usePrayerTimes, useCityTimezone } from "@/hooks/use-external-api";
+import { loadPrayerPrefs, savePrayerPrefs } from "@/hooks/use-prayer-prefs";
 import { MapPin, Loader2, Compass, Search, Sunrise, Sun, Cloud, Sunset, Moon } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 
@@ -40,30 +41,26 @@ function calculateQibla(lat: number, lng: number): number {
 }
 
 /**
- * Get the current "minutes since midnight" in a given IANA timezone.
- * Falls back to device local time if the timezone is invalid or unsupported.
+ * Get "minutes since midnight" in the given IANA timezone.
+ * Falls back to device local time if the timezone is missing or invalid.
  */
-function getNowMinsInTimezone(timezone?: string): number {
+function getNowMinsInTimezone(timezone: string): number {
   try {
-    if (timezone) {
-      const now = new Date();
-      const formatted = new Intl.DateTimeFormat("en-GB", {
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false,
-        timeZone: timezone,
-      }).format(now); // "HH:MM"
-      const [h, m] = formatted.split(":").map(Number);
-      return h * 60 + m;
-    }
+    const formatted = new Intl.DateTimeFormat("en-GB", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+      timeZone: timezone,
+    }).format(new Date());
+    const [h, m] = formatted.split(":").map(Number);
+    return h * 60 + m;
   } catch {
-    // fall through to device local time
+    const now = new Date();
+    return now.getHours() * 60 + now.getMinutes();
   }
-  const now = new Date();
-  return now.getHours() * 60 + now.getMinutes();
 }
 
-function getCurrentPrayer(timings: Record<string, string>, timezone?: string): string {
+function getCurrentPrayer(timings: Record<string, string>, timezone: string): string {
   const nowMins = getNowMinsInTimezone(timezone);
   let current = "Isha";
   for (const prayer of PRAYERS.filter(p => p !== "Sunrise")) {
@@ -73,7 +70,7 @@ function getCurrentPrayer(timings: Record<string, string>, timezone?: string): s
   return current;
 }
 
-function getNextPrayer(timings: Record<string, string>, timezone?: string): string {
+function getNextPrayer(timings: Record<string, string>, timezone: string): string {
   const nowMins = getNowMinsInTimezone(timezone);
   for (const prayer of PRAYERS.filter(p => p !== "Sunrise")) {
     const [h, m] = (timings[prayer] || "00:00").split(":").map(Number);
@@ -82,77 +79,47 @@ function getNextPrayer(timings: Record<string, string>, timezone?: string): stri
   return "Fajr";
 }
 
-/** SVG-based compass — needle rotates via SVG transform attribute (reliable, no CSS conflict) */
 function QiblaCompass({ angle, language }: { angle: number; language: string }) {
   return (
     <div className="flex flex-col items-center gap-4">
       <svg viewBox="0 0 220 220" className="w-52 h-52" role="img" aria-label="Qibla compass">
-        {/* Outer ring */}
         <circle cx="110" cy="110" r="105" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
         <circle cx="110" cy="110" r="100" fill="url(#compassGrad)" stroke="rgba(255,255,255,0.15)" strokeWidth="2" />
-
         <defs>
           <radialGradient id="compassGrad" cx="40%" cy="30%">
             <stop offset="0%" stopColor="hsl(156,45%,16%)" />
             <stop offset="100%" stopColor="hsl(156,51%,8%)" />
           </radialGradient>
         </defs>
-
-        {/* Tick marks */}
         {Array.from({ length: 36 }).map((_, i) => {
           const deg = i * 10;
           const isMajor = deg % 90 === 0;
           const rad = (deg - 90) * (Math.PI / 180);
           const r1 = 92, r2 = isMajor ? 78 : 84;
           return (
-            <line
-              key={i}
-              x1={110 + r1 * Math.cos(rad)}
-              y1={110 + r1 * Math.sin(rad)}
-              x2={110 + r2 * Math.cos(rad)}
-              y2={110 + r2 * Math.sin(rad)}
+            <line key={i}
+              x1={110 + r1 * Math.cos(rad)} y1={110 + r1 * Math.sin(rad)}
+              x2={110 + r2 * Math.cos(rad)} y2={110 + r2 * Math.sin(rad)}
               stroke={isMajor ? "rgba(255,255,255,0.35)" : "rgba(255,255,255,0.12)"}
               strokeWidth={isMajor ? 2 : 1}
             />
           );
         })}
-
-        {/* Cardinal directions — fixed, never rotate */}
         <text x="110" y="22" textAnchor="middle" fill="#ef4444" fontSize="15" fontWeight="bold" fontFamily="Inter,sans-serif">N</text>
         <text x="110" y="208" textAnchor="middle" fill="rgba(255,255,255,0.4)" fontSize="13" fontFamily="Inter,sans-serif">S</text>
         <text x="200" y="115" textAnchor="middle" fill="rgba(255,255,255,0.4)" fontSize="13" fontFamily="Inter,sans-serif">E</text>
         <text x="20" y="115" textAnchor="middle" fill="rgba(255,255,255,0.4)" fontSize="13" fontFamily="Inter,sans-serif">W</text>
-
-        {/* Needle group — rotate around center (110,110) */}
-        <g
-          transform={`rotate(${angle}, 110, 110)`}
-          style={{ transition: "transform 1s ease" }}
-        >
-          {/* Gold tip — points to Qibla (upward in natural state = north = 0°) */}
-          <polygon
-            points="110,20 117,72 103,72"
-            fill="hsl(var(--primary))"
-            opacity="0.95"
-          />
+        <g transform={`rotate(${angle}, 110, 110)`} style={{ transition: "transform 1s ease" }}>
+          <polygon points="110,20 117,72 103,72" fill="hsl(var(--primary))" opacity="0.95" />
           <rect x="107" y="72" width="6" height="38" rx="3" fill="hsl(var(--primary))" opacity="0.8" />
-
-          {/* Gray tail — points away from Qibla */}
           <rect x="107" y="110" width="6" height="38" rx="3" fill="rgba(255,255,255,0.2)" />
-          <polygon
-            points="110,200 117,148 103,148"
-            fill="rgba(255,255,255,0.2)"
-          />
+          <polygon points="110,200 117,148 103,148" fill="rgba(255,255,255,0.2)" />
         </g>
-
-        {/* Center dot */}
         <circle cx="110" cy="110" r="7" fill="hsl(var(--primary))" stroke="hsl(var(--background))" strokeWidth="3" />
-
-        {/* Kaaba icon at needle tip (tiny square) */}
         <g transform={`rotate(${angle}, 110, 110)`}>
           <rect x="105" y="12" width="10" height="10" rx="1" fill="hsl(var(--primary-foreground))" opacity="0.6" />
         </g>
       </svg>
-
       <div className="text-center">
         <p className="text-4xl font-bold text-primary">{Math.round(angle)}°</p>
         <p className="text-sm text-muted-foreground mt-1">
@@ -163,45 +130,82 @@ function QiblaCompass({ angle, language }: { angle: number; language: string }) 
   );
 }
 
+// ─── Initialise state from localStorage on first render ───────────────────
+function initFromPrefs() {
+  const prefs = loadPrayerPrefs();
+  return {
+    cityInput:        prefs?.type === "city" ? `${prefs.city}, ${prefs.country}` : "",
+    submittedCity:    prefs?.type === "city" ? (prefs.city    ?? "") : "",
+    submittedCountry: prefs?.type === "city" ? (prefs.country ?? "") : "",
+    coords:           prefs?.type === "coords" ? { lat: prefs.lat!, lng: prefs.lng! } : null,
+    method:           prefs?.method ?? "2",
+  };
+}
+
 export default function PrayerTimes() {
   const { language } = useI18n();
-  const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
-  const [loadingLoc, setLoadingLoc] = useState(false);
-  const [locError, setLocError] = useState(false);
-  const [cityInput, setCityInput] = useState("");
-  const [submittedCity, setSubmittedCity] = useState("");
-  const [submittedCountry, setSubmittedCountry] = useState("");
-  const [method, setMethod] = useState("2");
-  const [qiblaAngle, setQiblaAngle] = useState<number | null>(null);
 
-  const { data: coordData, isLoading: coordLoading } = usePrayerTimesByCoords(coords?.lat || 0, coords?.lng || 0);
-  const { data: cityData, isLoading: cityLoading } = usePrayerTimes(submittedCity, submittedCountry);
+  const initial = initFromPrefs();
+  const [coords,           setCoords]           = useState<{ lat: number; lng: number } | null>(initial.coords);
+  const [loadingLoc,       setLoadingLoc]        = useState(false);
+  const [locError,         setLocError]          = useState(false);
+  const [cityInput,        setCityInput]         = useState(initial.cityInput);
+  const [submittedCity,    setSubmittedCity]     = useState(initial.submittedCity);
+  const [submittedCountry, setSubmittedCountry] = useState(initial.submittedCountry);
+  const [method,           setMethod]            = useState(initial.method);
+  const [qiblaAngle,       setQiblaAngle]        = useState<number | null>(null);
 
-  const data = coords ? coordData : cityData;
+  const { data: coordData, isLoading: coordLoading } = usePrayerTimesByCoords(
+    coords?.lat ?? 0,
+    coords?.lng ?? 0,
+    method
+  );
+  const { data: cityData, isLoading: cityLoading } = usePrayerTimes(
+    submittedCity,
+    submittedCountry,
+    method
+  );
+
+  const data      = coords ? coordData : cityData;
   const isLoading = coords ? coordLoading : cityLoading;
-  const timings = data?.timings || null;
+  const timings   = data?.timings ?? null;
 
-  // Use the browser's own local timezone (e.g. "Europe/Berlin" for a user in Germany).
-  // The AlAdhan API's meta.timezone field incorrectly returns "Asia/Riyadh" for all cities,
-  // so we rely on Intl.DateTimeFormat().resolvedOptions().timeZone instead.
-  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  // City coordinates extracted from AlAdhan meta (for Qibla + timezone lookup)
+  const cityLat = cityData?.meta?.latitude  ? parseFloat(cityData.meta.latitude)  : null;
+  const cityLng = cityData?.meta?.longitude ? parseFloat(cityData.meta.longitude) : null;
 
-  // Set qibla from GPS coordinates
+  // Detect the searched city's local timezone using coordinates.
+  // Only fires when showing city results (not GPS). Falls back to browser TZ below.
+  const { data: cityTimezoneData } = useCityTimezone(
+    cityLat,
+    cityLng,
+    !coords && !!cityData
+  );
+
+  // Timezone used for "current / next prayer" detection:
+  //   • GPS mode  → browser's own timezone (user IS at those coordinates)
+  //   • City mode → city's IANA timezone from timeapi.io, fallback to browser TZ
+  const timezone: string = coords
+    ? Intl.DateTimeFormat().resolvedOptions().timeZone
+    : (cityTimezoneData ?? Intl.DateTimeFormat().resolvedOptions().timeZone);
+
+  // Qibla from GPS coords
   useEffect(() => {
-    if (coords) {
-      setQiblaAngle(calculateQibla(coords.lat, coords.lng));
-    }
+    if (coords) setQiblaAngle(calculateQibla(coords.lat, coords.lng));
   }, [coords]);
 
-  // Set qibla from city search result (uses meta lat/lng from API response)
+  // Qibla from city API meta
   useEffect(() => {
-    if (cityData?.meta?.latitude && cityData?.meta?.longitude) {
-      setQiblaAngle(calculateQibla(
-        parseFloat(cityData.meta.latitude),
-        parseFloat(cityData.meta.longitude)
-      ));
+    if (cityLat !== null && cityLng !== null) {
+      setQiblaAngle(calculateQibla(cityLat, cityLng));
     }
-  }, [cityData]);
+  }, [cityLat, cityLng]);
+
+  // Persist method changes (only when a location is already saved)
+  useEffect(() => {
+    const prefs = loadPrayerPrefs();
+    if (prefs) savePrayerPrefs({ ...prefs, method });
+  }, [method]);
 
   const handleDetectLocation = () => {
     setLoadingLoc(true);
@@ -214,6 +218,7 @@ export default function PrayerTimes() {
           setLoadingLoc(false);
           setSubmittedCity("");
           setSubmittedCountry("");
+          savePrayerPrefs({ type: "coords", lat: c.lat, lng: c.lng, method });
         },
         () => {
           setLoadingLoc(false);
@@ -230,19 +235,18 @@ export default function PrayerTimes() {
   const handleCitySearch = (e: React.FormEvent) => {
     e.preventDefault();
     const parts = cityInput.trim().split(",");
-    const city = parts[0].trim();
+    const city    = parts[0].trim();
     const country = parts[1]?.trim() || "SA";
     setCoords(null);
     setQiblaAngle(null);
     setSubmittedCity(city);
     setSubmittedCountry(country);
+    savePrayerPrefs({ type: "city", city, country, method });
   };
 
   const dir = language === "ar" ? "rtl" : "ltr";
-
-  // Use the city's own timezone for current/next prayer detection
   const currentPrayer = timings ? getCurrentPrayer(timings, timezone) : null;
-  const nextPrayer = timings ? getNextPrayer(timings, timezone) : null;
+  const nextPrayer    = timings ? getNextPrayer(timings, timezone)    : null;
 
   return (
     <div className="p-4 md:p-8 max-w-5xl mx-auto min-h-full pb-20" dir={dir}>
@@ -305,13 +309,11 @@ export default function PrayerTimes() {
       ) : timings ? (
         <>
           {data?.date && (
-            <div className="text-center mb-6 text-muted-foreground text-sm">
-              {data.date.readable}
-              {timezone && (
-                <span className="ml-2 px-2 py-0.5 bg-primary/10 text-primary rounded-full text-xs font-medium">
-                  {timezone}
-                </span>
-              )}
+            <div className="text-center mb-6 text-muted-foreground text-sm flex flex-wrap items-center justify-center gap-2">
+              <span>{data.date.readable}</span>
+              <span className="px-2 py-0.5 bg-primary/10 text-primary rounded-full text-xs font-medium">
+                {timezone}
+              </span>
             </div>
           )}
 
@@ -337,13 +339,13 @@ export default function PrayerTimes() {
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {PRAYERS.map(prayer => {
               const isCurrent = prayer === currentPrayer;
-              const isNext = prayer === nextPrayer;
+              const isNext    = prayer === nextPrayer;
               return (
                 <div
                   key={prayer}
                   className={`glass-card rounded-2xl p-6 text-center transition-all ${
                     isCurrent ? "border-primary/60 bg-primary/10" :
-                    isNext ? "border-primary/30" : "border-white/5"
+                    isNext    ? "border-primary/30" : "border-white/5"
                   }`}
                 >
                   <div className={`flex justify-center mb-2 ${isCurrent || isNext ? "text-primary" : "text-muted-foreground"}`}>
@@ -368,7 +370,6 @@ export default function PrayerTimes() {
             <h3 className="text-xl font-bold text-foreground mb-6 text-center">
               {language === "ar" ? "اتجاه القبلة" : "Qibla Direction"}
             </h3>
-
             {qiblaAngle !== null ? (
               <QiblaCompass angle={qiblaAngle} language={language} />
             ) : (
@@ -381,14 +382,6 @@ export default function PrayerTimes() {
                     ? "ابحث عن مدينة أو استخدم موقعك لمعرفة اتجاه القبلة"
                     : "Search for a city or use your location to see the Qibla direction toward the Kaaba."}
                 </p>
-                <button
-                  onClick={handleDetectLocation}
-                  disabled={loadingLoc}
-                  className="px-5 py-2.5 bg-primary/20 text-primary rounded-xl text-sm font-semibold hover:bg-primary/30 transition border border-primary/30"
-                >
-                  {loadingLoc ? <Loader2 className="w-4 h-4 animate-spin inline mr-2" /> : null}
-                  {language === "ar" ? "تحديد موقعي" : "Detect My Location"}
-                </button>
               </div>
             )}
           </div>

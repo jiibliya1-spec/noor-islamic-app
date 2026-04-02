@@ -53,9 +53,9 @@ export function useSurahDetail(surahNumber: number) {
   });
 }
 
-// Tafsir — uses alquran.cloud editions:
-//   ar.muyassar  = التفسير الميسر  (simplified Arabic tafsir, Saudi Ministry of Religious Affairs)
-//   en.maududi   = Tafhim al-Quran (Sayyid Abul Ala Maududi, English)
+// Tafsir — alquran.cloud editions:
+//   ar.muyassar  = التفسير الميسر  (Saudi Ministry)
+//   en.maududi   = Tafhim al-Quran (Maududi)
 export function useTafsir(
   surahNumber: number,
   ayahNumber: number,
@@ -107,13 +107,15 @@ export function useWordMeanings(
   });
 }
 
-// 2. Prayer Times API
-export function usePrayerTimes(city: string, country: string) {
+// 2. Prayer Times API — method param included in cache key + request
+export function usePrayerTimes(city: string, country: string, method: string = "2") {
   return useQuery({
-    queryKey: ["prayer-times", city, country],
+    queryKey: ["prayer-times", city, country, method],
     queryFn: async () => {
       if (!city || !country) return null;
-      const res = await fetch(`https://api.aladhan.com/v1/timingsByCity?city=${encodeURIComponent(city)}&country=${encodeURIComponent(country)}&method=2`);
+      const res = await fetch(
+        `https://api.aladhan.com/v1/timingsByCity?city=${encodeURIComponent(city)}&country=${encodeURIComponent(country)}&method=${method}`
+      );
       const data = await res.json();
       return data.data;
     },
@@ -121,16 +123,41 @@ export function usePrayerTimes(city: string, country: string) {
   });
 }
 
-export function usePrayerTimesByCoords(lat: number, lng: number) {
+export function usePrayerTimesByCoords(lat: number, lng: number, method: string = "2") {
   return useQuery({
-    queryKey: ["prayer-times-coords", lat, lng],
+    queryKey: ["prayer-times-coords", lat, lng, method],
     queryFn: async () => {
       if (!lat || !lng) return null;
-      const res = await fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lng}&method=2`);
+      const res = await fetch(
+        `https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lng}&method=${method}`
+      );
       const data = await res.json();
       return data.data;
     },
     enabled: !!lat && !!lng,
+  });
+}
+
+// City timezone lookup via timeapi.io (free, CORS-enabled)
+// Returns the IANA timezone string for the given coordinates, e.g. "Europe/Berlin"
+export function useCityTimezone(lat: number | null, lng: number | null, enabled: boolean = true) {
+  return useQuery({
+    queryKey: ["timezone", lat, lng],
+    queryFn: async () => {
+      if (lat === null || lng === null) return null;
+      try {
+        const res = await fetch(
+          `https://timeapi.io/api/Time/current/coordinate?latitude=${lat}&longitude=${lng}`
+        );
+        const data = await res.json();
+        return (data.timeZone || null) as string | null;
+      } catch {
+        return null;
+      }
+    },
+    enabled: enabled && lat !== null && lng !== null,
+    staleTime: 1000 * 60 * 60 * 24, // timezone data valid for 24 hours
+    retry: 1,
   });
 }
 

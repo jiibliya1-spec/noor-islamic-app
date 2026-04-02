@@ -1,22 +1,37 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { RotateCcw, CheckCircle2, ChevronRight, ChevronLeft, BookOpen } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { useToast } from "@/hooks/use-toast";
 import { ADHKAR_DATA, CATEGORY_META } from "@/data/adhkar-data";
+import {
+  loadAdhkarDayProgress,
+  saveAdhkarDayProgress,
+  incrementAdhkarTotal,
+} from "@/hooks/use-adhkar-progress";
+import { bumpStreak } from "@/hooks/use-streak";
 
 export default function Adhkar() {
   const { language } = useI18n();
   const [activeCategory, setActiveCategory] = useState("morning");
   const [dhikrIndex, setDhikrIndex] = useState(0);
   const [count, setCount] = useState(0);
-  const [completedIds, setCompletedIds] = useState<Set<string>>(new Set());
+
+  // Initialise from today's localStorage progress (resets on new day automatically)
+  const [completedIds, setCompletedIds] = useState<Set<string>>(() =>
+    loadAdhkarDayProgress()
+  );
   const { toast } = useToast();
 
-  const list = ADHKAR_DATA[activeCategory];
+  const list  = ADHKAR_DATA[activeCategory];
   const dhikr = list[dhikrIndex];
-  const isComplete = count >= dhikr.count;
+  const isComplete  = count >= dhikr.count;
   const progressPct = Math.min((count / dhikr.count) * 100, 100);
-  const strokeDash = 2 * Math.PI * 110;
+  const strokeDash  = 2 * Math.PI * 110;
+
+  // Persist completion state whenever it changes
+  useEffect(() => {
+    saveAdhkarDayProgress(completedIds);
+  }, [completedIds]);
 
   const handleTap = useCallback(() => {
     if (isComplete) return;
@@ -25,7 +40,13 @@ export default function Adhkar() {
     setCount(next);
     if (next >= dhikr.count) {
       if ("vibrate" in navigator) navigator.vibrate([80, 40, 80]);
-      setCompletedIds(prev => new Set([...prev, dhikr.id]));
+      setCompletedIds(prev => {
+        const newSet = new Set([...prev, dhikr.id]);
+        return newSet;
+      });
+      // Persist lifetime total and bump streak
+      incrementAdhkarTotal();
+      bumpStreak();
       toast({
         title: language === "ar" ? "اكتمل! 🌟" : "Completed! 🌟",
         description: dhikr.arabic,
@@ -36,21 +57,25 @@ export default function Adhkar() {
   const goNext = () => {
     if (dhikrIndex < list.length - 1) {
       setDhikrIndex(i => i + 1);
-      setCount(0);
+      // Restore count if we've already completed the next dhikr today
+      const nextDhikr = list[dhikrIndex + 1];
+      setCount(completedIds.has(nextDhikr.id) ? nextDhikr.count : 0);
     }
   };
 
   const goPrev = () => {
     if (dhikrIndex > 0) {
       setDhikrIndex(i => i - 1);
-      setCount(0);
+      const prevDhikr = list[dhikrIndex - 1];
+      setCount(completedIds.has(prevDhikr.id) ? prevDhikr.count : 0);
     }
   };
 
   const switchCategory = (cat: string) => {
     setActiveCategory(cat);
     setDhikrIndex(0);
-    setCount(0);
+    const firstDhikr = ADHKAR_DATA[cat][0];
+    setCount(completedIds.has(firstDhikr.id) ? firstDhikr.count : 0);
   };
 
   const isDir = language === "ar" ? "rtl" : "ltr";
@@ -67,9 +92,9 @@ export default function Adhkar() {
       {/* Category Tabs */}
       <div className="flex gap-2 mb-8 overflow-x-auto pb-2 scrollbar-none">
         {Object.keys(ADHKAR_DATA).map(cat => {
-          const meta = CATEGORY_META[cat];
+          const meta  = CATEGORY_META[cat];
           const label = meta[language as keyof typeof meta] ?? meta.en;
-          const done = ADHKAR_DATA[cat].every(d => completedIds.has(d.id));
+          const done  = ADHKAR_DATA[cat].every(d => completedIds.has(d.id));
           return (
             <button
               key={cat}
@@ -120,7 +145,7 @@ export default function Adhkar() {
               {dhikr.arabic}
             </p>
 
-            {/* Transliteration — always visible */}
+            {/* Transliteration */}
             <p className="text-sm italic text-primary/80 mb-3 max-w-lg">
               {dhikr.transliteration}
             </p>
@@ -181,7 +206,11 @@ export default function Adhkar() {
               <button
                 onClick={() => {
                   setCount(0);
-                  setCompletedIds(prev => { const s = new Set(prev); s.delete(dhikr.id); return s; });
+                  setCompletedIds(prev => {
+                    const s = new Set(prev);
+                    s.delete(dhikr.id);
+                    return s;
+                  });
                 }}
                 className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-card text-muted-foreground hover:bg-white/10 transition text-sm font-medium border border-border/40"
               >
@@ -208,12 +237,15 @@ export default function Adhkar() {
           </h3>
           <div className="space-y-2">
             {list.map((d, i) => {
-              const done = completedIds.has(d.id);
+              const done   = completedIds.has(d.id);
               const active = i === dhikrIndex;
               return (
                 <button
                   key={d.id}
-                  onClick={() => { setDhikrIndex(i); setCount(done ? d.count : 0); }}
+                  onClick={() => {
+                    setDhikrIndex(i);
+                    setCount(done ? d.count : 0);
+                  }}
                   className={`w-full flex items-center gap-3 p-2.5 rounded-xl transition-all text-left ${
                     active ? "bg-primary/20 border border-primary/40" : "hover:bg-white/5"
                   }`}
@@ -224,7 +256,9 @@ export default function Adhkar() {
                     {done ? "✓" : i + 1}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <span className="text-xs font-quran text-foreground truncate block" dir="rtl">{d.arabic.split(" ").slice(0, 4).join(" ")}…</span>
+                    <span className="text-xs font-quran text-foreground truncate block" dir="rtl">
+                      {d.arabic.split(" ").slice(0, 4).join(" ")}…
+                    </span>
                     <span className="text-[10px] text-muted-foreground">×{d.count}</span>
                   </div>
                 </button>
@@ -232,7 +266,7 @@ export default function Adhkar() {
             })}
           </div>
 
-          {/* Category completion */}
+          {/* Category completion bar */}
           <div className="mt-4 pt-4 border-t border-border/30">
             <div className="text-xs text-muted-foreground mb-1">
               {language === "ar" ? "اكتمل" : "Completed"}

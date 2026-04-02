@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Switch, Route, Router as WouterRouter } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -6,6 +7,7 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import { I18nProvider, useI18n } from "@/lib/i18n";
 import { AuthProvider } from "@/lib/auth";
 import { BottomNav } from "@/components/bottom-nav";
+import { bumpStreak } from "@/hooks/use-streak";
 import NotFound from "@/pages/not-found";
 
 import { AppSidebar } from "@/components/app-sidebar";
@@ -32,6 +34,11 @@ const queryClient = new QueryClient({
 
 function AppLayout() {
   const { language } = useI18n();
+
+  // Bump daily streak once on every app load (e.g. opening the app counts as activity)
+  useEffect(() => {
+    bumpStreak();
+  }, []);
 
   return (
     <SidebarProvider style={{ "--sidebar-width": "17rem", "--sidebar-width-icon": "4rem" } as React.CSSProperties}>
