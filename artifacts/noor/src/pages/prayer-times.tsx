@@ -5,7 +5,7 @@ import { useDeviceCompass } from "@/hooks/use-device-compass";
 import {
   MapPin, Loader2, Compass, Search,
   Sunrise, Sun, Cloud, Sunset, Moon,
-  AlertCircle, Navigation2, Wifi,
+  AlertCircle, Navigation2,
 } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 
@@ -27,12 +27,12 @@ const METHODS = [
 function PrayerIcon({ prayer, className = "w-5 h-5" }: { prayer: string; className?: string }) {
   switch (prayer) {
     case "Fajr":    return <Sunrise className={className} />;
-    case "Sunrise": return <Sun className={className} />;
-    case "Dhuhr":   return <Sun className={className} />;
-    case "Asr":     return <Cloud className={className} />;
-    case "Maghrib": return <Sunset className={className} />;
-    case "Isha":    return <Moon className={className} />;
-    default:        return <Sun className={className} />;
+    case "Sunrise": return <Sun     className={className} />;
+    case "Dhuhr":   return <Sun     className={className} />;
+    case "Asr":     return <Cloud   className={className} />;
+    case "Maghrib": return <Sunset  className={className} />;
+    case "Isha":    return <Moon    className={className} />;
+    default:        return <Sun     className={className} />;
   }
 }
 
@@ -78,94 +78,207 @@ function getNextPrayer(timings: Record<string, string>, timezone: string): strin
   return "Fajr";
 }
 
-// ── Qibla Compass ─────────────────────────────────────────────────────────
+// ── Qibla Compass (Mawaqit-style) ─────────────────────────────────────────
+// The DIAL rotates to track real-world cardinal directions.
+// The KAABA icon is fixed at 12-o'clock (top) — it acts as the fixed pointer.
+// When the user rotates their phone so the Kaaba (top of screen) faces Makkah,
+// the live dial confirms their orientation.
+//
+// Geometry:
+//   dialRotation = deviceHeading - qiblaAngle
+//
+//   This rotates the dial so that the qibla bearing on the dial rises to the
+//   12-o'clock position (Kaaba). As the phone rotates (heading changes) the
+//   dial counter-rotates to stay geographically accurate.
+//   No sensor → dial frozen at -qiblaAngle so user sees the static bearing.
+// ──────────────────────────────────────────────────────────────────────────
 interface QiblaCompassProps {
-  qiblaAngle: number;        // static bearing to Kaaba from North (degrees)
-  deviceHeading: number | null; // real-time compass heading (null = no sensor)
+  qiblaAngle: number;
+  deviceHeading: number | null;
   isLive: boolean;
   language: string;
 }
 
 function QiblaCompass({ qiblaAngle, deviceHeading, isLive, language }: QiblaCompassProps) {
-  // When sensor is active: needle = qiblaAngle - deviceHeading
-  // (needle always points toward Kaaba regardless of phone orientation)
-  // When no sensor: needle = qiblaAngle (static bearing from North)
-  const needleAngle = deviceHeading !== null ? qiblaAngle - deviceHeading : qiblaAngle;
+  // When live: dial rotates so qibla bearing stays under the fixed Kaaba marker
+  // When static: freeze at -qiblaAngle so user can read the bearing on the dial
+  const dialRotation = deviceHeading !== null
+    ? deviceHeading - qiblaAngle
+    : -qiblaAngle;
+
+  const bearing = Math.round(((qiblaAngle % 360) + 360) % 360);
 
   return (
-    <div className="flex flex-col items-center gap-4">
-      {/* Live indicator */}
-      {isLive && (
-        <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-xs font-semibold">
-          <Wifi className="w-3 h-3" />
-          {language === "ar" ? "مباشر" : "Live"}
-        </div>
-      )}
+    <div className="flex flex-col items-center gap-5">
+      {/* Status badge */}
+      <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border ${
+        isLive
+          ? "bg-emerald-500/15 border-emerald-500/30 text-emerald-400"
+          : "bg-primary/15 border-primary/25 text-primary"
+      }`}>
+        <span className={`w-2 h-2 rounded-full ${isLive ? "bg-emerald-400 animate-pulse" : "bg-primary"}`} />
+        {isLive
+          ? (language === "ar" ? "البوصلة مباشرة" : "Live Compass")
+          : (language === "ar" ? "اتجاه ثابت" : "Static Bearing")}
+      </div>
 
-      <svg viewBox="0 0 220 220" className="w-56 h-56" role="img" aria-label="Qibla compass">
-        {/* Outer rings */}
-        <circle cx="110" cy="110" r="105" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
-        <circle cx="110" cy="110" r="100" fill="url(#cGrad2)" stroke="rgba(255,255,255,0.13)" strokeWidth="2" />
-        <defs>
-          <radialGradient id="cGrad2" cx="40%" cy="30%">
-            <stop offset="0%" stopColor="hsl(156,45%,16%)" />
-            <stop offset="100%" stopColor="hsl(156,51%,8%)" />
-          </radialGradient>
-        </defs>
+      {/* Compass SVG */}
+      <div className="relative w-64 h-64 select-none">
+        <svg viewBox="0 0 240 240" className="w-full h-full" aria-label="Qibla compass">
+          <defs>
+            {/* Dial background gradient */}
+            <radialGradient id="dialBg" cx="40%" cy="30%">
+              <stop offset="0%" stopColor="hsl(156,40%,14%)" />
+              <stop offset="100%" stopColor="hsl(156,50%,7%)" />
+            </radialGradient>
+            {/* Outer glow ring */}
+            <radialGradient id="outerGlow" cx="50%" cy="50%" r="50%">
+              <stop offset="80%" stopColor="transparent" />
+              <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity="0.12" />
+            </radialGradient>
+          </defs>
 
-        {/* Tick marks */}
-        {Array.from({ length: 36 }).map((_, i) => {
-          const deg = i * 10, isMajor = deg % 90 === 0;
-          const rad = (deg - 90) * (Math.PI / 180);
-          const r1 = 92, r2 = isMajor ? 78 : 85;
-          return (
-            <line key={i}
-              x1={110 + r1 * Math.cos(rad)} y1={110 + r1 * Math.sin(rad)}
-              x2={110 + r2 * Math.cos(rad)} y2={110 + r2 * Math.sin(rad)}
-              stroke={isMajor ? "rgba(255,255,255,0.3)" : "rgba(255,255,255,0.1)"}
-              strokeWidth={isMajor ? 2 : 1}
-            />
-          );
-        })}
+          {/* Outer decorative glow */}
+          <circle cx="120" cy="120" r="118" fill="url(#outerGlow)" />
 
-        {/* Cardinal directions — fixed (never rotate with needle) */}
-        <text x="110" y="21"  textAnchor="middle" fill="#ef4444" fontSize="14" fontWeight="bold" fontFamily="Inter,sans-serif">N</text>
-        <text x="110" y="208" textAnchor="middle" fill="rgba(255,255,255,0.35)" fontSize="12" fontFamily="Inter,sans-serif">S</text>
-        <text x="202" y="115" textAnchor="middle" fill="rgba(255,255,255,0.35)" fontSize="12" fontFamily="Inter,sans-serif">E</text>
-        <text x="18"  y="115" textAnchor="middle" fill="rgba(255,255,255,0.35)" fontSize="12" fontFamily="Inter,sans-serif">W</text>
+          {/* ── FIXED: Compass frame ring ── */}
+          <circle cx="120" cy="120" r="108"
+            fill="url(#dialBg)"
+            stroke="rgba(255,255,255,0.10)"
+            strokeWidth="1.5"
+          />
 
-        {/* Needle — CSS transform for smooth animation */}
-        <g
-          style={{
-            transform: `rotate(${needleAngle}deg)`,
-            transformOrigin: "110px 110px",
-            transition: "transform 0.15s linear",
-          }}
-        >
-          {/* Gold tip — points toward Kaaba */}
-          <polygon points="110,18 117,70 103,70" fill="hsl(var(--primary))" opacity="0.95" />
-          <rect x="107" y="70" width="6" height="40" rx="3" fill="hsl(var(--primary))" opacity="0.8" />
-          {/* Gray tail */}
-          <rect x="107" y="110" width="6" height="40" rx="3" fill="rgba(255,255,255,0.18)" />
-          <polygon points="110,202 117,150 103,150" fill="rgba(255,255,255,0.18)" />
-        </g>
+          {/* ── ROTATING DIAL ── */}
+          <g
+            style={{
+              transform: `rotate(${dialRotation}deg)`,
+              transformOrigin: "120px 120px",
+              transition: isLive ? "transform 0.12s linear" : "none",
+            }}
+          >
+            {/* Degree tick marks (every 5°, major every 30°) */}
+            {Array.from({ length: 72 }).map((_, i) => {
+              const deg = i * 5;
+              const isMajor = deg % 30 === 0;
+              const isCardinal = deg % 90 === 0;
+              const rad = (deg - 90) * (Math.PI / 180);
+              const r1 = 100, r2 = isCardinal ? 80 : isMajor ? 86 : 92;
+              return (
+                <line key={i}
+                  x1={120 + r1 * Math.cos(rad)} y1={120 + r1 * Math.sin(rad)}
+                  x2={120 + r2 * Math.cos(rad)} y2={120 + r2 * Math.sin(rad)}
+                  stroke={
+                    isCardinal
+                      ? "rgba(255,255,255,0.45)"
+                      : isMajor
+                      ? "rgba(255,255,255,0.22)"
+                      : "rgba(255,255,255,0.08)"
+                  }
+                  strokeWidth={isCardinal ? 2 : isMajor ? 1.5 : 1}
+                />
+              );
+            })}
 
-        {/* Center dot */}
-        <circle cx="110" cy="110" r="7" fill="hsl(var(--primary))" stroke="hsl(var(--background))" strokeWidth="3" />
+            {/* Cardinal direction labels */}
+            {/* North — red */}
+            <text x="120" y="30"
+              textAnchor="middle" dominantBaseline="middle"
+              fill="#ef4444" fontSize="16" fontWeight="800"
+              fontFamily="Inter, system-ui, sans-serif"
+            >N</text>
 
-        {/* Kaaba icon at needle tip */}
-        <g style={{ transform: `rotate(${needleAngle}deg)`, transformOrigin: "110px 110px" }}>
-          <rect x="104.5" y="10" width="11" height="11" rx="1.5"
-            fill="hsl(var(--primary-foreground))" opacity="0.55" />
-        </g>
-      </svg>
+            {/* South */}
+            <text x="120" y="212"
+              textAnchor="middle" dominantBaseline="middle"
+              fill="rgba(255,255,255,0.40)" fontSize="13" fontWeight="600"
+              fontFamily="Inter, system-ui, sans-serif"
+            >S</text>
 
+            {/* East */}
+            <text x="213" y="121"
+              textAnchor="middle" dominantBaseline="middle"
+              fill="rgba(255,255,255,0.40)" fontSize="13" fontWeight="600"
+              fontFamily="Inter, system-ui, sans-serif"
+            >E</text>
+
+            {/* West */}
+            <text x="27" y="121"
+              textAnchor="middle" dominantBaseline="middle"
+              fill="rgba(255,255,255,0.40)" fontSize="13" fontWeight="600"
+              fontFamily="Inter, system-ui, sans-serif"
+            >W</text>
+
+            {/* Intercardinal labels (NE, SE, SW, NW) */}
+            {[
+              { label: "NE", x: 185, y: 57  },
+              { label: "SE", x: 185, y: 185 },
+              { label: "SW", x: 55,  y: 185 },
+              { label: "NW", x: 55,  y: 57  },
+            ].map(({ label, x, y }) => (
+              <text key={label} x={x} y={y}
+                textAnchor="middle" dominantBaseline="middle"
+                fill="rgba(255,255,255,0.20)" fontSize="9" fontWeight="600"
+                fontFamily="Inter, system-ui, sans-serif"
+              >{label}</text>
+            ))}
+          </g>
+          {/* ── END ROTATING DIAL ── */}
+
+          {/* ── FIXED: Qibla pointer + Kaaba icon at 12 o'clock ── */}
+          {/* Gold pointer triangle — tip at very top */}
+          <polygon
+            points="120,10 127,38 113,38"
+            fill="hsl(var(--primary))"
+            opacity="0.92"
+          />
+          {/* Pointer shaft */}
+          <rect x="117" y="35" width="6" height="28" rx="3"
+            fill="hsl(var(--primary))" opacity="0.80"
+          />
+
+          {/* Kaaba icon — fixed at pointer tip */}
+          {/* Black cube body */}
+          <rect x="110" y="8" width="20" height="16" rx="2"
+            fill="#0f0f0f"
+            stroke="hsl(var(--primary))"
+            strokeWidth="1.5"
+          />
+          {/* Kiswah gold band */}
+          <rect x="110" y="16" width="20" height="3"
+            fill="hsl(var(--primary))" opacity="0.70"
+          />
+          {/* Door arch */}
+          <path d="M118,24 Q120,20 122,24 L122,29 L118,29 Z"
+            fill="hsl(var(--primary))" opacity="0.55"
+          />
+          {/* Corner highlight */}
+          <line x1="110" y1="8" x2="110" y2="24"
+            stroke="hsl(var(--primary))" strokeWidth="1" opacity="0.30"
+          />
+
+          {/* ── FIXED: Center hub ── */}
+          <circle cx="120" cy="120" r="10"
+            fill="hsl(var(--background))"
+            stroke="hsl(var(--primary))"
+            strokeWidth="2"
+          />
+          <circle cx="120" cy="120" r="4"
+            fill="hsl(var(--primary))"
+          />
+        </svg>
+      </div>
+
+      {/* Bearing readout */}
       <div className="text-center">
-        <p className="text-4xl font-bold text-primary">{Math.round(((qiblaAngle % 360) + 360) % 360)}°</p>
-        <p className="text-xs text-muted-foreground mt-1">
-          {language === "ar"
-            ? (isLive ? "تحرك حتى يشير السهم للأعلى نحو الكعبة" : "من الشمال باتجاه القبلة")
-            : (isLive ? "Rotate until the needle points up toward the Kaaba" : "from North toward the Kaaba")}
+        <p className="text-5xl font-bold text-primary font-mono leading-none">{bearing}°</p>
+        <p className="text-xs text-muted-foreground mt-2 max-w-[220px] text-center leading-relaxed">
+          {isLive
+            ? (language === "ar"
+                ? "دوّر هاتفك حتى يشير رمز الكعبة نحو مكة المكرمة"
+                : "Rotate your phone until the Kaaba points toward Makkah")
+            : (language === "ar"
+                ? `القبلة على بُعد ${bearing}° من الشمال`
+                : `Qibla is ${bearing}° from North`)}
         </p>
       </div>
     </div>
@@ -209,19 +322,16 @@ export default function PrayerTimes() {
   const timings   = data?.timings ?? null;
   const timezone: string = data?.meta?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-  // Qibla from GPS
   useEffect(() => {
     if (coords) setQiblaAngle(calculateQibla(coords.lat, coords.lng));
   }, [coords]);
 
-  // Qibla from city meta
   useEffect(() => {
     const lat = cityData?.meta?.latitude  ? parseFloat(cityData.meta.latitude)  : null;
     const lng = cityData?.meta?.longitude ? parseFloat(cityData.meta.longitude) : null;
     if (lat !== null && lng !== null) setQiblaAngle(calculateQibla(lat, lng));
   }, [cityData]);
 
-  // Persist method changes
   useEffect(() => {
     const prefs = loadPrayerPrefs();
     if (prefs) savePrayerPrefs({ ...prefs, method });
@@ -384,12 +494,12 @@ export default function PrayerTimes() {
 
           {/* Qibla Compass */}
           <div className="glass-card rounded-3xl p-8">
-            <h3 className="text-xl font-bold text-foreground mb-2 text-center">
+            <h3 className="text-xl font-bold text-foreground mb-6 text-center">
               {language === "ar" ? "اتجاه القبلة" : "Qibla Direction"}
             </h3>
 
             {qiblaAngle !== null ? (
-              <div className="flex flex-col items-center gap-5">
+              <div className="flex flex-col items-center gap-6">
                 <QiblaCompass
                   qiblaAngle={qiblaAngle}
                   deviceHeading={deviceHeading}
@@ -397,14 +507,14 @@ export default function PrayerTimes() {
                   language={language}
                 />
 
-                {/* Sensor permission UI */}
+                {/* Permission UI */}
                 {permission === "unknown" && (
                   <button
                     onClick={requestPermission}
-                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary/15 text-primary border border-primary/30 text-sm font-semibold hover:bg-primary/25 transition"
+                    className="flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:bg-primary/90 transition shadow-lg shadow-primary/20"
                   >
                     <Navigation2 className="w-4 h-4" />
-                    {language === "ar" ? "تفعيل البوصلة الحية" : "Enable Live Compass"}
+                    {language === "ar" ? "تفعيل البوصلة المباشرة" : "Enable Live Compass"}
                   </button>
                 )}
                 {permission === "denied" && (
@@ -416,8 +526,21 @@ export default function PrayerTimes() {
                 )}
                 {permission === "unavailable" && (
                   <p className="text-xs text-muted-foreground text-center">
-                    {language === "ar" ? "لا يوجد استشعار في هذا الجهاز." : "No compass sensor on this device — showing static bearing."}
+                    {language === "ar"
+                      ? "لا يوجد استشعار في هذا الجهاز — الاتجاه ثابت."
+                      : "No compass sensor — showing static bearing."}
                   </p>
+                )}
+
+                {/* Usage hint */}
+                {compassLive && (
+                  <div className="bg-primary/8 border border-primary/15 rounded-2xl px-5 py-3 text-center max-w-xs">
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      {language === "ar"
+                        ? "امسك هاتفك أفقياً ودوّره حتى يشير رمز الكعبة (أعلى البوصلة) نحو مكة"
+                        : "Hold phone flat and rotate until the Kaaba at the top points toward Makkah"}
+                    </p>
+                  </div>
                 )}
               </div>
             ) : (
