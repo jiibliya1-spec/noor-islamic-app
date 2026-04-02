@@ -78,23 +78,19 @@ function getNextPrayer(timings: Record<string, string>, timezone: string): strin
   return "Fajr";
 }
 
-// ── Qibla Compass (Mawaqit-style) ─────────────────────────────────────────
+// ── Qibla Compass ──────────────────────────────────────────────────────────
 //
 // Design:
-//   • Kaaba icon — fixed at screen 12-o'clock (top). Acts as the aim indicator.
-//   • Compass DIAL — rotates by −deviceHeading (CCW as phone rotates CW).
-//     This keeps N/E/S/W labels pointing to their real geographic directions.
-//   • Qibla arrow — embedded ON the dial at position qiblaAngle. It rotates
-//     with the dial. When it rises to the top (aligned with the fixed Kaaba),
-//     the phone top is facing Makkah.
+//   • Compass DIAL  — rotates by −deviceHeading (keeps N/E/S/W geographically
+//     accurate as the phone rotates).
+//   • Kaaba icon    — drawn at the CENTER of the dial (fixed over the dial).
+//   • Gold needle   — rotates by (qiblaAngle − deviceHeading) so its tip
+//     always points from the center TOWARD Makkah, regardless of phone heading.
 //
-// Formula:  dialRotation = −deviceHeading  (CSS degrees, positive = CW)
+// Formula:  needleAngle = qiblaAngle − deviceHeading
+//           dialRotation = −deviceHeading
 //
-// When phone faces Makkah (deviceHeading ≈ qiblaAngle):
-//   The qibla arrow (at dial position qiblaAngle) has moved to screen 0° (top)
-//   → aligns with the fixed Kaaba ✓
-//
-// No sensor: dial frozen at 0 (North-up static view), bearing shown in text.
+// No sensor: needle frozen at qiblaAngle (static bearing), dial at 0°.
 // ──────────────────────────────────────────────────────────────────────────
 interface QiblaCompassProps {
   qiblaAngle: number;
@@ -104,23 +100,9 @@ interface QiblaCompassProps {
 }
 
 function QiblaCompass({ qiblaAngle, deviceHeading, isLive, language }: QiblaCompassProps) {
-  // Dial counter-rotates as phone rotates → keeps cardinal labels geographically fixed
   const dialRotation = deviceHeading !== null ? -deviceHeading : 0;
-
-  // Qibla arrow position on the (pre-rotation) dial
-  const qiblaRad  = (qiblaAngle - 90) * (Math.PI / 180);
-  const arrowR    = 72; // distance of arrow tip from centre
-  const arrowTipX = 120 + arrowR * Math.cos(qiblaRad);
-  const arrowTipY = 120 + arrowR * Math.sin(qiblaRad);
-  // Base of arrow (14 px wide, 22 px back from tip)
-  const baseR     = arrowR - 22;
-  const baseX     = 120 + baseR * Math.cos(qiblaRad);
-  const baseY     = 120 + baseR * Math.sin(qiblaRad);
-  // Perpendicular to the arrow for base width
-  const perpRad   = qiblaRad + Math.PI / 2;
-  const half      = 7;
-
-  const bearing = Math.round(((qiblaAngle % 360) + 360) % 360);
+  const needleAngle  = deviceHeading !== null ? qiblaAngle - deviceHeading : qiblaAngle;
+  const bearing      = Math.round(((qiblaAngle % 360) + 360) % 360);
 
   return (
     <div className="flex flex-col items-center gap-5">
@@ -136,42 +118,40 @@ function QiblaCompass({ qiblaAngle, deviceHeading, isLive, language }: QiblaComp
           : (language === "ar" ? "اتجاه ثابت" : "Static Bearing")}
       </div>
 
-      {/* Compass SVG */}
+      {/* Compass */}
       <div className="relative w-64 h-64 select-none">
         <svg viewBox="0 0 240 240" className="w-full h-full" aria-label="Qibla compass">
           <defs>
             <radialGradient id="dialBg" cx="40%" cy="30%">
-              <stop offset="0%" stopColor="hsl(156,40%,14%)" />
-              <stop offset="100%" stopColor="hsl(156,50%,7%)" />
+              <stop offset="0%"   stopColor="hsl(156,40%,14%)" />
+              <stop offset="100%" stopColor="hsl(156,50%,7%)"  />
             </radialGradient>
             <radialGradient id="outerGlow" cx="50%" cy="50%" r="50%">
-              <stop offset="78%" stopColor="transparent" />
-              <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity="0.14" />
+              <stop offset="78%"  stopColor="transparent" />
+              <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity="0.15" />
             </radialGradient>
           </defs>
 
-          {/* Glow ring */}
+          {/* Outer glow */}
           <circle cx="120" cy="120" r="118" fill="url(#outerGlow)" />
 
-          {/* ── FIXED frame ── */}
+          {/* Dial background */}
           <circle cx="120" cy="120" r="108"
             fill="url(#dialBg)"
             stroke="rgba(255,255,255,0.10)" strokeWidth="1.5"
           />
 
-          {/* ── ROTATING DIAL (dialRotation = −deviceHeading) ── */}
-          <g
-            style={{
-              transform: `rotate(${dialRotation}deg)`,
-              transformOrigin: "120px 120px",
-              transition: isLive ? "transform 0.10s linear" : "none",
-            }}
-          >
+          {/* ── ROTATING DIAL ── */}
+          <g style={{
+            transform: `rotate(${dialRotation}deg)`,
+            transformOrigin: "120px 120px",
+            transition: isLive ? "transform 0.10s linear" : "none",
+          }}>
             {/* Tick marks every 5° */}
             {Array.from({ length: 72 }).map((_, i) => {
               const deg = i * 5;
-              const isMajor    = deg % 30 === 0;
               const isCardinal = deg % 90 === 0;
+              const isMajor    = deg % 30 === 0;
               const rad = (deg - 90) * (Math.PI / 180);
               const r1 = 100, r2 = isCardinal ? 78 : isMajor ? 86 : 93;
               return (
@@ -183,12 +163,11 @@ function QiblaCompass({ qiblaAngle, deviceHeading, isLive, language }: QiblaComp
                 />
               );
             })}
-
             {/* Cardinal labels */}
-            <text x="120" y="30"  textAnchor="middle" dominantBaseline="middle" fill="#ef4444"               fontSize="16" fontWeight="800" fontFamily="Inter,system-ui,sans-serif">N</text>
-            <text x="120" y="212" textAnchor="middle" dominantBaseline="middle" fill="rgba(255,255,255,0.38)" fontSize="13" fontWeight="600" fontFamily="Inter,system-ui,sans-serif">S</text>
-            <text x="213" y="121" textAnchor="middle" dominantBaseline="middle" fill="rgba(255,255,255,0.38)" fontSize="13" fontWeight="600" fontFamily="Inter,system-ui,sans-serif">E</text>
-            <text x="27"  y="121" textAnchor="middle" dominantBaseline="middle" fill="rgba(255,255,255,0.38)" fontSize="13" fontWeight="600" fontFamily="Inter,system-ui,sans-serif">W</text>
+            <text x="120" y="30"  textAnchor="middle" dominantBaseline="middle" fill="#ef4444"                fontSize="16" fontWeight="800" fontFamily="Inter,system-ui,sans-serif">N</text>
+            <text x="120" y="212" textAnchor="middle" dominantBaseline="middle" fill="rgba(255,255,255,0.40)" fontSize="13" fontWeight="600" fontFamily="Inter,system-ui,sans-serif">S</text>
+            <text x="213" y="121" textAnchor="middle" dominantBaseline="middle" fill="rgba(255,255,255,0.40)" fontSize="13" fontWeight="600" fontFamily="Inter,system-ui,sans-serif">E</text>
+            <text x="27"  y="121" textAnchor="middle" dominantBaseline="middle" fill="rgba(255,255,255,0.40)" fontSize="13" fontWeight="600" fontFamily="Inter,system-ui,sans-serif">W</text>
             {[
               { label: "NE", x: 185, y: 57  },
               { label: "SE", x: 185, y: 185 },
@@ -196,61 +175,59 @@ function QiblaCompass({ qiblaAngle, deviceHeading, isLive, language }: QiblaComp
               { label: "NW", x: 55,  y: 57  },
             ].map(({ label, x, y }) => (
               <text key={label} x={x} y={y} textAnchor="middle" dominantBaseline="middle"
-                fill="rgba(255,255,255,0.18)" fontSize="9" fontWeight="600" fontFamily="Inter,system-ui,sans-serif"
+                fill="rgba(255,255,255,0.18)" fontSize="9" fontWeight="600"
+                fontFamily="Inter,system-ui,sans-serif"
               >{label}</text>
             ))}
+          </g>
 
-            {/* ── Qibla arrow ON the dial — points toward Makkah ── */}
-            {/* Glow halo */}
-            <circle
-              cx={arrowTipX} cy={arrowTipY} r="10"
-              fill="hsl(var(--primary))" opacity="0.18"
+          {/* ── NEEDLE — rotates to always point toward Makkah ── */}
+          <g style={{
+            transform: `rotate(${needleAngle}deg)`,
+            transformOrigin: "120px 120px",
+            transition: isLive ? "transform 0.10s linear" : "none",
+          }}>
+            {/* Tip glow */}
+            <ellipse cx="120" cy="46" rx="6" ry="10"
+              fill="hsl(var(--primary))" opacity="0.25"
             />
-            {/* Arrow triangle */}
-            <polygon
-              points={`
-                ${arrowTipX},${arrowTipY}
-                ${baseX + half * Math.cos(perpRad)},${baseY + half * Math.sin(perpRad)}
-                ${baseX - half * Math.cos(perpRad)},${baseY - half * Math.sin(perpRad)}
-              `}
-              fill="hsl(var(--primary))"
-              opacity="0.95"
+            {/* Gold tip (pointing up = toward Makkah) */}
+            <polygon points="120,26 128,80 112,80"
+              fill="hsl(var(--primary))" opacity="0.95"
             />
-            {/* Dot at tip */}
-            <circle cx={arrowTipX} cy={arrowTipY} r="3.5"
-              fill="hsl(var(--primary))" opacity="1"
+            {/* Tail (opposite direction) */}
+            <polygon points="120,214 126,162 114,162"
+              fill="rgba(255,255,255,0.15)"
             />
           </g>
-          {/* ── END ROTATING DIAL ── */}
 
-          {/* ── FIXED: Kaaba icon at top (aim indicator) ── */}
-          {/* Notch pointing down into the dial — guides eye to Kaaba */}
-          <polygon points="120,22 124,34 116,34"
-            fill="hsl(var(--primary))" opacity="0.30"
+          {/* ── KAABA at center (fixed, above needle) ── */}
+          {/* Soft glow behind Kaaba */}
+          <circle cx="120" cy="120" r="22"
+            fill="hsl(var(--primary))" opacity="0.10"
           />
-          {/* Kaaba cube body */}
-          <rect x="109" y="6" width="22" height="18" rx="2.5"
-            fill="#111111"
+          {/* Cube body */}
+          <rect x="106" y="109" width="28" height="22" rx="3"
+            fill="#0d0d0d"
             stroke="hsl(var(--primary))" strokeWidth="1.8"
           />
           {/* Kiswah gold band */}
-          <rect x="109" y="14" width="22" height="4"
-            fill="hsl(var(--primary))" opacity="0.65"
+          <rect x="106" y="117" width="28" height="5"
+            fill="hsl(var(--primary))" opacity="0.70"
           />
-          {/* Door */}
-          <path d="M117,24 Q120,19 123,24 L123,28 L117,28 Z"
-            fill="hsl(var(--primary))" opacity="0.50"
+          {/* Door arch */}
+          <path d="M115,131 Q120,124 125,131 L125,136 L115,136 Z"
+            fill="hsl(var(--primary))" opacity="0.55"
           />
-          {/* Side shadow line */}
-          <line x1="109" y1="6" x2="109" y2="24"
-            stroke="hsl(var(--primary))" strokeWidth="1" opacity="0.25"
+          {/* Left edge shadow */}
+          <line x1="106" y1="109" x2="106" y2="131"
+            stroke="hsl(var(--primary))" strokeWidth="1" opacity="0.20"
           />
-
-          {/* ── FIXED: Center hub ── */}
-          <circle cx="120" cy="120" r="10"
-            fill="hsl(var(--background))" stroke="hsl(var(--primary))" strokeWidth="2"
+          {/* Center pin */}
+          <circle cx="120" cy="120" r="4"
+            fill="hsl(var(--primary))"
+            stroke="hsl(var(--background))" strokeWidth="1.5"
           />
-          <circle cx="120" cy="120" r="4" fill="hsl(var(--primary))" />
         </svg>
       </div>
 
@@ -260,8 +237,8 @@ function QiblaCompass({ qiblaAngle, deviceHeading, isLive, language }: QiblaComp
         <p className="text-xs text-muted-foreground mt-2 max-w-[230px] leading-relaxed">
           {isLive
             ? (language === "ar"
-                ? "دوّر هاتفك حتى يتوافق السهم الذهبي مع رمز الكعبة في الأعلى"
-                : "Rotate phone until the gold arrow aligns with the Kaaba at the top")
+                ? "السهم يشير دائماً نحو مكة المكرمة"
+                : "The needle always points toward Makkah")
             : (language === "ar"
                 ? `القبلة على بُعد ${bearing}° من الشمال`
                 : `Qibla is ${bearing}° from North — enable compass for live tracking`)}
