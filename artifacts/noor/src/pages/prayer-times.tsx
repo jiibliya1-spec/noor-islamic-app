@@ -105,7 +105,9 @@ interface QiblaCompassProps {
 }
 
 function QiblaCompass({ qiblaAngle, deviceHeading, isLive, t }: QiblaCompassProps) {
-  const needleRotation = deviceHeading ?? 0;
+  // On mobile with live compass: needle tracks deviceHeading so user aligns it with Kaaba.
+  // On desktop / no gyro: needle is frozen at qiblaAngle — it already points at the Kaaba.
+  const needleRotation = deviceHeading ?? qiblaAngle;
   const bearing        = Math.round(((qiblaAngle % 360) + 360) % 360);
 
   // Kaaba position on the compass face (fixed, at qiblaAngle from North)
@@ -123,7 +125,7 @@ function QiblaCompass({ qiblaAngle, deviceHeading, isLive, t }: QiblaCompassProp
           : "bg-primary/15 border-primary/25 text-primary"
       }`}>
         <span className={`w-2 h-2 rounded-full ${isLive ? "bg-emerald-400 animate-pulse" : "bg-primary"}`} />
-        {isLive ? t("liveCompass") : t("staticBearing")}
+        {isLive ? t("liveCompass") : t("qiblaDirection")}
       </div>
 
       {/* Compass */}
@@ -203,13 +205,27 @@ function QiblaCompass({ qiblaAngle, deviceHeading, isLive, t }: QiblaCompassProp
         </svg>
       </div>
 
-      {/* Bearing */}
-      <div className="text-center">
-        <p className="text-5xl font-bold text-primary font-mono leading-none">{bearing}°</p>
-        <p className="text-xs text-muted-foreground mt-2 max-w-[240px] leading-relaxed">
-          {isLive ? t("rotateToAlign") : `${t("qiblaIs")} ${bearing}° ${t("fromNorth")}`}
-        </p>
-      </div>
+      {/* Bearing card */}
+      {isLive ? (
+        /* Mobile live mode — minimal hint */
+        <div className="text-center">
+          <p className="text-5xl font-bold text-primary font-mono leading-none">{bearing}°</p>
+          <p className="text-xs text-muted-foreground mt-2 max-w-[240px] leading-relaxed">
+            {t("rotateToAlign")}
+          </p>
+        </div>
+      ) : (
+        /* Desktop / no gyro — clear static direction card */
+        <div className="w-full max-w-xs bg-primary/10 border border-primary/25 rounded-2xl px-5 py-4 text-center">
+          <p className="text-4xl font-bold text-primary font-mono leading-none mb-1">{bearing}°</p>
+          <p className="text-sm font-semibold text-foreground mt-2">
+            {t("qiblaIs")} {bearing}° {t("fromNorth")}
+          </p>
+          <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+            {t("needlePointsMakkah")}
+          </p>
+        </div>
+      )}
     </div>
   );
 }
@@ -266,6 +282,23 @@ export default function PrayerTimes() {
     const prefs = loadPrayerPrefs();
     if (prefs) savePrayerPrefs({ ...prefs, method });
   }, [method]);
+
+  // Auto-detect location on page load when no prefs exist (e.g. first visit on desktop)
+  useEffect(() => {
+    const prefs = loadPrayerPrefs();
+    if (prefs) return; // already have a saved location
+    if (!("geolocation" in navigator)) return;
+    navigator.geolocation.getCurrentPosition(
+      pos => {
+        const c = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+        setCoords(c);
+        setCityInput(""); setSubmittedCity(""); setSubmittedCountry("");
+        savePrayerPrefs({ type: "coords", lat: c.lat, lng: c.lng, method: "3" });
+      },
+      () => {} // silently ignore — user can manually search
+    );
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleDetectLocation = () => {
     setLoadingLoc(true); setLocError(null);
