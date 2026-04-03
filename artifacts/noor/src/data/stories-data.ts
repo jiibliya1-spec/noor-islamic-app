@@ -1183,5 +1183,5 @@ export const STORY_CATEGORIES = [
   { id: "companions",label: "Companions",       ar: "الصحابة",           fr: "Compagnons",           de: "Gefährten" },
   { id: "prophets",  label: "Prophets",         ar: "الأنبياء",          fr: "Prophètes",            de: "Propheten" },
   { id: "history",   label: "Islamic History",  ar: "التاريخ الإسلامي",  fr: "Histoire Islamique",   de: "Islamische Geschichte" },
-  { id: "moral",     label: "Moral Lessons",    ar: "الدروس الأخلاقية",  fr: "Leçons Morales",       de: "Moralische Lektionen" },
+  { id: "moral",     label: "Moral Stories",    ar: "الدروس الأخلاقية",  fr: "Leçons Morales",       de: "Moralische Lektionen" },
 ] as const;

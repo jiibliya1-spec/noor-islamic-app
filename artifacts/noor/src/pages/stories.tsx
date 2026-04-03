@@ -5,13 +5,14 @@ import { ISLAMIC_STORIES, STORY_CATEGORIES } from "@/data/stories-data";
 
 type StoryCategory = typeof STORY_CATEGORIES[number]["id"];
 
-const CATEGORY_ICON: Record<string, string> = {
-  all: "📖",
-  prophet: "🕌",
-  companions: "🌙",
-  prophets: "⭐",
-  history: "📜",
-  moral: "💡",
+/* Per-category styling: emoji + accent colour */
+const CAT_META: Record<string, { emoji: string; color: string; activeClass: string; badgeClass: string }> = {
+  all:        { emoji: "📖", color: "#4ade80", activeClass: "bg-primary text-primary-foreground shadow-primary/30",        badgeClass: "bg-white/25" },
+  prophet:    { emoji: "🕌", color: "#f59e0b", activeClass: "bg-amber-500  text-white          shadow-amber-500/30",       badgeClass: "bg-white/25" },
+  companions: { emoji: "🌙", color: "#818cf8", activeClass: "bg-indigo-500 text-white          shadow-indigo-500/30",      badgeClass: "bg-white/25" },
+  prophets:   { emoji: "⭐", color: "#f472b6", activeClass: "bg-pink-500   text-white          shadow-pink-500/30",        badgeClass: "bg-white/25" },
+  history:    { emoji: "📜", color: "#fb923c", activeClass: "bg-orange-500 text-white          shadow-orange-500/30",      badgeClass: "bg-white/25" },
+  moral:      { emoji: "💡", color: "#34d399", activeClass: "bg-emerald-500 text-white         shadow-emerald-500/30",     badgeClass: "bg-white/25" },
 };
 
 export default function Stories() {
@@ -20,10 +21,14 @@ export default function Stories() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const isDir = language === "ar" ? "rtl" : "ltr";
 
-  const filtered = category === "all" ? ISLAMIC_STORIES : ISLAMIC_STORIES.filter(s => s.category === category);
+  const filtered = category === "all"
+    ? ISLAMIC_STORIES
+    : ISLAMIC_STORIES.filter(s => s.category === category);
+
   const selected = selectedId ? ISLAMIC_STORIES.find(s => s.id === selectedId) : null;
   const selectedIdx = selectedId ? filtered.findIndex(s => s.id === selectedId) : -1;
 
+  /* ─── Story detail view ─── */
   if (selected) {
     return (
       <div className="p-4 md:p-8 max-w-3xl mx-auto w-full pb-24" dir={isDir}>
@@ -36,21 +41,22 @@ export default function Stories() {
           {language === "ar" ? "العودة إلى القصص" : "Back to Stories"}
         </button>
 
-        {/* Story hero — illustrated gradient background */}
+        {/* Story hero */}
         <div
           className="rounded-3xl mb-5 overflow-hidden shadow-lg"
-          style={{ background: selected.bg || "linear-gradient(135deg, #1a472a 0%, #2d6a4f 100%)" }}
+          style={{ background: selected.bg || "linear-gradient(135deg,#1a472a 0%,#2d6a4f 100%)" }}
         >
           {selected.emoji && (
-            <div className="flex justify-center pt-8 pb-2 text-7xl select-none">
-              {selected.emoji}
-            </div>
+            <div className="flex justify-center pt-8 pb-2 text-7xl select-none">{selected.emoji}</div>
           )}
           <div className="p-6 md:p-8">
             <div className="flex items-start justify-between gap-4 mb-4">
               <div>
                 <span className="text-xs font-medium text-white/70 uppercase tracking-wider mb-2 block">
-                  {(() => { const cat = STORY_CATEGORIES.find(c => c.id === selected.category); return cat ? ((cat as Record<string, string>)[language] ?? cat.label) : ""; })()}
+                  {(() => {
+                    const cat = STORY_CATEGORIES.find(c => c.id === selected.category);
+                    return cat ? ((cat as Record<string, string>)[language] ?? cat.label) : "";
+                  })()}
                 </span>
                 <h1 className="text-2xl md:text-3xl font-bold text-white mb-1">
                   {(selected.title as Record<string, string>)[language] ?? selected.title.en}
@@ -64,8 +70,6 @@ export default function Stories() {
                 {selected.readingTime} {language === "ar" ? "دقائق" : "min"}
               </div>
             </div>
-
-            {/* Arabic opening quote */}
             <div className="bg-white/10 border border-white/20 rounded-2xl p-4 text-center">
               <p className="font-quran text-xl text-white leading-relaxed" dir="rtl">
                 {selected.arabicOpening}
@@ -74,14 +78,16 @@ export default function Stories() {
           </div>
         </div>
 
-        {/* Story content */}
+        {/* Content */}
         <div className="glass-card rounded-3xl p-6 md:p-8 mb-5">
           <div className="prose prose-sm max-w-none">
-            {((selected.content as Record<string, string>)[language] ?? selected.content.en).split("\n\n").map((para, i) => (
-              <p key={i} className="text-foreground/90 leading-relaxed mb-4 last:mb-0 text-sm md:text-base">
-                {para}
-              </p>
-            ))}
+            {((selected.content as Record<string, string>)[language] ?? selected.content.en)
+              .split("\n\n")
+              .map((para, i) => (
+                <p key={i} className="text-foreground/90 leading-relaxed mb-4 last:mb-0 text-sm md:text-base">
+                  {para}
+                </p>
+              ))}
           </div>
         </div>
 
@@ -95,12 +101,14 @@ export default function Stories() {
               <p className="font-bold text-sm text-primary mb-1">
                 {language === "ar" ? "العبرة" : "Moral of the Story"}
               </p>
-              <p className="text-sm text-muted-foreground leading-relaxed">{(selected.moral as Record<string, string>)[language] ?? selected.moral.en}</p>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                {(selected.moral as Record<string, string>)[language] ?? selected.moral.en}
+              </p>
             </div>
           </div>
         </div>
 
-        {/* Prev / Next nav */}
+        {/* Prev / Next */}
         <div className="flex gap-3">
           {selectedIdx > 0 && (
             <button
@@ -125,97 +133,134 @@ export default function Stories() {
     );
   }
 
+  /* ─── Story list view ─── */
   return (
     <div className="p-4 md:p-8 max-w-4xl mx-auto w-full pb-24" dir={isDir}>
-      <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
+      <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-1">
         {language === "ar" ? "القصص الإسلامية" : "Islamic Stories"}
       </h1>
-      <p className="text-muted-foreground mb-8 text-sm">
+      <p className="text-muted-foreground mb-6 text-sm">
         {language === "ar"
           ? "قصص النبي ﷺ والصحابة والأنبياء وتاريخ الإسلام"
           : "Stories of the Prophet ﷺ, Companions, Prophets & Islamic History"}
       </p>
 
-      {/* Category filter */}
-      <div className="flex gap-2 mb-8 overflow-x-auto pb-2 scrollbar-none">
-        {STORY_CATEGORIES.map(cat => (
-          <button
-            key={cat.id}
-            onClick={() => setCategory(cat.id as StoryCategory)}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-semibold whitespace-nowrap transition-all flex-shrink-0 ${
-              category === cat.id
-                ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
-                : "bg-card text-muted-foreground hover:bg-white/10 border border-border/40"
-            }`}
-          >
-            <span>{CATEGORY_ICON[cat.id]}</span>
-            {(cat as Record<string, string>)[language] ?? cat.label}
-            <span className={`text-xs rounded-full px-2 py-0.5 ${
-              category === cat.id ? "bg-white/20" : "bg-white/10"
-            }`}>
-              {cat.id === "all" ? ISLAMIC_STORIES.length : ISLAMIC_STORIES.filter(s => s.category === cat.id).length}
-            </span>
-          </button>
-        ))}
-      </div>
+      {/* ── Category filter row ── */}
+      <div
+        className="flex gap-2.5 mb-8 overflow-x-auto pb-2"
+        style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+      >
+        {STORY_CATEGORIES.map((cat) => {
+          const meta = CAT_META[cat.id] ?? CAT_META.all;
+          const isActive = category === cat.id;
+          const count = cat.id === "all"
+            ? ISLAMIC_STORIES.length
+            : ISLAMIC_STORIES.filter(s => s.category === cat.id).length;
+          const label = (cat as Record<string, string>)[language] ?? cat.label;
 
-      {/* Story grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {filtered.map(story => (
-          <button
-            key={story.id}
-            onClick={() => setSelectedId(story.id)}
-            className="glass-card rounded-2xl overflow-hidden text-left hover:border-primary/30 border border-transparent transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/10 active:scale-[0.99] group"
-          >
-            {/* Emoji banner */}
-            {story.emoji && (
-              <div
-                className="h-20 flex items-center justify-center text-5xl select-none"
-                style={{ background: story.bg || "linear-gradient(135deg, #1a472a 0%, #2d6a4f 100%)" }}
+          return (
+            <button
+              key={cat.id}
+              onClick={() => setCategory(cat.id as StoryCategory)}
+              className={`
+                flex items-center gap-2 px-4 py-2.5 rounded-2xl text-sm font-semibold whitespace-nowrap flex-shrink-0
+                transition-all duration-200 shadow-md
+                ${isActive
+                  ? `${meta.activeClass} shadow-lg scale-[1.03]`
+                  : "bg-card/80 text-muted-foreground hover:bg-white/10 border border-border/40 hover:border-border/60 hover:scale-[1.01]"
+                }
+              `}
+            >
+              <span className="text-base leading-none">{meta.emoji}</span>
+              <span>{label}</span>
+              <span
+                className={`
+                  text-xs font-bold rounded-full px-2 py-0.5 min-w-[1.5rem] text-center
+                  ${isActive ? meta.badgeClass : "bg-white/10 text-muted-foreground"}
+                `}
               >
-                {story.emoji}
-              </div>
-            )}
-            <div className="p-5">
-            {/* Category + read time */}
-            <div className="flex items-center justify-between mb-3">
-              <span className="flex items-center gap-1.5 text-xs font-medium text-primary">
-                <span>{CATEGORY_ICON[story.category]}</span>
-                {(() => { const cat = STORY_CATEGORIES.find(c => c.id === story.category); return cat ? ((cat as Record<string, string>)[language] ?? cat.label) : ""; })()}
+                {count}
               </span>
-              <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                <Clock className="w-3 h-3" />
-                {story.readingTime} {language === "ar" ? "دقائق" : "min"}
-              </span>
-            </div>
-
-            {/* Title */}
-            <h3 className="font-bold text-base text-foreground mb-1 group-hover:text-primary transition-colors">
-              {(story.title as Record<string, string>)[language] ?? story.title.en}
-            </h3>
-            {language !== "ar" && (
-              <p className="text-sm text-muted-foreground font-quran mb-3" dir="rtl">{story.title.ar}</p>
-            )}
-
-            {/* Arabic opening snippet */}
-            <p className="text-xs text-primary/70 font-quran border-r-2 border-primary/30 pr-3 mb-3" dir="rtl">
-              {story.arabicOpening}
-            </p>
-
-            {/* Content preview */}
-            <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">
-              {((story.content as Record<string, string>)[language] ?? story.content.en).split("\n\n")[0].slice(0, 120)}…
-            </p>
-
-            <div className="flex items-center gap-1.5 mt-3 text-xs text-primary font-semibold">
-              <BookOpen className="w-3.5 h-3.5" />
-              {language === "ar" ? "اقرأ القصة" : "Read Story"}
-              <ChevronRight className="w-3.5 h-3.5" />
-            </div>
-            </div>
-          </button>
-        ))}
+            </button>
+          );
+        })}
       </div>
+
+      {/* ── Story grid ── */}
+      {filtered.length === 0 ? (
+        <div className="text-center py-20 text-muted-foreground">
+          {language === "ar" ? "لا توجد قصص في هذه الفئة" : "No stories in this category yet."}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {filtered.map((story) => {
+            const meta = CAT_META[story.category] ?? CAT_META.all;
+            return (
+              <button
+                key={story.id}
+                onClick={() => setSelectedId(story.id)}
+                className="glass-card rounded-2xl overflow-hidden text-left hover:border-primary/30 border border-transparent transition-all duration-200 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/10 active:scale-[0.99] group"
+              >
+                {/* Emoji banner */}
+                <div
+                  className="h-24 flex items-center justify-center text-5xl select-none"
+                  style={{ background: story.bg || "linear-gradient(135deg,#1a472a 0%,#2d6a4f 100%)" }}
+                >
+                  {story.emoji ?? meta.emoji}
+                </div>
+
+                <div className="p-5">
+                  {/* Category chip + read time */}
+                  <div className="flex items-center justify-between mb-3">
+                    <span
+                      className="flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full"
+                      style={{ background: `${meta.color}22`, color: meta.color }}
+                    >
+                      {meta.emoji}
+                      {(() => {
+                        const cat = STORY_CATEGORIES.find(c => c.id === story.category);
+                        return cat ? ((cat as Record<string, string>)[language] ?? cat.label) : "";
+                      })()}
+                    </span>
+                    <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                      <Clock className="w-3 h-3" />
+                      {story.readingTime} {language === "ar" ? "دقائق" : "min"}
+                    </span>
+                  </div>
+
+                  {/* Title */}
+                  <h3 className="font-bold text-base text-foreground mb-1 group-hover:text-primary transition-colors">
+                    {(story.title as Record<string, string>)[language] ?? story.title.en}
+                  </h3>
+                  {language !== "ar" && (
+                    <p className="text-sm text-muted-foreground font-quran mb-3" dir="rtl">
+                      {story.title.ar}
+                    </p>
+                  )}
+
+                  {/* Arabic snippet */}
+                  <p className="text-xs text-primary/70 font-quran border-r-2 border-primary/30 pr-3 mb-3 line-clamp-1" dir="rtl">
+                    {story.arabicOpening}
+                  </p>
+
+                  {/* Preview */}
+                  <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">
+                    {((story.content as Record<string, string>)[language] ?? story.content.en)
+                      .split("\n\n")[0]
+                      .slice(0, 120)}…
+                  </p>
+
+                  <div className="flex items-center gap-1.5 mt-3 text-xs text-primary font-semibold">
+                    <BookOpen className="w-3.5 h-3.5" />
+                    {language === "ar" ? "اقرأ القصة" : "Read Story"}
+                    <ChevronRight className="w-3.5 h-3.5" />
+                  </div>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
