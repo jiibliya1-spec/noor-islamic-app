@@ -105,127 +105,200 @@ interface QiblaCompassProps {
 }
 
 function QiblaCompass({ qiblaAngle, deviceHeading, isLive, t }: QiblaCompassProps) {
-  // On mobile with live compass: needle tracks deviceHeading so user aligns it with Kaaba.
-  // On desktop / no gyro: needle is frozen at qiblaAngle — it already points at the Kaaba.
-  const needleRotation = deviceHeading ?? qiblaAngle;
-  const bearing        = Math.round(((qiblaAngle % 360) + 360) % 360);
+  const bearing = Math.round(((qiblaAngle % 360) + 360) % 360);
+  const [showQr, setShowQr] = useState(false);
+  const appUrl = typeof window !== "undefined" ? window.location.href : "";
 
-  // Kaaba position on the compass face (fixed, at qiblaAngle from North)
-  const kaabaRad = (qiblaAngle - 90) * (Math.PI / 180);
-  const kaabaR   = 82;
-  const kaabaX   = 120 + kaabaR * Math.cos(kaabaRad);
-  const kaabaY   = 120 + kaabaR * Math.sin(kaabaRad);
+  // ── Mobile / live compass ─────────────────────────────────────────────────
+  if (isLive) {
+    const needleRotation = deviceHeading ?? qiblaAngle;
+
+    // Kaaba position on the face at qiblaAngle from North (fixed)
+    const kaabaRad = (qiblaAngle - 90) * (Math.PI / 180);
+    const kaabaR   = 82;
+    const kaabaX   = 120 + kaabaR * Math.cos(kaabaRad);
+    const kaabaY   = 120 + kaabaR * Math.sin(kaabaRad);
+
+    return (
+      <div className="flex flex-col items-center gap-5">
+        <div className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border bg-emerald-500/15 border-emerald-500/30 text-emerald-400">
+          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+          {t("liveCompass")}
+        </div>
+
+        <div className="relative w-64 h-64 select-none">
+          <svg viewBox="0 0 240 240" className="w-full h-full" aria-label="Qibla live compass">
+            <defs>
+              <radialGradient id="dialBg" cx="40%" cy="30%">
+                <stop offset="0%"   stopColor="hsl(156,40%,14%)" />
+                <stop offset="100%" stopColor="hsl(156,50%,7%)"  />
+              </radialGradient>
+              <radialGradient id="outerGlow" cx="50%" cy="50%" r="50%">
+                <stop offset="78%"  stopColor="transparent" />
+                <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity="0.15" />
+              </radialGradient>
+            </defs>
+            <circle cx="120" cy="120" r="118" fill="url(#outerGlow)" />
+            <circle cx="120" cy="120" r="108" fill="url(#dialBg)" stroke="rgba(255,255,255,0.10)" strokeWidth="1.5" />
+            {Array.from({ length: 72 }).map((_, i) => {
+              const deg = i * 5;
+              const isCardinal = deg % 90 === 0;
+              const isMajor    = deg % 30 === 0;
+              const rad = (deg - 90) * (Math.PI / 180);
+              const r1 = 100, r2 = isCardinal ? 78 : isMajor ? 86 : 93;
+              return (
+                <line key={i}
+                  x1={120 + r1 * Math.cos(rad)} y1={120 + r1 * Math.sin(rad)}
+                  x2={120 + r2 * Math.cos(rad)} y2={120 + r2 * Math.sin(rad)}
+                  stroke={isCardinal ? "rgba(255,255,255,0.50)" : isMajor ? "rgba(255,255,255,0.22)" : "rgba(255,255,255,0.07)"}
+                  strokeWidth={isCardinal ? 2 : isMajor ? 1.5 : 1}
+                />
+              );
+            })}
+            <text x="120" y="30"  textAnchor="middle" dominantBaseline="middle" fill="#ef4444"                fontSize="16" fontWeight="800" fontFamily="Inter,system-ui,sans-serif">N</text>
+            <text x="120" y="212" textAnchor="middle" dominantBaseline="middle" fill="rgba(255,255,255,0.40)" fontSize="13" fontWeight="600" fontFamily="Inter,system-ui,sans-serif">S</text>
+            <text x="213" y="121" textAnchor="middle" dominantBaseline="middle" fill="rgba(255,255,255,0.40)" fontSize="13" fontWeight="600" fontFamily="Inter,system-ui,sans-serif">E</text>
+            <text x="27"  y="121" textAnchor="middle" dominantBaseline="middle" fill="rgba(255,255,255,0.40)" fontSize="13" fontWeight="600" fontFamily="Inter,system-ui,sans-serif">W</text>
+            <circle cx={kaabaX} cy={kaabaY} r="13" fill="hsl(var(--primary))" opacity="0.18" />
+            <rect x={kaabaX - 9} y={kaabaY - 8} width="18" height="15" rx="2" fill="#0d0d0d" stroke="hsl(var(--primary))" strokeWidth="1.6" />
+            <rect x={kaabaX - 9} y={kaabaY - 2} width="18" height="4" fill="hsl(var(--primary))" opacity="0.75" />
+            <path d={`M${kaabaX-3},${kaabaY+7} Q${kaabaX},${kaabaY+2} ${kaabaX+3},${kaabaY+7} L${kaabaX+3},${kaabaY+8} L${kaabaX-3},${kaabaY+8} Z`} fill="hsl(var(--primary))" opacity="0.55" />
+            <g style={{ transform: `rotate(${needleRotation}deg)`, transformOrigin: "120px 120px", transition: "transform 0.10s linear" }}>
+              <ellipse cx="120" cy="50" rx="5" ry="9" fill="hsl(var(--primary))" opacity="0.22" />
+              <polygon points="120,28 127,82 113,82" fill="hsl(var(--primary))" opacity="0.95" />
+              <polygon points="120,212 125,162 115,162" fill="rgba(255,255,255,0.15)" />
+              <circle cx="120" cy="120" r="6" fill="hsl(var(--background))" stroke="hsl(var(--primary))" strokeWidth="2" />
+              <circle cx="120" cy="120" r="3" fill="hsl(var(--primary))" />
+            </g>
+          </svg>
+        </div>
+
+        <div className="text-center">
+          <p className="text-5xl font-bold text-primary font-mono leading-none">{bearing}°</p>
+          <p className="text-xs text-muted-foreground mt-2 max-w-[240px] leading-relaxed">{t("rotateToAlign")}</p>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Desktop / no gyro — compass rose with fixed Qibla arrow ──────────────
+  const qr = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(appUrl)}&bgcolor=0d1a0f&color=c9a84c&qzone=2`;
 
   return (
-    <div className="flex flex-col items-center gap-5">
-      {/* Status badge */}
-      <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border ${
-        isLive
-          ? "bg-emerald-500/15 border-emerald-500/30 text-emerald-400"
-          : "bg-primary/15 border-primary/25 text-primary"
-      }`}>
-        <span className={`w-2 h-2 rounded-full ${isLive ? "bg-emerald-400 animate-pulse" : "bg-primary"}`} />
-        {isLive ? t("liveCompass") : t("qiblaDirection")}
+    <div className="flex flex-col items-center gap-4 w-full">
+      {/* Badge */}
+      <div className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border bg-primary/15 border-primary/25 text-primary">
+        <span className="w-2 h-2 rounded-full bg-primary" />
+        {t("qiblaDirection")}
       </div>
 
-      {/* Compass */}
+      {/* Title */}
+      <p className="text-base font-semibold text-foreground text-center leading-snug">
+        {t("qiblaDesktopPre")}{" "}
+        <span className="text-primary font-bold font-mono text-xl">{bearing}°</span>{" "}
+        {t("qiblaDesktopSuf")}
+      </p>
+
+      {/* Compass rose — North fixed at top, gold arrow at bearing */}
       <div className="relative w-64 h-64 select-none">
-        <svg viewBox="0 0 240 240" className="w-full h-full" aria-label="Qibla compass">
+        <svg viewBox="0 0 240 240" className="w-full h-full" aria-label="Qibla direction compass">
           <defs>
-            <radialGradient id="dialBg" cx="40%" cy="30%">
+            <radialGradient id="roseBg" cx="40%" cy="30%">
               <stop offset="0%"   stopColor="hsl(156,40%,14%)" />
               <stop offset="100%" stopColor="hsl(156,50%,7%)"  />
             </radialGradient>
-            <radialGradient id="outerGlow" cx="50%" cy="50%" r="50%">
-              <stop offset="78%"  stopColor="transparent" />
-              <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity="0.15" />
-            </radialGradient>
           </defs>
-
           {/* Outer glow */}
-          <circle cx="120" cy="120" r="118" fill="url(#outerGlow)" />
+          <circle cx="120" cy="120" r="118" fill="hsl(var(--primary))" opacity="0.07" />
           {/* Face */}
-          <circle cx="120" cy="120" r="108"
-            fill="url(#dialBg)" stroke="rgba(255,255,255,0.10)" strokeWidth="1.5" />
+          <circle cx="120" cy="120" r="108" fill="url(#roseBg)" stroke="rgba(255,255,255,0.10)" strokeWidth="1.5" />
 
-          {/* ── STATIC compass face (never rotates) ── */}
-          {/* Tick marks every 5° */}
-          {Array.from({ length: 72 }).map((_, i) => {
-            const deg = i * 5;
-            const isCardinal = deg % 90 === 0;
-            const isMajor    = deg % 30 === 0;
+          {/* 16 tick marks */}
+          {Array.from({ length: 16 }).map((_, i) => {
+            const deg = i * 22.5;
+            const isCard = deg % 90 === 0;
             const rad = (deg - 90) * (Math.PI / 180);
-            const r1 = 100, r2 = isCardinal ? 78 : isMajor ? 86 : 93;
+            const r1 = 100, r2 = isCard ? 76 : 90;
             return (
               <line key={i}
                 x1={120 + r1 * Math.cos(rad)} y1={120 + r1 * Math.sin(rad)}
                 x2={120 + r2 * Math.cos(rad)} y2={120 + r2 * Math.sin(rad)}
-                stroke={isCardinal ? "rgba(255,255,255,0.50)" : isMajor ? "rgba(255,255,255,0.22)" : "rgba(255,255,255,0.07)"}
-                strokeWidth={isCardinal ? 2 : isMajor ? 1.5 : 1}
+                stroke={isCard ? "rgba(255,255,255,0.40)" : "rgba(255,255,255,0.12)"}
+                strokeWidth={isCard ? 2 : 1}
               />
             );
           })}
+
           {/* Cardinal labels */}
-          <text x="120" y="30"  textAnchor="middle" dominantBaseline="middle" fill="#ef4444"                fontSize="16" fontWeight="800" fontFamily="Inter,system-ui,sans-serif">N</text>
-          <text x="120" y="212" textAnchor="middle" dominantBaseline="middle" fill="rgba(255,255,255,0.40)" fontSize="13" fontWeight="600" fontFamily="Inter,system-ui,sans-serif">S</text>
-          <text x="213" y="121" textAnchor="middle" dominantBaseline="middle" fill="rgba(255,255,255,0.40)" fontSize="13" fontWeight="600" fontFamily="Inter,system-ui,sans-serif">E</text>
-          <text x="27"  y="121" textAnchor="middle" dominantBaseline="middle" fill="rgba(255,255,255,0.40)" fontSize="13" fontWeight="600" fontFamily="Inter,system-ui,sans-serif">W</text>
+          <text x="120" y="30"  textAnchor="middle" dominantBaseline="middle" fill="#ef4444"                fontSize="17" fontWeight="800" fontFamily="Inter,system-ui,sans-serif">N</text>
+          <text x="120" y="212" textAnchor="middle" dominantBaseline="middle" fill="rgba(255,255,255,0.35)" fontSize="14" fontWeight="600" fontFamily="Inter,system-ui,sans-serif">S</text>
+          <text x="213" y="121" textAnchor="middle" dominantBaseline="middle" fill="rgba(255,255,255,0.35)" fontSize="14" fontWeight="600" fontFamily="Inter,system-ui,sans-serif">E</text>
+          <text x="27"  y="121" textAnchor="middle" dominantBaseline="middle" fill="rgba(255,255,255,0.35)" fontSize="14" fontWeight="600" fontFamily="Inter,system-ui,sans-serif">W</text>
 
-          {/* ── Kaaba icon ON the face at qibla bearing (FIXED) ── */}
-          {/* Glow halo */}
-          <circle cx={kaabaX} cy={kaabaY} r="13"
-            fill="hsl(var(--primary))" opacity="0.18" />
-          {/* Cube body */}
-          <rect x={kaabaX - 9} y={kaabaY - 8} width="18" height="15" rx="2"
-            fill="#0d0d0d" stroke="hsl(var(--primary))" strokeWidth="1.6" />
-          {/* Kiswah gold band */}
-          <rect x={kaabaX - 9} y={kaabaY - 2} width="18" height="4"
-            fill="hsl(var(--primary))" opacity="0.75" />
-          {/* Door */}
-          <path d={`M${kaabaX - 3},${kaabaY + 7} Q${kaabaX},${kaabaY + 2} ${kaabaX + 3},${kaabaY + 7} L${kaabaX + 3},${kaabaY + 8} L${kaabaX - 3},${kaabaY + 8} Z`}
-            fill="hsl(var(--primary))" opacity="0.55" />
+          {/* Degree arc label */}
+          <text x="120" y="145" textAnchor="middle" dominantBaseline="middle"
+            fill="rgba(255,255,255,0.18)" fontSize="11" fontFamily="Inter,system-ui,sans-serif">
+            {bearing}°
+          </text>
 
-          {/* ── NEEDLE — rotates with phone heading ── */}
-          <g style={{
-            transform: `rotate(${needleRotation}deg)`,
-            transformOrigin: "120px 120px",
-            transition: isLive ? "transform 0.10s linear" : "none",
-          }}>
-            {/* Tip glow */}
-            <ellipse cx="120" cy="50" rx="5" ry="9" fill="hsl(var(--primary))" opacity="0.22" />
-            {/* Gold tip (up = direction phone top is pointing) */}
-            <polygon points="120,28 127,82 113,82" fill="hsl(var(--primary))" opacity="0.95" />
-            {/* Tail */}
-            <polygon points="120,212 125,162 115,162" fill="rgba(255,255,255,0.15)" />
-            {/* Center hub */}
-            <circle cx="120" cy="120" r="6"
-              fill="hsl(var(--background))" stroke="hsl(var(--primary))" strokeWidth="2" />
-            <circle cx="120" cy="120" r="3" fill="hsl(var(--primary))" />
+          {/* Center pivot */}
+          <circle cx="120" cy="120" r="5" fill="hsl(var(--background))" stroke="hsl(var(--primary))" strokeWidth="2" />
+
+          {/* ── Gold Qibla arrow — rotated by bearing from North ── */}
+          <g style={{ transform: `rotate(${bearing}deg)`, transformOrigin: "120px 120px" }}>
+            {/* Shaft glow */}
+            <line x1="120" y1="120" x2="120" y2="36"
+              stroke="hsl(var(--primary))" strokeWidth="8" strokeLinecap="round" opacity="0.10" />
+            {/* Shaft */}
+            <line x1="120" y1="120" x2="120" y2="44"
+              stroke="hsl(var(--primary))" strokeWidth="2.5" strokeLinecap="round" opacity="0.85" />
+            {/* Arrowhead */}
+            <polygon points="120,18 110,46 130,46" fill="hsl(var(--primary))" opacity="0.95" />
+            {/* Kaaba icon at tip */}
+            <rect x="111" y="14" width="18" height="14" rx="2"
+              fill="#0d0d0d" stroke="hsl(var(--primary))" strokeWidth="1.5" />
+            <rect x="111" y="19" width="18" height="3.5"
+              fill="hsl(var(--primary))" opacity="0.75" />
+            <rect x="116" y="22" width="8" height="6" rx="1"
+              fill="hsl(var(--primary))" opacity="0.45" />
           </g>
         </svg>
       </div>
 
-      {/* Bearing card */}
-      {isLive ? (
-        /* Mobile live mode — minimal hint */
-        <div className="text-center">
-          <p className="text-5xl font-bold text-primary font-mono leading-none">{bearing}°</p>
-          <p className="text-xs text-muted-foreground mt-2 max-w-[240px] leading-relaxed">
-            {t("rotateToAlign")}
-          </p>
-        </div>
-      ) : (
-        /* Desktop / no gyro — clear static direction card */
-        <div className="w-full max-w-xs bg-primary/10 border border-primary/25 rounded-2xl px-5 py-4 text-center">
-          <p className="text-4xl font-bold text-primary font-mono leading-none mb-1">{bearing}°</p>
-          <p className="text-sm font-semibold text-foreground mt-2">
-            {t("qiblaIs")} {bearing}° {t("fromNorth")}
-          </p>
-          <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-            {t("needlePointsMakkah")}
-          </p>
-        </div>
-      )}
+      {/* Instruction card */}
+      <div className="w-full max-w-sm bg-card border border-border rounded-2xl px-4 py-3 text-center">
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          {t("findNorthPre")}{" "}
+          <span className="text-primary font-bold font-mono">{bearing}°</span>{" "}
+          {t("findNorthSuf")}
+        </p>
+      </div>
+
+      {/* QR code section */}
+      <div className="flex flex-col items-center gap-2 w-full max-w-sm">
+        <button
+          onClick={() => setShowQr(q => !q)}
+          className="w-full flex items-center justify-center gap-2 bg-primary/10 hover:bg-primary/20 border border-primary/30 text-primary text-sm font-semibold rounded-xl px-4 py-2.5 transition-colors"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="2" y="2" width="8" height="8" rx="1"/><rect x="14" y="2" width="8" height="8" rx="1"/>
+            <rect x="2" y="14" width="8" height="8" rx="1"/><rect x="14" y="17" width="3" height="3"/>
+            <rect x="19" y="14" width="3" height="3"/><rect x="14" y="14" width="3" height="1"/>
+          </svg>
+          {t("openOnPhone")}
+        </button>
+        {showQr && (
+          <div className="flex flex-col items-center gap-1.5 pt-1">
+            <img
+              src={qr}
+              alt="QR code"
+              width={140} height={140}
+              className="rounded-xl border border-primary/20"
+            />
+            <p className="text-xs text-muted-foreground">{t("scanQr")}</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

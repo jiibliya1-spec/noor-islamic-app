@@ -32,6 +32,14 @@ export const translations: Record<string, Record<Language, string>> = {
   needlePointsMakkah: { en: "The needle points toward Makkah", ar: "السهم يشير نحو مكة", fr: "L'aiguille pointe vers La Mecque", de: "Die Nadel zeigt nach Mekka" },
   enableCompassLive: { en: "Enable compass for live tracking", ar: "فعّل البوصلة للتتبع المباشر", fr: "Activez la boussole pour le suivi en direct", de: "Kompass für Live-Tracking aktivieren" },
   qiblaIs:          { en: "Qibla is",         ar: "القبلة على بُعد",   fr: "La Qibla est à",      de: "Qibla liegt bei" },
+
+  // Desktop static Qibla panel
+  qiblaDesktopPre:  { en: "Qibla is",         ar: "القبلة تبعد",       fr: "La Qibla est à",      de: "Qibla liegt bei" },
+  qiblaDesktopSuf:  { en: "from True North",  ar: "من الشمال الحقيقي", fr: "du Nord géographique", de: "vom wahren Norden" },
+  findNorthPre:     { en: "Use your phone's compass or look at the sun to find North, then turn", ar: "استخدم بوصلة هاتفك أو انظر إلى الشمس لتحديد اتجاه الشمال، ثم اتجه", fr: "Utilisez la boussole de votre téléphone ou le soleil pour trouver le Nord, puis tournez", de: "Nutzen Sie Ihren Handykompass oder die Sonne um Norden zu finden, dann drehen Sie sich" },
+  findNorthSuf:     { en: "clockwise",         ar: "نحو اليمين",         fr: "vers la droite",       de: "im Uhrzeigersinn" },
+  openOnPhone:      { en: "Open on your phone for the live compass", ar: "افتح على هاتفك للحصول على البوصلة الحية", fr: "Ouvrez sur votre téléphone pour la boussole en direct", de: "Auf dem Telefon für Live-Kompass öffnen" },
+  scanQr:           { en: "Scan to open on phone", ar: "امسح للفتح على الهاتف", fr: "Scanner pour ouvrir sur téléphone", de: "Scannen zum Öffnen auf dem Telefon" },
   nextPrayer:       { en: "Next Prayer",       ar: "الصلاة القادمة",   fr: "Prochaine Prière",    de: "Nächstes Gebet" },
   currentPrayer:    { en: "Current Prayer",   ar: "الصلاة الحالية",    fr: "Prière actuelle",     de: "Aktuelles Gebet" },
   cityCountryPlaceholder: { en: "City, Country (e.g. Berlin, DE)", ar: "المدينة، البلد (مثال: Berlin, DE)", fr: "Ville, Pays (ex: Paris, FR)", de: "Stadt, Land (z.B. Berlin, DE)" },
