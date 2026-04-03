@@ -11,6 +11,7 @@ const CATEGORY_ICON: Record<string, string> = {
   companions: "🌙",
   prophets: "⭐",
   history: "📜",
+  moral: "💡",
 };
 
 export default function Stories() {
@@ -35,31 +36,41 @@ export default function Stories() {
           {language === "ar" ? "العودة إلى القصص" : "Back to Stories"}
         </button>
 
-        {/* Story header */}
-        <div className="glass-card rounded-3xl p-6 md:p-8 mb-5">
-          <div className="flex items-start justify-between gap-4 mb-4">
-            <div>
-              <span className="text-xs font-medium text-primary uppercase tracking-wider mb-2 block">
-                {(() => { const cat = STORY_CATEGORIES.find(c => c.id === selected.category); return cat ? ((cat as Record<string, string>)[language] ?? cat.label) : ""; })()}
-              </span>
-              <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-1">
-                {(selected.title as Record<string, string>)[language] ?? selected.title.en}
-              </h1>
-              {language !== "ar" && (
-                <p className="text-base text-muted-foreground font-quran" dir="rtl">{selected.title.ar}</p>
-              )}
+        {/* Story hero — illustrated gradient background */}
+        <div
+          className="rounded-3xl mb-5 overflow-hidden shadow-lg"
+          style={{ background: selected.bg || "linear-gradient(135deg, #1a472a 0%, #2d6a4f 100%)" }}
+        >
+          {selected.emoji && (
+            <div className="flex justify-center pt-8 pb-2 text-7xl select-none">
+              {selected.emoji}
             </div>
-            <div className="flex items-center gap-1.5 bg-card px-3 py-1.5 rounded-full text-xs text-muted-foreground shrink-0 border border-border/40">
-              <Clock className="w-3 h-3" />
-              {selected.readingTime} {language === "ar" ? "دقائق" : "min"}
+          )}
+          <div className="p-6 md:p-8">
+            <div className="flex items-start justify-between gap-4 mb-4">
+              <div>
+                <span className="text-xs font-medium text-white/70 uppercase tracking-wider mb-2 block">
+                  {(() => { const cat = STORY_CATEGORIES.find(c => c.id === selected.category); return cat ? ((cat as Record<string, string>)[language] ?? cat.label) : ""; })()}
+                </span>
+                <h1 className="text-2xl md:text-3xl font-bold text-white mb-1">
+                  {(selected.title as Record<string, string>)[language] ?? selected.title.en}
+                </h1>
+                {language !== "ar" && (
+                  <p className="text-base text-white/70 font-quran" dir="rtl">{selected.title.ar}</p>
+                )}
+              </div>
+              <div className="flex items-center gap-1.5 bg-black/20 px-3 py-1.5 rounded-full text-xs text-white/80 shrink-0">
+                <Clock className="w-3 h-3" />
+                {selected.readingTime} {language === "ar" ? "دقائق" : "min"}
+              </div>
             </div>
-          </div>
 
-          {/* Arabic opening quote */}
-          <div className="bg-primary/10 border border-primary/20 rounded-2xl p-4 text-center mb-0">
-            <p className="font-quran text-xl text-primary leading-relaxed" dir="rtl">
-              {selected.arabicOpening}
-            </p>
+            {/* Arabic opening quote */}
+            <div className="bg-white/10 border border-white/20 rounded-2xl p-4 text-center">
+              <p className="font-quran text-xl text-white leading-relaxed" dir="rtl">
+                {selected.arabicOpening}
+              </p>
+            </div>
           </div>
         </div>
 
@@ -154,8 +165,18 @@ export default function Stories() {
           <button
             key={story.id}
             onClick={() => setSelectedId(story.id)}
-            className="glass-card rounded-2xl p-5 text-left hover:border-primary/30 border border-transparent transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/10 active:scale-[0.99] group"
+            className="glass-card rounded-2xl overflow-hidden text-left hover:border-primary/30 border border-transparent transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/10 active:scale-[0.99] group"
           >
+            {/* Emoji banner */}
+            {story.emoji && (
+              <div
+                className="h-20 flex items-center justify-center text-5xl select-none"
+                style={{ background: story.bg || "linear-gradient(135deg, #1a472a 0%, #2d6a4f 100%)" }}
+              >
+                {story.emoji}
+              </div>
+            )}
+            <div className="p-5">
             {/* Category + read time */}
             <div className="flex items-center justify-between mb-3">
               <span className="flex items-center gap-1.5 text-xs font-medium text-primary">
@@ -190,6 +211,7 @@ export default function Stories() {
               <BookOpen className="w-3.5 h-3.5" />
               {language === "ar" ? "اقرأ القصة" : "Read Story"}
               <ChevronRight className="w-3.5 h-3.5" />
+            </div>
             </div>
           </button>
         ))}

@@ -4,7 +4,7 @@ import { useAuth } from "@/lib/auth";
 import {
   Home, BookOpen, Clock, Heart, CalendarDays,
   MapPin, LayoutDashboard, Settings, LogIn, LogOut,
-  HelpCircle, BookMarked
+  HelpCircle, BookMarked, Mic2
 } from "lucide-react";
 import {
   Sidebar,
@@ -33,9 +33,10 @@ export function AppSidebar() {
     { title: t("quran"), url: "/quran", icon: BookOpen },
     { title: t("prayerTimes"), url: "/prayer-times", icon: Clock },
     { title: t("adhkar"), url: "/adhkar", icon: Heart },
-    { title: t("quiz"), url: "/quiz", icon: HelpCircle },
-    { title: t("stories"), url: "/stories", icon: BookMarked },
-    { title: t("calendar"), url: "/calendar", icon: CalendarDays },
+    { title: t("quiz"),    url: "/quiz",    icon: HelpCircle  },
+    { title: t("stories"), url: "/stories", icon: BookMarked  },
+    { title: t("tajweed"), url: "/tajweed", icon: Mic2        },
+    { title: t("calendar"),url: "/calendar",icon: CalendarDays },
     { title: t("mosques"), url: "/mosques", icon: MapPin },
     { title: t("dashboard"), url: "/dashboard", icon: LayoutDashboard, auth: true },
     { title: t("settings"), url: "/settings", icon: Settings },

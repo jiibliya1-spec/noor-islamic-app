@@ -19,12 +19,14 @@ import PrayerTimes from "@/pages/prayer-times";
 import Adhkar from "@/pages/adhkar";
 import Quiz from "@/pages/quiz";
 import Stories from "@/pages/stories";
+import Tajweed from "@/pages/tajweed";
 import Mosques from "@/pages/mosques";
 import IslamicCalendar from "@/pages/calendar";
 import Dashboard from "@/pages/dashboard";
 import Settings from "@/pages/settings";
 import Login from "@/pages/login";
 import Register from "@/pages/register";
+import { requestAdhanPermission } from "@/hooks/use-adhan-alarm";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -38,6 +40,7 @@ function AppLayout() {
   // Bump daily streak once on every app load (e.g. opening the app counts as activity)
   useEffect(() => {
     bumpStreak();
+    requestAdhanPermission();
   }, []);
 
   return (
@@ -63,6 +66,7 @@ function AppLayout() {
               <Route path="/adhkar" component={Adhkar} />
               <Route path="/quiz" component={Quiz} />
               <Route path="/stories" component={Stories} />
+              <Route path="/tajweed" component={Tajweed} />
               <Route path="/calendar" component={IslamicCalendar} />
               <Route path="/mosques" component={Mosques} />
               <Route path="/dashboard" component={Dashboard} />

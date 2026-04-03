@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { usePrayerTimesByCoords, usePrayerTimes } from "@/hooks/use-external-api";
 import { loadPrayerPrefs, savePrayerPrefs } from "@/hooks/use-prayer-prefs";
 import { useDeviceCompass } from "@/hooks/use-device-compass";
+import { useAdhanAlarm } from "@/hooks/use-adhan-alarm";
 import {
   MapPin, Loader2, Compass, Search,
   Sunrise, Sun, Cloud, Sunset, Moon,
@@ -340,6 +341,9 @@ export default function PrayerTimes() {
   const apiError  = coords ? coordError  : cityError;
   const timings   = data?.timings ?? null;
   const timezone: string = data?.meta?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+  // Adhan alarm: plays audio + shows notification when prayer time arrives
+  useAdhanAlarm(timings, language);
 
   useEffect(() => {
     if (coords) setQiblaAngle(calculateQibla(coords.lat, coords.lng));

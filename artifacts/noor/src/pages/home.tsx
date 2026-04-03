@@ -2,9 +2,10 @@ import { useState, useEffect } from "react";
 import { Link } from "wouter";
 import { useI18n } from "@/lib/i18n";
 import { usePrayerTimesByCoords } from "@/hooks/use-external-api";
-import { BookOpen, Clock, Heart, CalendarDays, MapPin, LogIn, Sunrise, Sun, Cloud, Sunset, Moon, HelpCircle, BookMarked } from "lucide-react";
+import { BookOpen, Clock, Heart, CalendarDays, MapPin, LogIn, Sunrise, Sun, Cloud, Sunset, Moon, HelpCircle, BookMarked, Mic2 } from "lucide-react";
 import { format } from "date-fns";
 import { useAuth } from "@/lib/auth";
+import { getVerseOfTheDay } from "@/data/daily-verses";
 
 const PRAYERS = ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"];
 
@@ -34,6 +35,9 @@ export default function Home() {
   const [time, setTime] = useState(new Date());
   const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);
   const { user } = useAuth();
+  const verse = getVerseOfTheDay();
+  type Lang = "en" | "ar" | "fr" | "de";
+  const lang = (["en","ar","fr","de"].includes(language) ? language : "en") as Lang;
 
   useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 1000);
@@ -59,13 +63,14 @@ export default function Home() {
   const dir = language === "ar" ? "rtl" : "ltr";
 
   const quickLinks = [
-    { label: t("quran"),       url: "/quran",         icon: BookOpen  },
-    { label: t("prayerTimes"), url: "/prayer-times",  icon: Clock     },
-    { label: t("adhkar"),      url: "/adhkar",        icon: Heart     },
+    { label: t("quran"),       url: "/quran",         icon: BookOpen   },
+    { label: t("prayerTimes"), url: "/prayer-times",  icon: Clock      },
+    { label: t("adhkar"),      url: "/adhkar",        icon: Heart      },
     { label: t("quiz"),        url: "/quiz",          icon: HelpCircle },
     { label: t("stories"),     url: "/stories",       icon: BookMarked },
+    { label: t("tajweed"),     url: "/tajweed",       icon: Mic2       },
     { label: t("calendar"),    url: "/calendar",      icon: CalendarDays },
-    { label: t("mosques"),     url: "/mosques",       icon: MapPin    },
+    { label: t("mosques"),     url: "/mosques",       icon: MapPin     },
   ];
 
   return (
@@ -148,17 +153,24 @@ export default function Home() {
           </div>
         )}
 
-        {/* Verse of the Day */}
+        {/* Verse of the Day — rotates daily */}
         <div className="glass-card rounded-2xl p-5 relative overflow-hidden">
           <div className="absolute -right-4 -top-6 text-8xl text-white/5 font-serif font-bold select-none">"</div>
           <p className="text-xs text-primary font-semibold tracking-widest uppercase mb-3">{t("verseOfDay")}</p>
           <p className="text-2xl leading-loose font-quran text-foreground mb-3 text-right" dir="rtl">
-            ٱللَّهُ نُورُ ٱلسَّمَـٰوَٰتِ وَٱلْأَرْضِ
+            {verse.arabic}
           </p>
-          <p className="text-muted-foreground text-sm leading-relaxed">
-            "Allah is the Light of the heavens and the earth..."
-          </p>
-          <p className="text-xs font-semibold text-primary mt-2">— Surah An-Nur [24:35]</p>
+          {lang !== "ar" && (
+            <p className="text-muted-foreground text-sm leading-relaxed mb-1">
+              {verse.translation[lang]}
+            </p>
+          )}
+          {lang === "ar" && (
+            <p className="text-xs text-muted-foreground mb-1" dir="rtl">
+              {verse.translation.ar}
+            </p>
+          )}
+          <p className="text-xs font-semibold text-primary">— {verse.surah} [{verse.ref}]</p>
         </div>
 
         {/* Quick nav grid */}

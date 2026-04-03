@@ -18,6 +18,7 @@ export const translations: Record<string, Record<Language, string>> = {
   register:         { en: "Register",         ar: "إنشاء حساب",         fr: "S'inscrire",          de: "Registrieren" },
   quiz:             { en: "Islamic Quiz",     ar: "الاختبار الإسلامي",  fr: "Quiz Islamique",      de: "Islamisches Quiz" },
   stories:          { en: "Islamic Stories",  ar: "القصص الإسلامية",    fr: "Histoires Islamiques", de: "Islamische Geschichten" },
+  tajweed:          { en: "Tajweed",          ar: "التجويد",             fr: "Tajweed",              de: "Tajweed" },
 
   // Prayer Times page
   myLocation:       { en: "My Location",      ar: "موقعي الحالي",      fr: "Ma position",         de: "Mein Standort" },
