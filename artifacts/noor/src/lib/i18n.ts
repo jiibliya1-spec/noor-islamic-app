@@ -110,6 +110,53 @@ export const translations: Record<string, Record<Language, string>> = {
   retry:        { en: "Try again",         ar: "حاول مرة أخرى",      fr: "Réessayer",            de: "Erneut versuchen" },
   back:         { en: "Back",              ar: "رجوع",               fr: "Retour",               de: "Zurück" },
   continueReading: { en: "Continue reading", ar: "متابعة القراءة",   fr: "Continuer la lecture", de: "Weiterlesen" },
+
+  // Quiz UI
+  quizCongrats:       { en: "Congratulations!",           ar: "أحسنت! أكملت جميع الأسئلة",   fr: "Félicitations!",              de: "Glückwunsch!" },
+  quizAllAnswered:    { en: "You've answered all the questions in this category. Start fresh to go through them again!", ar: "لقد أجبت على جميع أسئلة هذه الفئة. هل تريد البدء من جديد؟", fr: "Vous avez répondu à toutes les questions de cette catégorie. Recommencez pour les reparcourir!", de: "Du hast alle Fragen in dieser Kategorie beantwortet. Starte neu, um sie wieder durchzugehen!" },
+  quizChangeCategory: { en: "Change Category",            ar: "تغيير الفئة",                  fr: "Changer de catégorie",        de: "Kategorie wechseln" },
+  quizStartFresh:     { en: "Start Fresh",                ar: "ابدأ من جديد",                 fr: "Recommencer",                 de: "Neu starten" },
+  quizChooseCategory: { en: "Choose a Category",          ar: "اختر الفئة",                   fr: "Choisir une catégorie",       de: "Kategorie wählen" },
+  quizTestKnowledge:  { en: "Test your knowledge — answered questions never repeat until you've seen them all", ar: "اختبر معلوماتك الإسلامية — الأسئلة المجابة لا تتكرر", fr: "Testez vos connaissances — les questions répondues ne se répètent pas", de: "Teste dein Wissen — beantwortete Fragen wiederholen sich nicht" },
+  quizStartButton:    { en: "Start Quiz",                 ar: "ابدأ الاختبار",                fr: "Démarrer le quiz",            de: "Quiz starten" },
+  quizExcellent:      { en: "Excellent!",                 ar: "ممتاز!",                       fr: "Excellent!",                  de: "Ausgezeichnet!" },
+  quizVeryGood:       { en: "Very Good!",                 ar: "جيد جداً!",                    fr: "Très bien!",                  de: "Sehr gut!" },
+  quizKeepLearning:   { en: "Good — Keep Learning!",     ar: "جيد — استمر في التعلم",        fr: "Bien — continuez à apprendre!", de: "Gut — weiter lernen!" },
+  quizTryAgain:       { en: "Try Again!",                 ar: "حاول مرة أخرى",                fr: "Réessayez!",                  de: "Nochmal versuchen!" },
+  quizCorrect:        { en: "Correct",                    ar: "صحيح",                         fr: "Correct",                     de: "Richtig" },
+  quizWrong:          { en: "Wrong",                      ar: "خطأ",                          fr: "Faux",                        de: "Falsch" },
+  quizScoreLabel:     { en: "Score",                      ar: "النتيجة",                      fr: "Score",                       de: "Punkte" },
+  quizExplanation:    { en: "Explanation",                ar: "الشرح",                        fr: "Explication",                 de: "Erklärung" },
+  quizNextQuestion:   { en: "Next Question",              ar: "السؤال التالي",                 fr: "Question suivante",           de: "Nächste Frage" },
+  quizSeeResults:     { en: "See Results",                ar: "عرض النتائج",                  fr: "Voir les résultats",          de: "Ergebnisse sehen" },
+  quizMoreQuestions:  { en: "More Questions",             ar: "أسئلة جديدة",                  fr: "Plus de questions",           de: "Mehr Fragen" },
+  quizAllDone:        { en: "✓ All answered",             ar: "✓ اكتملت جميعها",              fr: "✓ Tout répondu",              de: "✓ Alle beantwortet" },
+  quizRemaining:      { en: "remaining",                  ar: "متبقية",                       fr: "restantes",                   de: "verbleibend" },
+  quizNeverRepeat:    { en: "Questions you answered won't appear again until you've seen them all", ar: "الأسئلة التي أجبت عليها لن تظهر مرة أخرى", fr: "Les questions répondues ne réapparaîtront pas avant que vous les ayez toutes vues", de: "Beantwortete Fragen erscheinen erst wieder, wenn du alle gesehen hast" },
+  quizAnswered:       { en: "You answered",               ar: "أجبت بشكل صحيح على",           fr: "Vous avez répondu",           de: "Du hast beantwortet" },
+  quizOutOf:          { en: "out of",                     ar: "من",                           fr: "sur",                         de: "von" },
+  quizCorrectly:      { en: "correctly",                  ar: "سؤالاً بشكل صحيح",             fr: "correctement",                de: "richtig" },
+  quizQuestionOf:     { en: "Question",                   ar: "السؤال",                       fr: "Question",                    de: "Frage" },
+  quizOf:             { en: "of",                         ar: "من",                           fr: "sur",                         de: "von" },
+
+  // Stories UI
+  backToStories:   { en: "Back to Stories",       ar: "العودة إلى القصص",              fr: "Retour aux histoires",          de: "Zurück zu Geschichten" },
+  moralOfStory:    { en: "Moral of the Story",    ar: "العبرة",                        fr: "La leçon de l'histoire",        de: "Moral der Geschichte" },
+  readStory:       { en: "Read Story",            ar: "اقرأ القصة",                    fr: "Lire l'histoire",               de: "Geschichte lesen" },
+  previousStory:   { en: "Previous",              ar: "القصة السابقة",                 fr: "Précédent",                     de: "Vorherige" },
+  nextStory:       { en: "Next Story",            ar: "القصة التالية",                 fr: "Histoire suivante",             de: "Nächste Geschichte" },
+  noStoriesYet:    { en: "No stories in this category yet.", ar: "لا توجد قصص في هذه الفئة", fr: "Pas encore d'histoires dans cette catégorie.", de: "Noch keine Geschichten in dieser Kategorie." },
+  storiesSubtitle: { en: "Stories of the Prophet ﷺ, Companions, Prophets & Islamic History", ar: "قصص النبي ﷺ والصحابة والأنبياء وتاريخ الإسلام", fr: "Histoires du Prophète ﷺ, des Compagnons, des Prophètes & de l'Histoire Islamique", de: "Geschichten des Propheten ﷺ, der Gefährten, Propheten & Islamischer Geschichte" },
+  minutesLabel:    { en: "min",                   ar: "دقائق",                         fr: "min",                           de: "min" },
+
+  // Adhkar UI
+  adhkarTitle:      { en: "Adhkar & Tasbeeh",                       ar: "الأذكار والتسبيح",     fr: "Adhkar & Tasbeeh",                           de: "Adhkar & Tasbeeh" },
+  adhkarSubtitle:   { en: "Remember Allah and He will remember you", ar: "اذكر الله يذكرك",      fr: "Rappelle-toi d'Allah et Il se souviendra de toi", de: "Gedenke Allahs und Er wird dich gedenken" },
+  adhkarDone:       { en: "Done!",                                   ar: "اكتمل!",               fr: "Terminé!",                                   de: "Fertig!" },
+  adhkarTapCount:   { en: "Tap to count",                            ar: "انقر للعدّ",            fr: "Appuyez pour compter",                       de: "Tippen zum Zählen" },
+  adhkarProgress:   { en: "Progress",                                ar: "التقدم",               fr: "Progression",                                de: "Fortschritt" },
+  adhkarCompleted:  { en: "Completed",                               ar: "اكتمل",                fr: "Complété",                                   de: "Abgeschlossen" },
+  adhkarNext:       { en: "Next",                                    ar: "التالي",               fr: "Suivant",                                    de: "Weiter" },
 };
 
 function applyTheme(theme: Theme) {

@@ -11,7 +11,7 @@ import {
 import { bumpStreak } from "@/hooks/use-streak";
 
 export default function Adhkar() {
-  const { language } = useI18n();
+  const { language, t } = useI18n();
   const [activeCategory, setActiveCategory] = useState("morning");
   const [dhikrIndex, setDhikrIndex] = useState(0);
   const [count, setCount] = useState(0);
@@ -48,7 +48,7 @@ export default function Adhkar() {
       incrementAdhkarTotal();
       bumpStreak();
       toast({
-        title: language === "ar" ? "اكتمل! 🌟" : "Completed! 🌟",
+        title: t("adhkarDone") + " 🌟",
         description: dhikr.arabic,
       });
     }
@@ -83,10 +83,10 @@ export default function Adhkar() {
   return (
     <div className="p-4 md:p-8 max-w-4xl mx-auto min-h-full pb-24" dir={isDir}>
       <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
-        {language === "ar" ? "الأذكار والتسبيح" : "Adhkar & Tasbeeh"}
+        {t("adhkarTitle")}
       </h1>
       <p className="text-muted-foreground mb-8 text-sm">
-        {language === "ar" ? "اذكر الله يذكرك" : "Remember Allah and He will remember you"}
+        {t("adhkarSubtitle")}
       </p>
 
       {/* Category Tabs */}
@@ -127,9 +127,7 @@ export default function Adhkar() {
                 <ChevronLeft className="w-5 h-5" />
               </button>
               <span>
-                {language === "ar"
-                  ? `الذكر ${dhikrIndex + 1} من ${list.length}`
-                  : `${dhikrIndex + 1} / ${list.length}`}
+                {dhikrIndex + 1} / {list.length}
               </span>
               <button
                 onClick={goNext}
@@ -186,7 +184,7 @@ export default function Adhkar() {
                   <div className="flex flex-col items-center">
                     <CheckCircle2 className="w-14 h-14 text-primary mb-1" />
                     <span className="text-primary font-semibold text-sm">
-                      {language === "ar" ? "اكتمل!" : "Done!"}
+                      {t("adhkarDone")}
                     </span>
                   </div>
                 ) : (
@@ -194,7 +192,7 @@ export default function Adhkar() {
                     <span className="text-5xl font-bold text-foreground font-mono">{count}</span>
                     <span className="text-base text-muted-foreground">/ {dhikr.count}</span>
                     <span className="text-[11px] text-muted-foreground/50 mt-1">
-                      {language === "ar" ? "انقر للعدّ" : "Tap to count"}
+                      {t("adhkarTapCount")}
                     </span>
                   </>
                 )}
@@ -215,14 +213,14 @@ export default function Adhkar() {
                 className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-card text-muted-foreground hover:bg-white/10 transition text-sm font-medium border border-border/40"
               >
                 <RotateCcw className="w-4 h-4" />
-                {language === "ar" ? "إعادة" : "Reset"}
+                {t("reset")}
               </button>
               {isComplete && dhikrIndex < list.length - 1 && (
                 <button
                   onClick={goNext}
                   className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/20 transition text-sm font-medium"
                 >
-                  {language === "ar" ? "التالي" : "Next"}
+                  {t("adhkarNext")}
                   <ChevronRight className="w-4 h-4" />
                 </button>
               )}
@@ -233,7 +231,7 @@ export default function Adhkar() {
         {/* Progress list */}
         <div className="glass-card rounded-3xl p-5">
           <h3 className="font-bold text-base mb-4 text-foreground">
-            {language === "ar" ? "التقدم" : "Progress"}
+            {t("adhkarProgress")}
           </h3>
           <div className="space-y-2">
             {list.map((d, i) => {
@@ -269,7 +267,7 @@ export default function Adhkar() {
           {/* Category completion bar */}
           <div className="mt-4 pt-4 border-t border-border/30">
             <div className="text-xs text-muted-foreground mb-1">
-              {language === "ar" ? "اكتمل" : "Completed"}
+              {t("adhkarCompleted")}
             </div>
             <div className="flex items-center gap-2">
               <div className="flex-1 h-2 bg-border/30 rounded-full overflow-hidden">

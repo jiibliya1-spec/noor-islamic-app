@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Clock, ChevronLeft, ChevronRight, BookOpen, Star } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
+
 import { ISLAMIC_STORIES, STORY_CATEGORIES } from "@/data/stories-data";
 
 type StoryCategory = typeof STORY_CATEGORIES[number]["id"];
@@ -16,7 +17,7 @@ const CAT_META: Record<string, { emoji: string; color: string; activeClass: stri
 };
 
 export default function Stories() {
-  const { language } = useI18n();
+  const { language, t } = useI18n();
   const [category, setCategory] = useState<StoryCategory>("all");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const isDir = language === "ar" ? "rtl" : "ltr";
@@ -38,7 +39,7 @@ export default function Stories() {
           className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition mb-6 text-sm font-medium"
         >
           <ChevronLeft className="w-4 h-4" />
-          {language === "ar" ? "العودة إلى القصص" : "Back to Stories"}
+          {t("backToStories")}
         </button>
 
         {/* Story hero */}
@@ -67,7 +68,7 @@ export default function Stories() {
               </div>
               <div className="flex items-center gap-1.5 bg-black/20 px-3 py-1.5 rounded-full text-xs text-white/80 shrink-0">
                 <Clock className="w-3 h-3" />
-                {selected.readingTime} {language === "ar" ? "دقائق" : "min"}
+                {selected.readingTime} {t("minutesLabel")}
               </div>
             </div>
             <div className="bg-white/10 border border-white/20 rounded-2xl p-4 text-center">
@@ -99,7 +100,7 @@ export default function Stories() {
             </div>
             <div>
               <p className="font-bold text-sm text-primary mb-1">
-                {language === "ar" ? "العبرة" : "Moral of the Story"}
+                {t("moralOfStory")}
               </p>
               <p className="text-sm text-muted-foreground leading-relaxed">
                 {(selected.moral as Record<string, string>)[language] ?? selected.moral.en}
@@ -116,7 +117,7 @@ export default function Stories() {
               className="flex-1 py-3 rounded-2xl border border-border/40 text-foreground hover:bg-white/5 transition flex items-center justify-center gap-2 text-sm font-medium"
             >
               <ChevronLeft className="w-4 h-4" />
-              {language === "ar" ? "القصة السابقة" : "Previous"}
+              {t("previousStory")}
             </button>
           )}
           {selectedIdx < filtered.length - 1 && (
@@ -124,7 +125,7 @@ export default function Stories() {
               onClick={() => setSelectedId(filtered[selectedIdx + 1].id)}
               className="flex-1 py-3 rounded-2xl bg-primary text-primary-foreground shadow-lg shadow-primary/20 hover:shadow-primary/30 transition active:scale-95 flex items-center justify-center gap-2 text-sm font-medium"
             >
-              {language === "ar" ? "القصة التالية" : "Next Story"}
+              {t("nextStory")}
               <ChevronRight className="w-4 h-4" />
             </button>
           )}
@@ -137,12 +138,10 @@ export default function Stories() {
   return (
     <div className="p-4 md:p-8 max-w-4xl mx-auto w-full pb-24" dir={isDir}>
       <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-1">
-        {language === "ar" ? "القصص الإسلامية" : "Islamic Stories"}
+        {t("stories")}
       </h1>
       <p className="text-muted-foreground mb-6 text-sm">
-        {language === "ar"
-          ? "قصص النبي ﷺ والصحابة والأنبياء وتاريخ الإسلام"
-          : "Stories of the Prophet ﷺ, Companions, Prophets & Islamic History"}
+        {t("storiesSubtitle")}
       </p>
 
       {/* ── Category filter row ── */}
@@ -189,7 +188,7 @@ export default function Stories() {
       {/* ── Story grid ── */}
       {filtered.length === 0 ? (
         <div className="text-center py-20 text-muted-foreground">
-          {language === "ar" ? "لا توجد قصص في هذه الفئة" : "No stories in this category yet."}
+          {t("noStoriesYet")}
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -224,7 +223,7 @@ export default function Stories() {
                     </span>
                     <span className="flex items-center gap-1 text-xs text-muted-foreground">
                       <Clock className="w-3 h-3" />
-                      {story.readingTime} {language === "ar" ? "دقائق" : "min"}
+                      {story.readingTime} {t("minutesLabel")}
                     </span>
                   </div>
 
@@ -252,7 +251,7 @@ export default function Stories() {
 
                   <div className="flex items-center gap-1.5 mt-3 text-xs text-primary font-semibold">
                     <BookOpen className="w-3.5 h-3.5" />
-                    {language === "ar" ? "اقرأ القصة" : "Read Story"}
+                    {t("readStory")}
                     <ChevronRight className="w-3.5 h-3.5" />
                   </div>
                 </div>

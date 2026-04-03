@@ -5,7 +5,6 @@ import { QUIZ_QUESTIONS, QUIZ_CATEGORIES } from "@/data/quiz-data";
 
 type Category = typeof QUIZ_CATEGORIES[number]["id"];
 
-// ── localStorage helpers ──────────────────────────────────────────────────
 const SEEN_KEY = "noor_quiz_seen";
 
 function loadSeenIds(): Set<string> {
@@ -41,10 +40,10 @@ function shuffle<T>(arr: T[]): T[] {
 }
 
 export default function Quiz() {
-  const { language } = useI18n();
+  const { language, t } = useI18n();
   const [category, setCategory] = useState<Category>("all");
   const [started, setStarted] = useState(false);
-  const [showCongrats, setShowCongrats] = useState(false);  // all questions in category answered
+  const [showCongrats, setShowCongrats] = useState(false);
   const [questions, setQuestions] = useState(QUIZ_QUESTIONS);
   const [qIndex, setQIndex] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
@@ -55,7 +54,6 @@ export default function Quiz() {
 
   const isDir = language === "ar" ? "rtl" : "ltr";
 
-  // Compute unseen count per category (live, re-computed each render from localStorage)
   const unseenCounts = useMemo(() => {
     const seen = loadSeenIds();
     const counts: Record<string, { unseen: number; total: number }> = {};
@@ -73,7 +71,6 @@ export default function Quiz() {
     const available = allForCat.filter(q => !seen.has(q.id));
 
     if (available.length === 0) {
-      // Every question in this category has been answered — show congrats
       setShowCongrats(true);
       return;
     }
@@ -88,7 +85,6 @@ export default function Quiz() {
     const allForCat = category === "all" ? QUIZ_QUESTIONS : QUIZ_QUESTIONS.filter(q => q.category === category);
     resetSeenForCategory(allForCat.map(q => q.id));
     setShowCongrats(false);
-
     const shuffled = shuffle(allForCat);
     setQuestions(shuffled);
     setQIndex(0); setSelected(null); setAnswered(false);
@@ -101,7 +97,6 @@ export default function Quiz() {
     setSelected(idx);
     setAnswered(true);
     const q = questions[qIndex];
-    // Mark as seen immediately when answered
     markSeen(q.id);
     if (idx === q.answer) {
       setScore(s => s + 1);
@@ -124,30 +119,28 @@ export default function Quiz() {
   const total = questions.length;
   const pct = total > 0 ? Math.round((score / total) * 100) : 0;
 
-  // ── Congratulations screen (all answered in category) ───────────────────
+  // ── Congratulations screen ──────────────────────────────────────────────
   if (showCongrats) {
     return (
       <div className="p-4 md:p-8 max-w-3xl mx-auto min-h-full pb-24 flex flex-col items-center" dir={isDir}>
         <div className="glass-card rounded-3xl p-10 w-full text-center">
           <div className="text-7xl mb-4">🎉</div>
-          <h2 className="text-3xl font-bold text-foreground mb-3">
-            {language === "ar" ? "أحسنت! أكملت جميع الأسئلة" : "Congratulations!"}
-          </h2>
-          <p className="text-muted-foreground mb-8 text-sm leading-relaxed">
-            {language === "ar"
-              ? "لقد أجبت على جميع أسئلة هذه الفئة. هل تريد البدء من جديد؟"
-              : `You've answered all ${unseenCounts[category]?.total || QUIZ_QUESTIONS.length} questions in this category. Start fresh to go through them again!`}
-          </p>
+          <h2 className="text-3xl font-bold text-foreground mb-3">{t("quizCongrats")}</h2>
+          <p className="text-muted-foreground mb-8 text-sm leading-relaxed">{t("quizAllAnswered")}</p>
           <div className="flex gap-3 justify-center">
-            <button onClick={() => { setShowCongrats(false); setStarted(false); }}
-              className="flex items-center gap-2 px-5 py-3 rounded-2xl border border-border/50 text-foreground font-semibold hover:bg-white/5 transition text-sm">
+            <button
+              onClick={() => { setShowCongrats(false); setStarted(false); }}
+              className="flex items-center gap-2 px-5 py-3 rounded-2xl border border-border/50 text-foreground font-semibold hover:bg-white/5 transition text-sm"
+            >
               <RotateCcw className="w-4 h-4" />
-              {language === "ar" ? "تغيير الفئة" : "Change Category"}
+              {t("quizChangeCategory")}
             </button>
-            <button onClick={startFresh}
-              className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-primary text-primary-foreground font-semibold shadow-lg shadow-primary/20 text-sm">
+            <button
+              onClick={startFresh}
+              className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-primary text-primary-foreground font-semibold shadow-lg shadow-primary/20 text-sm"
+            >
               <RefreshCw className="w-4 h-4" />
-              {language === "ar" ? "ابدأ من جديد" : "Start Fresh"}
+              {t("quizStartFresh")}
             </button>
           </div>
         </div>
@@ -155,44 +148,38 @@ export default function Quiz() {
     );
   }
 
-  // ── Category picker (lobby) ──────────────────────────────────────────────
+  // ── Category picker (lobby) ─────────────────────────────────────────────
   if (!started) {
     return (
       <div className="p-4 md:p-8 max-w-3xl mx-auto min-h-full pb-24" dir={isDir}>
-        <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
-          {language === "ar" ? "الاختبار الإسلامي" : "Islamic Quiz"}
-        </h1>
-        <p className="text-muted-foreground mb-8 text-sm">
-          {language === "ar"
-            ? "اختبر معلوماتك الإسلامية — الأسئلة المجابة لا تتكرر"
-            : "Test your knowledge — answered questions never repeat until you've seen them all"}
-        </p>
+        <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">{t("quiz")}</h1>
+        <p className="text-muted-foreground mb-8 text-sm">{t("quizTestKnowledge")}</p>
 
         <div className="glass-card rounded-3xl p-6 mb-6">
-          <h2 className="font-bold text-lg mb-4 text-foreground">
-            {language === "ar" ? "اختر الفئة" : "Choose a Category"}
-          </h2>
+          <h2 className="font-bold text-lg mb-4 text-foreground">{t("quizChooseCategory")}</h2>
           <div className="grid grid-cols-2 gap-3">
             {QUIZ_CATEGORIES.map(cat => {
               const counts = unseenCounts[cat.id] ?? { unseen: 0, total: 0 };
               const allDone = counts.unseen === 0;
+              const catLabel = (cat as Record<string, string>)[language] ?? cat.label;
               return (
-                <button key={cat.id} onClick={() => setCategory(cat.id as Category)}
+                <button
+                  key={cat.id}
+                  onClick={() => setCategory(cat.id as Category)}
                   className={`p-4 rounded-2xl text-left transition-all border ${
                     category === cat.id
                       ? "bg-primary/15 border-primary text-primary"
                       : "bg-card border-border/40 text-foreground hover:bg-white/5"
-                  }`}>
+                  }`}
+                >
                   <div className="flex items-center justify-between mb-1">
-                    <div className="font-semibold text-sm">
-                      {(cat as Record<string, string>)[language] ?? cat.label}
-                    </div>
+                    <div className="font-semibold text-sm">{catLabel}</div>
                     {allDone && <Star className="w-3.5 h-3.5 text-primary" />}
                   </div>
                   <div className="text-xs text-muted-foreground">
                     {allDone
-                      ? (language === "ar" ? "✓ اكتملت جميعها" : "✓ All answered")
-                      : `${counts.unseen} ${language === "ar" ? "متبقية" : "remaining"} / ${counts.total}`}
+                      ? t("quizAllDone")
+                      : `${counts.unseen} ${t("quizRemaining")} / ${counts.total}`}
                   </div>
                 </button>
               );
@@ -200,22 +187,23 @@ export default function Quiz() {
           </div>
         </div>
 
-        <button onClick={startQuiz}
-          className="w-full py-4 rounded-2xl bg-primary text-primary-foreground font-bold text-lg shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all active:scale-95">
-          {language === "ar" ? "ابدأ الاختبار" : "Start Quiz"}
+        <button
+          onClick={startQuiz}
+          className="w-full py-4 rounded-2xl bg-primary text-primary-foreground font-bold text-lg shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all active:scale-95"
+        >
+          {t("quizStartButton")}
         </button>
       </div>
     );
   }
 
-  // ── Results screen ───────────────────────────────────────────────────────
+  // ── Results screen ──────────────────────────────────────────────────────
   if (finished) {
     const grade = pct >= 90 ? "🌟" : pct >= 70 ? "👍" : pct >= 50 ? "📚" : "🔄";
-    const gradeLabel = pct >= 90
-      ? (language === "ar" ? "ممتاز!" : "Excellent!")
-      : pct >= 70 ? (language === "ar" ? "جيد جداً!" : "Very Good!")
-      : pct >= 50 ? (language === "ar" ? "جيد — استمر في التعلم" : "Good — Keep Learning!")
-      : (language === "ar" ? "حاول مرة أخرى" : "Try Again!");
+    const gradeLabel = pct >= 90 ? t("quizExcellent")
+      : pct >= 70 ? t("quizVeryGood")
+      : pct >= 50 ? t("quizKeepLearning")
+      : t("quizTryAgain");
 
     return (
       <div className="p-4 md:p-8 max-w-3xl mx-auto min-h-full pb-24 flex flex-col items-center" dir={isDir}>
@@ -223,64 +211,60 @@ export default function Quiz() {
           <div className="text-7xl mb-4">{grade}</div>
           <h2 className="text-3xl font-bold text-foreground mb-2">{gradeLabel}</h2>
           <p className="text-muted-foreground mb-6">
-            {language === "ar"
-              ? `أجبت بشكل صحيح على ${score} من ${total} سؤال`
-              : `You answered ${score} out of ${total} correctly`}
+            {t("quizAnswered")} {score} {t("quizOutOf")} {total} {t("quizCorrectly")}
           </p>
           <div className="flex items-center justify-center gap-6 mb-6">
             <div className="flex flex-col items-center">
               <Trophy className="w-8 h-8 text-primary mb-1" />
               <span className="text-3xl font-bold text-primary">{score}</span>
-              <span className="text-xs text-muted-foreground">{language === "ar" ? "صحيح" : "Correct"}</span>
+              <span className="text-xs text-muted-foreground">{t("quizCorrect")}</span>
             </div>
             <div className="w-px h-16 bg-border/30" />
             <div className="flex flex-col items-center">
               <XCircle className="w-8 h-8 text-destructive/70 mb-1" />
               <span className="text-3xl font-bold text-destructive/70">{total - score}</span>
-              <span className="text-xs text-muted-foreground">{language === "ar" ? "خطأ" : "Wrong"}</span>
+              <span className="text-xs text-muted-foreground">{t("quizWrong")}</span>
             </div>
             <div className="w-px h-16 bg-border/30" />
             <div className="flex flex-col items-center">
               <HelpCircle className="w-8 h-8 text-muted-foreground mb-1" />
               <span className="text-3xl font-bold text-foreground">{pct}%</span>
-              <span className="text-xs text-muted-foreground">{language === "ar" ? "النتيجة" : "Score"}</span>
+              <span className="text-xs text-muted-foreground">{t("quizScoreLabel")}</span>
             </div>
           </div>
           <div className="h-3 rounded-full bg-border/30 mb-2 overflow-hidden">
             <div className="h-full rounded-full bg-primary transition-all duration-1000" style={{ width: `${pct}%` }} />
           </div>
-          <p className="text-xs text-muted-foreground">
-            {language === "ar"
-              ? "الأسئلة التي أجبت عليها لن تظهر مرة أخرى"
-              : "Questions you answered won't appear again until you've seen them all"}
-          </p>
+          <p className="text-xs text-muted-foreground">{t("quizNeverRepeat")}</p>
         </div>
         <div className="flex gap-3 w-full">
-          <button onClick={() => { setStarted(false); setFinished(false); }}
-            className="flex-1 py-3.5 rounded-2xl border border-border/50 text-foreground font-semibold hover:bg-white/5 transition flex items-center justify-center gap-2">
+          <button
+            onClick={() => { setStarted(false); setFinished(false); }}
+            className="flex-1 py-3.5 rounded-2xl border border-border/50 text-foreground font-semibold hover:bg-white/5 transition flex items-center justify-center gap-2"
+          >
             <RotateCcw className="w-4 h-4" />
-            {language === "ar" ? "تغيير الفئة" : "Change Category"}
+            {t("quizChangeCategory")}
           </button>
-          <button onClick={startQuiz}
-            className="flex-1 py-3.5 rounded-2xl bg-primary text-primary-foreground font-semibold shadow-lg shadow-primary/20 transition active:scale-95 flex items-center justify-center gap-2">
+          <button
+            onClick={startQuiz}
+            className="flex-1 py-3.5 rounded-2xl bg-primary text-primary-foreground font-semibold shadow-lg shadow-primary/20 transition active:scale-95 flex items-center justify-center gap-2"
+          >
             <ChevronRight className="w-4 h-4" />
-            {language === "ar" ? "أسئلة جديدة" : "More Questions"}
+            {t("quizMoreQuestions")}
           </button>
         </div>
       </div>
     );
   }
 
-  // ── Active quiz ──────────────────────────────────────────────────────────
+  // ── Active quiz ─────────────────────────────────────────────────────────
   return (
     <div className="p-4 md:p-8 max-w-3xl mx-auto min-h-full pb-24" dir={isDir}>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">
-            {language === "ar" ? "الاختبار الإسلامي" : "Islamic Quiz"}
-          </h1>
+          <h1 className="text-2xl font-bold text-foreground">{t("quiz")}</h1>
           <p className="text-xs text-muted-foreground mt-0.5">
-            {language === "ar" ? `السؤال ${qIndex + 1} من ${total}` : `Question ${qIndex + 1} of ${total}`}
+            {t("quizQuestionOf")} {qIndex + 1} {t("quizOf")} {total}
           </p>
         </div>
         <div className="flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full">
@@ -290,13 +274,18 @@ export default function Quiz() {
       </div>
 
       <div className="h-2 rounded-full bg-border/30 mb-6 overflow-hidden">
-        <div className="h-full rounded-full bg-primary transition-all duration-300"
-          style={{ width: `${((qIndex + (answered ? 1 : 0)) / total) * 100}%` }} />
+        <div
+          className="h-full rounded-full bg-primary transition-all duration-300"
+          style={{ width: `${((qIndex + (answered ? 1 : 0)) / total) * 100}%` }}
+        />
       </div>
 
       <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-card border border-border/40 text-xs text-muted-foreground mb-4">
         <BookOpen className="w-3 h-3" />
-        {(() => { const cat = QUIZ_CATEGORIES.find(c => c.id === q.category); return cat ? ((cat as Record<string, string>)[language] ?? cat.label) : ""; })()}
+        {(() => {
+          const cat = QUIZ_CATEGORIES.find(c => c.id === q.category);
+          return cat ? ((cat as Record<string, string>)[language] ?? cat.label) : "";
+        })()}
       </div>
 
       <div className="glass-card rounded-3xl p-6 mb-5">
@@ -340,7 +329,7 @@ export default function Quiz() {
               <BookOpen className="w-4 h-4 text-primary" />
             </div>
             <div>
-              <div className="font-semibold text-sm text-primary mb-1">{language === "ar" ? "الشرح" : "Explanation"}</div>
+              <div className="font-semibold text-sm text-primary mb-1">{t("quizExplanation")}</div>
               <p className="text-sm text-muted-foreground leading-relaxed">
                 {(q.explanation as Record<string, string>)[language] ?? q.explanation.en}
               </p>
@@ -350,11 +339,11 @@ export default function Quiz() {
       )}
 
       {answered && (
-        <button onClick={handleNext}
-          className="w-full py-4 rounded-2xl bg-primary text-primary-foreground font-bold shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all active:scale-95 flex items-center justify-center gap-2">
-          {qIndex < total - 1
-            ? (language === "ar" ? "السؤال التالي" : "Next Question")
-            : (language === "ar" ? "عرض النتائج" : "See Results")}
+        <button
+          onClick={handleNext}
+          className="w-full py-4 rounded-2xl bg-primary text-primary-foreground font-bold shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all active:scale-95 flex items-center justify-center gap-2"
+        >
+          {qIndex < total - 1 ? t("quizNextQuestion") : t("quizSeeResults")}
           <ChevronRight className="w-5 h-5" />
         </button>
       )}
