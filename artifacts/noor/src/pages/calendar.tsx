@@ -115,7 +115,7 @@ export default function IslamicCalendar() {
         <span className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-purple-400 inline-block" /> Your Event</span>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Calendar grid */}
         <div className="lg:col-span-2 glass-card rounded-3xl p-6">
           <div className="flex justify-between items-center mb-6">

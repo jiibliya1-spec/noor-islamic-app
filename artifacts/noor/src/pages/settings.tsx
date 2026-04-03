@@ -57,7 +57,7 @@ export default function Settings() {
       </div>
 
       {/* Auth buttons — mobile (hidden on desktop where sidebar shows them) */}
-      <div className="grid grid-cols-2 gap-3 mb-6 lg:hidden">
+      <div className="grid grid-cols-2 gap-3 mb-6 md:hidden">
         {user ? (
           <>
             <Link href="/dashboard" className="glass-card rounded-2xl p-4 flex flex-col items-center gap-2 active:scale-95 transition-transform">

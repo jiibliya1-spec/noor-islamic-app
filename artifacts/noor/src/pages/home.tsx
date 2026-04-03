@@ -76,7 +76,7 @@ export default function Home() {
   return (
     <div className="min-h-full" dir={dir}>
       {/* Mobile top header */}
-      <header className="lg:hidden sticky top-0 z-40 flex items-center justify-between px-4 py-3 bg-background/90 backdrop-blur-xl border-b border-white/5">
+      <header className="md:hidden sticky top-0 z-40 flex items-center justify-between px-4 py-3 bg-background/90 backdrop-blur-xl border-b border-white/5">
         <div className="flex items-center gap-2">
           <span className="text-2xl font-bold text-gradient tracking-widest font-quran">نُور</span>
           <span className="text-lg font-bold text-primary tracking-widest">NOOR</span>
@@ -94,7 +94,7 @@ export default function Home() {
         )}
       </header>
 
-      <div className="p-4 space-y-4 max-w-2xl mx-auto lg:max-w-7xl lg:p-8 lg:space-y-8">
+      <div className="p-4 space-y-4 max-w-2xl mx-auto md:max-w-7xl md:p-8 md:space-y-8">
 
         {/* Hero: Date + Clock */}
         <div className="relative overflow-hidden rounded-2xl p-6 glass-card text-center">
@@ -176,7 +176,7 @@ export default function Home() {
         {/* Quick nav grid */}
         <div>
           <h3 className="text-base font-bold text-foreground mb-3">Quick Access</h3>
-          <div className="grid grid-cols-3 gap-3 lg:grid-cols-5">
+          <div className="grid grid-cols-3 gap-3 md:grid-cols-5">
             {quickLinks.map(link => (
               <Link
                 href={link.url}
