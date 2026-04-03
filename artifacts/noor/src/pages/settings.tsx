@@ -94,7 +94,7 @@ export default function Settings() {
           </div>
           <div>
             <h3 className="font-bold text-foreground">{t("appearance")}</h3>
-            <p className="text-muted-foreground text-xs">Choose your display theme</p>
+            <p className="text-muted-foreground text-xs">{t("chooseTheme")}</p>
           </div>
         </div>
         <div className="grid grid-cols-3 gap-2">
@@ -123,7 +123,7 @@ export default function Settings() {
           </div>
           <div>
             <h3 className="font-bold text-foreground">{t("language")}</h3>
-            <p className="text-muted-foreground text-xs">Choose your preferred language</p>
+            <p className="text-muted-foreground text-xs">{t("chooseLanguage")}</p>
           </div>
         </div>
         <div className="grid grid-cols-2 gap-2">

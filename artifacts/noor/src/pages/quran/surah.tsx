@@ -6,7 +6,7 @@ import { AudioPlayer } from "@/components/audio-player";
 import { useI18n } from "@/lib/i18n";
 import {
   Loader2, ArrowLeft, Bookmark, BookmarkCheck,
-  BookOpen, AlignLeft, ChevronLeft, Save, CheckCircle2,
+  BookOpen, AlignLeft, ChevronLeft, Save, CheckCircle2, BookmarkPlus,
 } from "lucide-react";
 import { useEffect, useRef, useState, useCallback } from "react";
 
@@ -39,7 +39,7 @@ export default function SurahDetail() {
   const surahNumber = parseInt(params.id || "1", 10);
   const { data: surah, isLoading } = useSurahDetail(surahNumber);
   const { isBookmarked, toggleBookmark } = useBookmarks();
-  const { language } = useI18n();
+  const { language, t } = useI18n();
 
   const [sheetAyah, setSheetAyah] = useState<AyahData | null>(null);
   const [sheetView, setSheetView] = useState<SheetView>("menu");
@@ -131,7 +131,7 @@ export default function SurahDetail() {
             {isRtl ? surah.name : surah.englishName}
           </span>
           <span className="text-muted-foreground shrink-0">
-            · {isRtl ? "الآية" : "Verse"} {currentAyah}
+            · {t("verse")} {currentAyah}
           </span>
         </div>
         <button
@@ -143,8 +143,8 @@ export default function SurahDetail() {
           }`}
         >
           {saveFlash
-            ? <><CheckCircle2 className="w-3.5 h-3.5" />{isRtl ? "تم الحفظ!" : "Saved!"}</>
-            : <><Save className="w-3.5 h-3.5" />{isRtl ? "حفظ التقدم" : "Save Progress"}</>
+            ? <><CheckCircle2 className="w-3.5 h-3.5" />{t("saved")}</>
+            : <><Save className="w-3.5 h-3.5" />{t("saveProgress")}</>
           }
         </button>
       </div>
@@ -201,23 +201,56 @@ export default function SurahDetail() {
             {surah.ayahs.map((ayah: AyahData) => {
               const bookmarked = isBookmarked(surahNumber, ayah.numberInSurah);
               return (
-                <button
+                <div
                   key={ayah.number}
                   id={`ayah-${ayah.numberInSurah}`}
-                  type="button"
-                  onClick={() => openSheet(ayah)}
-                  className={`w-full text-left flex gap-3 rounded-2xl p-3 transition-colors active:scale-[0.99] ${
-                    bookmarked ? "bg-primary/10 border border-primary/25" : "hover:bg-white/5 active:bg-white/5"
+                  className={`flex gap-3 rounded-2xl p-3 transition-colors ${
+                    bookmarked ? "bg-primary/10 border border-primary/25" : "border border-transparent hover:bg-white/5"
                   }`}
                 >
-                  <div className="shrink-0 flex flex-col items-center gap-0.5 mt-0.5">
+                  {/* Verse number badge */}
+                  <div className="shrink-0 flex items-start mt-0.5">
                     <span className="w-8 h-8 rounded-full bg-primary/15 flex items-center justify-center text-primary text-sm font-bold">
                       {ayah.numberInSurah}
                     </span>
-                    {bookmarked && <Bookmark className="w-3 h-3 text-primary fill-primary" />}
                   </div>
-                  <p className="text-foreground leading-relaxed pt-1 flex-1 text-sm">{ayah.translation}</p>
-                </button>
+
+                  {/* Translation — tap opens tafsir/sheet */}
+                  <button
+                    type="button"
+                    onClick={() => openSheet(ayah)}
+                    className="flex-1 text-left pt-1"
+                  >
+                    <p className="text-foreground leading-relaxed text-sm">{ayah.translation}</p>
+                    <p className="text-[11px] text-muted-foreground mt-1 opacity-60">
+                      {isRtl ? "اضغط للتفسير" : "Tap for tafsir"}
+                    </p>
+                  </button>
+
+                  {/* Inline bookmark icon — tap directly bookmarks this verse */}
+                  <button
+                    type="button"
+                    title={bookmarked ? (isRtl ? "إزالة الإشارة" : "Remove bookmark") : (isRtl ? "إضافة إشارة" : "Bookmark verse")}
+                    onClick={() => toggleBookmark({
+                      surahNumber,
+                      surahName: surah.name,
+                      surahEnglishName: surah.englishName,
+                      ayahNumber: ayah.numberInSurah,
+                      text: ayah.text,
+                      translation: ayah.translation,
+                    })}
+                    className={`shrink-0 flex items-center justify-center w-8 h-8 rounded-xl transition-all ${
+                      bookmarked
+                        ? "text-primary bg-primary/15"
+                        : "text-muted-foreground hover:text-primary hover:bg-primary/10"
+                    }`}
+                  >
+                    {bookmarked
+                      ? <BookmarkCheck className="w-4 h-4 fill-primary/30" />
+                      : <BookmarkPlus className="w-4 h-4" />
+                    }
+                  </button>
+                </div>
               );
             })}
           </div>
@@ -254,27 +287,27 @@ export default function SurahDetail() {
                     className="w-full flex items-center gap-3 p-4 rounded-2xl bg-primary/10 border border-primary/20 hover:bg-primary/15 transition-colors"
                   >
                     {sheetBookmarked ? (
-                      <><BookmarkCheck className="w-5 h-5 text-primary fill-primary/30 shrink-0" /><span className="text-sm font-semibold text-primary">Remove bookmark</span></>
+                      <><BookmarkCheck className="w-5 h-5 text-primary fill-primary/30 shrink-0" /><span className="text-sm font-semibold text-primary">{t("removeBookmark")}</span></>
                     ) : (
-                      <><Bookmark className="w-5 h-5 text-primary shrink-0" /><span className="text-sm font-semibold text-primary">Bookmark this verse</span></>
+                      <><Bookmark className="w-5 h-5 text-primary shrink-0" /><span className="text-sm font-semibold text-primary">{t("bookmarkVerse")}</span></>
                     )}
                   </button>
                   <button type="button" onClick={() => setSheetView("tafsir")} className="w-full flex items-center gap-3 p-4 rounded-2xl bg-white/5 hover:bg-white/8 transition-colors">
                     <BookOpen className="w-5 h-5 text-primary shrink-0" />
                     <div className="text-left">
-                      <p className="text-sm font-semibold text-foreground">View Tafsir</p>
+                      <p className="text-sm font-semibold text-foreground">{t("tafsir")}</p>
                       <p className="text-xs text-muted-foreground">{TAFSIR_SOURCE[language] || TAFSIR_SOURCE.en}</p>
                     </div>
                   </button>
                   <button type="button" onClick={() => setSheetView("words")} className="w-full flex items-center gap-3 p-4 rounded-2xl bg-white/5 hover:bg-white/8 transition-colors">
                     <AlignLeft className="w-5 h-5 text-primary shrink-0" />
                     <div className="text-left">
-                      <p className="text-sm font-semibold text-foreground">Word Meanings</p>
+                      <p className="text-sm font-semibold text-foreground">{t("wordMeanings")}</p>
                       <p className="text-xs text-muted-foreground">Meaning of each Arabic word</p>
                     </div>
                   </button>
                   <button type="button" onClick={closeSheet} className="w-full p-4 rounded-2xl text-sm text-muted-foreground hover:bg-white/5 transition-colors font-medium">
-                    Cancel
+                    {t("cancel")}
                   </button>
                 </div>
               </>
