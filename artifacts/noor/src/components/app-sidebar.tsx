@@ -42,7 +42,10 @@ export function AppSidebar() {
   ];
 
   return (
-    <Sidebar className="border-r border-border/50 bg-sidebar/95 backdrop-blur-md">
+    <Sidebar
+      side={language === "ar" ? "right" : "left"}
+      className={`bg-sidebar/95 backdrop-blur-md ${language === "ar" ? "border-l border-border/50" : "border-r border-border/50"}`}
+    >
       <SidebarHeader className="p-4 flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
           <img src={`${import.meta.env.BASE_URL}images/noor-logo.png`} alt="Noor Logo" className="w-16 h-16 drop-shadow-lg object-contain" />

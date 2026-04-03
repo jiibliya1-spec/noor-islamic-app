@@ -42,7 +42,10 @@ function AppLayout() {
 
   return (
     <SidebarProvider style={{ "--sidebar-width": "17rem", "--sidebar-width-icon": "4rem" } as React.CSSProperties}>
-      <div className="flex min-h-screen w-full bg-background text-foreground">
+      <div
+        dir={language === "ar" ? "rtl" : "ltr"}
+        className="flex min-h-screen w-full bg-background text-foreground"
+      >
 
         <div className="hidden lg:block">
           <AppSidebar />

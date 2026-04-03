@@ -267,7 +267,7 @@ export default function PrayerTimes() {
   const initial = initFromPrefs();
   const [coords,           setCoords]           = useState<{ lat: number; lng: number } | null>(initial.coords);
   const [loadingLoc,       setLoadingLoc]        = useState(false);
-  const [locError,         setLocError]          = useState(false);
+  const [locError,         setLocError]          = useState<string | null>(null);
   const [cityInput,        setCityInput]         = useState(initial.cityInput);
   const [submittedCity,    setSubmittedCity]     = useState(initial.submittedCity);
   const [submittedCountry, setSubmittedCountry] = useState(initial.submittedCountry);
@@ -301,16 +301,37 @@ export default function PrayerTimes() {
   }, [method]);
 
   const handleDetectLocation = () => {
-    setLoadingLoc(true); setLocError(false);
-    if (!("geolocation" in navigator)) { setLoadingLoc(false); setLocError(true); return; }
+    setLoadingLoc(true); setLocError(null);
+    if (!("geolocation" in navigator)) {
+      setLoadingLoc(false);
+      setLocError(language === "ar"
+        ? "الموقع الجغرافي غير مدعوم في هذا المتصفح."
+        : "Geolocation is not supported by your browser.");
+      return;
+    }
     navigator.geolocation.getCurrentPosition(
       pos => {
         const c = { lat: pos.coords.latitude, lng: pos.coords.longitude };
         setCoords(c); setSubmittedCity(""); setSubmittedCountry(""); setCityInput(""); setLoadingLoc(false);
         savePrayerPrefs({ type: "coords", lat: c.lat, lng: c.lng, method });
       },
-      () => { setLoadingLoc(false); setLocError(true); },
-      { timeout: 8000 }
+      (err) => {
+        setLoadingLoc(false);
+        if (err.code === err.PERMISSION_DENIED) {
+          setLocError(language === "ar"
+            ? "تم رفض إذن الموقع. افتح الإعدادات > الخصوصية > خدمات الموقع وفعّلها لهذا التطبيق."
+            : "Location permission denied. Please open Settings → Privacy → Location Services and enable it for this browser.");
+        } else if (err.code === err.POSITION_UNAVAILABLE) {
+          setLocError(language === "ar"
+            ? "تعذر تحديد الموقع. تأكد من تفعيل GPS."
+            : "Location unavailable. Ensure GPS is enabled and try again.");
+        } else {
+          setLocError(language === "ar"
+            ? "انتهت مهلة طلب الموقع. حاول مرة أخرى."
+            : "Location request timed out. Please try again.");
+        }
+      },
+      { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 }
     );
   };
 
@@ -381,9 +402,9 @@ export default function PrayerTimes() {
 
       {/* Errors */}
       {locError && (
-        <div className="flex items-center gap-2 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 mb-6 text-sm text-red-400">
-          <AlertCircle className="w-4 h-4 shrink-0" />
-          {language === "ar" ? "تعذر تحديد موقعك. ابحث عن مدينة بدلاً من ذلك." : "Could not detect your location. Please search by city instead."}
+        <div className="flex items-start gap-2 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 mb-6 text-sm text-red-400">
+          <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+          <span>{locError}</span>
         </div>
       )}
       {apiError && !isLoading && (

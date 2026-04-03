@@ -107,7 +107,9 @@ export default function Mosques() {
     setLoadingLoc(true); setLocError(null);
     if (!("geolocation" in navigator)) {
       setLoadingLoc(false);
-      setLocError(isRtl ? "الموقع الجغرافي غير متاح." : "Geolocation not available.");
+      setLocError(isRtl
+        ? "الموقع الجغرافي غير مدعوم في هذا المتصفح."
+        : "Geolocation is not supported by your browser.");
       return;
     }
     navigator.geolocation.getCurrentPosition(
@@ -116,11 +118,23 @@ export default function Mosques() {
         persistLoc({ lat: pos.coords.latitude, lng: pos.coords.longitude, label: isRtl ? "موقعي الحالي" : "My Location" });
         setCityInput("");
       },
-      () => {
+      (err) => {
         setLoadingLoc(false);
-        setLocError(isRtl ? "تعذر تحديد موقعك." : "Could not detect your location.");
+        if (err.code === err.PERMISSION_DENIED) {
+          setLocError(isRtl
+            ? "تم رفض إذن الموقع. افتح الإعدادات > الخصوصية > خدمات الموقع وفعّلها لهذا المتصفح."
+            : "Location permission denied. Open Settings → Privacy → Location Services and enable it for your browser.");
+        } else if (err.code === err.POSITION_UNAVAILABLE) {
+          setLocError(isRtl
+            ? "تعذر تحديد الموقع. تأكد من تفعيل GPS."
+            : "Location unavailable. Ensure GPS is enabled and try again.");
+        } else {
+          setLocError(isRtl
+            ? "انتهت مهلة طلب الموقع. حاول مرة أخرى."
+            : "Location request timed out. Please try again.");
+        }
       },
-      { timeout: 8000 }
+      { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 }
     );
   }
 
