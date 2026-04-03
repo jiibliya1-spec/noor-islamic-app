@@ -39,6 +39,7 @@ const SIDEBAR_W = 272; // px
 
 function AppLayout() {
   const { language } = useI18n();
+  const isRTL = language === "ar";
 
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(() => {
     try {
@@ -62,20 +63,27 @@ function AppLayout() {
     requestAdhanPermission();
   }, []);
 
-  const isRTL = language === "ar";
+  // CSS physical properties (left/right) do NOT flip with dir="rtl" —
+  // we compute them explicitly so the sidebar and padding behave correctly
+  // in both LTR and RTL without relying on logical-property browser support.
+  const sideEdge = isRTL ? "right" : "left";
+  const padEdge  = isRTL ? "paddingRight" : "paddingLeft";
+  const slideOut = isRTL ? `translateX(${SIDEBAR_W}px)` : `translateX(-${SIDEBAR_W}px)`;
+  const easing   = "300ms cubic-bezier(0.4,0,0.2,1)";
 
   return (
     <div
       dir={isRTL ? "rtl" : "ltr"}
       className="relative flex min-h-screen w-full bg-background text-foreground overflow-x-hidden"
     >
-      {/* ── Desktop sidebar (fixed, slides in/out) ── */}
+      {/* ── Desktop sidebar (fixed, slides in/out from correct edge) ── */}
       <aside
-        className="hidden lg:flex flex-col fixed top-0 left-0 h-full z-40"
+        className="hidden lg:flex flex-col fixed top-0 h-full z-40"
         style={{
           width: SIDEBAR_W,
-          transform: sidebarOpen ? "translateX(0)" : `translateX(-${SIDEBAR_W}px)`,
-          transition: "transform 300ms cubic-bezier(0.4,0,0.2,1)",
+          [sideEdge]: 0,
+          transform: sidebarOpen ? "translateX(0)" : slideOut,
+          transition: `transform ${easing}`,
           willChange: "transform",
         }}
       >
@@ -83,15 +91,15 @@ function AppLayout() {
       </aside>
 
       {/* ── Main content column ── */}
+      {/* Padding on the same side as the sidebar pushes content away from it */}
       <div
         className="flex flex-col flex-1 w-full min-w-0"
         style={{
-          marginLeft: 0,
-          paddingLeft: sidebarOpen ? SIDEBAR_W : 0,
-          transition: "padding-left 300ms cubic-bezier(0.4,0,0.2,1)",
+          [padEdge]: sidebarOpen ? SIDEBAR_W : 0,
+          transition: `${padEdge === "paddingRight" ? "padding-right" : "padding-left"} ${easing}`,
         }}
       >
-        {/* Desktop top-bar with hamburger */}
+        {/* Desktop top-bar — hamburger sits at the start edge (flips with dir) */}
         <div className="hidden lg:flex items-center h-12 px-3 border-b border-border/20 bg-background/90 backdrop-blur-sm sticky top-0 z-30 shrink-0">
           <button
             onClick={toggleSidebar}

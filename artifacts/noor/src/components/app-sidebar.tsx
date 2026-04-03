@@ -31,8 +31,12 @@ export function AppSidebar() {
     { title: t("settings"),  url: "/settings",     icon: Settings      },
   ];
 
+  const isRTL = language === "ar";
+
   return (
-    <div className="h-full w-full flex flex-col bg-sidebar border-r border-border/50 overflow-y-auto overflow-x-hidden select-none">
+    // border-r in LTR separates sidebar from content on its right.
+    // border-l in RTL separates sidebar (on the right) from content on its left.
+    <div className={`h-full w-full flex flex-col bg-sidebar overflow-y-auto overflow-x-hidden select-none ${isRTL ? "border-l" : "border-r"} border-border/50`}>
 
       {/* Logo */}
       <div className="flex flex-col items-center gap-3 py-6 px-4 shrink-0">
@@ -92,7 +96,7 @@ export function AppSidebar() {
             </div>
             <button
               onClick={handleLogout}
-              className="flex items-center gap-2 px-4 py-2 w-full text-left text-sm text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
+              className="flex items-center gap-2 px-4 py-2 w-full text-sm text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
             >
               <LogOut className="w-4 h-4" />
               <span>{t("logout")}</span>
