@@ -3,7 +3,8 @@ import { Switch, Route, Router as WouterRouter } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarProvider, useSidebar } from "@/components/ui/sidebar";
+import { Menu } from "lucide-react";
 import { I18nProvider, useI18n } from "@/lib/i18n";
 import { AuthProvider } from "@/lib/auth";
 import { BottomNav } from "@/components/bottom-nav";
@@ -34,29 +35,66 @@ const queryClient = new QueryClient({
   },
 });
 
+const LS_KEY = "noor_sidebar_open";
+
+function getInitialSidebarOpen(): boolean {
+  try {
+    const v = localStorage.getItem(LS_KEY);
+    return v === null ? true : v !== "false";
+  } catch {
+    return true;
+  }
+}
+
+function SidebarToggleButton() {
+  const { toggleSidebar, open } = useSidebar();
+  return (
+    <button
+      onClick={toggleSidebar}
+      aria-label={open ? "Hide sidebar" : "Show sidebar"}
+      title={open ? "Hide sidebar" : "Show sidebar"}
+      className="flex items-center justify-center w-9 h-9 rounded-lg text-muted-foreground hover:text-foreground hover:bg-white/10 transition-colors"
+    >
+      <Menu className="w-5 h-5" />
+    </button>
+  );
+}
+
 function AppLayout() {
   const { language } = useI18n();
 
-  // Bump daily streak once on every app load (e.g. opening the app counts as activity)
   useEffect(() => {
     bumpStreak();
     requestAdhanPermission();
   }, []);
 
   return (
-    <SidebarProvider style={{ "--sidebar-width": "17rem", "--sidebar-width-icon": "4rem" } as React.CSSProperties}>
+    <SidebarProvider
+      defaultOpen={getInitialSidebarOpen()}
+      onOpenChange={(open) => {
+        try { localStorage.setItem(LS_KEY, String(open)); } catch {}
+      }}
+      style={{ "--sidebar-width": "17rem", "--sidebar-width-icon": "4rem" } as React.CSSProperties}
+    >
       <div
         dir={language === "ar" ? "rtl" : "ltr"}
         className="flex min-h-screen w-full bg-background text-foreground"
       >
-
+        {/* Sidebar — hidden on mobile (BottomNav used there), collapsible on lg+ */}
         <div className="hidden lg:block">
           <AppSidebar />
         </div>
 
-        <div className="flex flex-col flex-1 w-full min-w-0 overflow-hidden">
+        {/* Main content column */}
+        <div className="flex flex-col flex-1 w-full min-w-0 overflow-x-hidden">
+
+          {/* Desktop-only top bar with hamburger sidebar toggle */}
+          <div className="hidden lg:flex items-center gap-3 h-12 px-3 border-b border-border/20 shrink-0 bg-background/80 backdrop-blur-sm sticky top-0 z-20">
+            <SidebarToggleButton />
+          </div>
+
+          {/* Scrollable page content */}
           <main className="flex-1 overflow-y-auto pb-20 lg:pb-4">
-            {/* key={language} forces page components to re-render on language change */}
             <Switch key={language}>
               <Route path="/" component={Home} />
               <Route path="/quran" component={QuranList} />
@@ -77,6 +115,7 @@ function AppLayout() {
         </div>
       </div>
 
+      {/* Mobile bottom navigation */}
       <div className="lg:hidden">
         <BottomNav />
       </div>

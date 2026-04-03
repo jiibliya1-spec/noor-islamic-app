@@ -26,7 +26,7 @@ export default function Stories() {
 
   if (selected) {
     return (
-      <div className="p-4 md:p-8 max-w-3xl mx-auto min-h-full pb-24" dir={isDir}>
+      <div className="p-4 md:p-8 max-w-3xl mx-auto w-full pb-24" dir={isDir}>
         {/* Back */}
         <button
           onClick={() => setSelectedId(null)}
@@ -126,7 +126,7 @@ export default function Stories() {
   }
 
   return (
-    <div className="p-4 md:p-8 max-w-4xl mx-auto min-h-full pb-24" dir={isDir}>
+    <div className="p-4 md:p-8 max-w-4xl mx-auto w-full pb-24" dir={isDir}>
       <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
         {language === "ar" ? "القصص الإسلامية" : "Islamic Stories"}
       </h1>
