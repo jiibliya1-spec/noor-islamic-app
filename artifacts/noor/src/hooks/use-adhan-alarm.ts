@@ -60,26 +60,62 @@ export interface AdhanBannerState {
   visible: boolean;
   prayer: string;
   time: string;
+  requiresTap: boolean;
+  audioUrl: string;
+}
+
+function isIOSSafari(): boolean {
+  if (typeof navigator === "undefined") return false;
+  const ua = navigator.userAgent;
+  return /iP(hone|od|ad)/.test(ua) && /WebKit/.test(ua) && !/CriOS|FxiOS/.test(ua);
+}
+
+function preloadAudio(url: string): HTMLAudioElement {
+  const a = new Audio();
+  a.crossOrigin = "anonymous";
+  a.preload = "auto";
+  a.src = url;
+  return a;
 }
 
 export function useAdhanAlarm(
   timings: Record<string, string> | null | undefined,
   language: string
 ) {
-  const firedRef  = useRef<Set<string>>(new Set());
-  const audioRef  = useRef<HTMLAudioElement | null>(null);
-  const fajrRef   = useRef<HTMLAudioElement | null>(null);
+  const firedRef = useRef<Set<string>>(new Set());
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const fajrRef  = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    audioRef.current = preloadAudio(ADHAN_URL);
+    fajrRef.current  = preloadAudio(FAJR_ADHAN_URL);
+    return () => {
+      audioRef.current?.pause();
+      fajrRef.current?.pause();
+    };
+  }, []);
 
   const [banner, setBanner] = useState<AdhanBannerState>({
     visible: false,
     prayer: "",
     time: "",
+    requiresTap: false,
+    audioUrl: ADHAN_URL,
   });
 
   const dismissBanner = useCallback(() => {
     setBanner(prev => ({ ...prev, visible: false }));
     if (audioRef.current) { audioRef.current.pause(); audioRef.current.currentTime = 0; }
     if (fajrRef.current)  { fajrRef.current.pause();  fajrRef.current.currentTime  = 0; }
+  }, []);
+
+  const playFromTap = useCallback((audioUrl: string) => {
+    const ref = audioUrl === FAJR_ADHAN_URL ? fajrRef : audioRef;
+    if (ref.current) {
+      ref.current.currentTime = 0;
+      ref.current.play().catch(() => {});
+    }
+    setBanner(prev => ({ ...prev, requiresTap: false }));
   }, []);
 
   useEffect(() => {
@@ -110,22 +146,29 @@ export function useAdhanAlarm(
         if (firedRef.current.has(key)) continue;
         firedRef.current.add(key);
 
-        const isFajr = prayer === "Fajr";
+        const isFajr   = prayer === "Fajr";
+        const audioUrl = isFajr ? FAJR_ADHAN_URL : ADHAN_URL;
+        const ref      = isFajr ? fajrRef : audioRef;
+        const ios      = isIOSSafari();
 
-        try {
-          const audioUrl = isFajr ? FAJR_ADHAN_URL : ADHAN_URL;
-          const ref      = isFajr ? fajrRef : audioRef;
-          if (!ref.current) {
-            const a = new Audio();
-            a.crossOrigin = "anonymous";
-            a.src = audioUrl;
-            ref.current = a;
-          }
-          ref.current.currentTime = 0;
-          ref.current.play().catch(() => {});
-        } catch {}
+        setBanner({
+          visible: true,
+          prayer,
+          time: pTime,
+          requiresTap: ios,
+          audioUrl,
+        });
 
-        setBanner({ visible: true, prayer, time: pTime });
+        if (!ios) {
+          try {
+            if (ref.current) {
+              ref.current.currentTime = 0;
+              ref.current.play().catch(() => {
+                setBanner(prev => ({ ...prev, requiresTap: true }));
+              });
+            }
+          } catch {}
+        }
 
         if ("Notification" in window && Notification.permission === "granted") {
           try {
@@ -144,5 +187,5 @@ export function useAdhanAlarm(
     return () => clearInterval(id);
   }, [timings, language]);
 
-  return { banner, dismissBanner };
+  return { banner, dismissBanner, playFromTap };
 }
