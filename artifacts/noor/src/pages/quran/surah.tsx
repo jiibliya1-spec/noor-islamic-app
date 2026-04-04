@@ -64,7 +64,6 @@ export default function SurahDetail() {
   const openSheet = (ayah: AyahData) => { setSheetAyah(ayah); setSheetView("menu"); };
   const closeSheet = () => { setSheetAyah(null); setSheetView("menu"); };
 
-  // Scroll to specific ayah from URL (?ayah=N)
   useEffect(() => {
     if (!surah) return;
     const target = new URLSearchParams(window.location.search).get("ayah");
@@ -73,7 +72,6 @@ export default function SurahDetail() {
     if (el) setTimeout(() => el.scrollIntoView({ behavior: "smooth", block: "center" }), 350);
   }, [surah]);
 
-  // Save progress when surah first loads (or when switching surahs)
   useEffect(() => {
     if (!surah) return;
     const existing = loadProgress();
@@ -82,7 +80,6 @@ export default function SurahDetail() {
     }
   }, [surah, surahNumber]);
 
-  // IntersectionObserver — auto-track current ayah as user reads
   useEffect(() => {
     if (!surah || !translationRef.current) return;
     const observer = new IntersectionObserver(
@@ -124,7 +121,7 @@ export default function SurahDetail() {
     <div className="min-h-screen pb-28">
       <AudioPlayer surahNumber={surahNumber} surahName={surah.englishName} />
 
-      {/* Save Progress bar — below audio player, above surah title */}
+      {/* Save Progress bar */}
       <div className="sticky top-[57px] z-30 w-full bg-background/90 backdrop-blur-md border-b border-white/5 px-4 py-2 flex items-center justify-between gap-3">
         <div className="flex items-center gap-2 text-xs text-muted-foreground min-w-0">
           <span className="truncate font-medium text-foreground/80">
@@ -166,10 +163,30 @@ export default function SurahDetail() {
           </div>
         </div>
 
-        {/* Bismillah */}
+        {/* Bismillah — on its own centered line, above verse 1 */}
         {surahNumber !== 1 && surahNumber !== 9 && (
-          <div className="text-center py-8 mb-6">
-            <p className="text-4xl font-quran text-foreground leading-loose">بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</p>
+          <div
+            className="text-center mb-8"
+            style={{
+              paddingTop: "2.5rem",
+              paddingBottom: "2.5rem",
+              borderTop: "1px solid rgba(201,168,76,0.15)",
+              borderBottom: "1px solid rgba(201,168,76,0.15)",
+            }}
+          >
+            <p
+              className="font-quran text-primary"
+              style={{
+                display: "block",
+                width: "100%",
+                textAlign: "center",
+                fontSize: "2.25rem",
+                lineHeight: "2.5",
+                letterSpacing: "0.05em",
+              }}
+            >
+              بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ
+            </p>
           </div>
         )}
 
@@ -208,14 +225,12 @@ export default function SurahDetail() {
                     bookmarked ? "bg-primary/10 border border-primary/25" : "border border-transparent hover:bg-white/5"
                   }`}
                 >
-                  {/* Verse number badge */}
                   <div className="shrink-0 flex items-start mt-0.5">
                     <span className="w-8 h-8 rounded-full bg-primary/15 flex items-center justify-center text-primary text-sm font-bold">
                       {ayah.numberInSurah}
                     </span>
                   </div>
 
-                  {/* Translation — tap opens tafsir/sheet */}
                   <button
                     type="button"
                     onClick={() => openSheet(ayah)}
@@ -227,7 +242,6 @@ export default function SurahDetail() {
                     </p>
                   </button>
 
-                  {/* Inline bookmark icon — tap directly bookmarks this verse */}
                   <button
                     type="button"
                     title={bookmarked ? (isRtl ? "إزالة الإشارة" : "Remove bookmark") : (isRtl ? "إضافة إشارة" : "Bookmark verse")}
