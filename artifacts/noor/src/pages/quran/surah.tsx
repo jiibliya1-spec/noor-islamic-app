@@ -28,11 +28,25 @@ function stripHtml(html: string): string {
 }
 
 function stripBismillah(text: string): string {
-  const stripped = text
-    .replace(/^[\u0600-\u06FF\u0610-\u061A\u064B-\u065F\s]*بسم[\u0600-\u06FF\u0610-\u061A\u064B-\u065F\s]*الله[\u0600-\u06FF\u0610-\u061A\u064B-\u065F\s]*الرحم[\u0600-\u06FF\u0610-\u061A\u064B-\u065F\u0646]*[\u0600-\u06FF\u0610-\u061A\u064B-\u065F\s]*الرحيم[^\u0600-\u06FF]*/, "")
-    .trim();
-  return stripped || text;
+  // Find الرحيم then take everything after it
+  // Works regardless of diacritics variant
+  const marker = "الرحيم";
+  // Search without diacritics by stripping them first for matching
+  const stripped = text.replace(/[\u064B-\u065F\u0610-\u061A]/g, "");
+  const idx = stripped.indexOf(marker);
+  if (idx === -1) return text;
+  // Find the actual position in original text
+  let count = 0;
+  let realIdx = 0;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    const isDiacritic = c >= "\u064B" && c <= "\u065F" || c >= "\u0610" && c <= "\u061A";
+    if (!isDiacritic) count++;
+    if (count === idx + marker.length + 1) { realIdx = i; break; }
+  }
+  return text.slice(realIdx).trim();
 }
+
 
 
 const TAFSIR_SOURCE: Record<string, string> = {
