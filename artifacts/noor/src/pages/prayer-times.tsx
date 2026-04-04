@@ -73,6 +73,21 @@ if (nowMins < h * 60 + m) return p;
 }
 return “Fajr”;
 }
+// ── Qibla Compass ──────────────────────────────────────────────────────────
+//
+// Design:
+//   • Compass face — FIXED (doesn’t rotate). N/E/S/W labels are geographically
+//     correct at all times.
+//   • Kaaba icon  — drawn ON the compass face at the qibla bearing position
+//     on the ring edge. FIXED. Never moves.
+//   • Gold needle — rotates by +deviceHeading (tracks where the phone top
+//     is pointing on the fixed compass face).
+//
+// Formula: needleRotation = deviceHeading (or 0 when no sensor)
+//
+// When the user rotates their phone so deviceHeading = qiblaAngle,
+// the needle tip points at the Kaaba icon. That is the Qibla direction.
+// ──────────────────────────────────────────────────────────────────────────
 interface QiblaCompassProps {
 qiblaAngle: number;
 deviceHeading: number | null;
@@ -83,13 +98,19 @@ function QiblaCompass({ qiblaAngle, deviceHeading, isLive, t }: QiblaCompassProp
 const bearing = Math.round(((qiblaAngle % 360) + 360) % 360);
 const [showQr, setShowQr] = useState(false);
 const appUrl = typeof window !== “undefined” ? window.location.href : “”;
+// ── Mobile / live compass ─────────────────────────────────────────────────
 if (isLive) {
 const needleRotation = deviceHeading ?? qiblaAngle;
+
+// Alignment detection: within ±5 degrees of qibla
 const diff = ((needleRotation - qiblaAngle + 360) % 360);
 const isAligned = diff <= 5 || diff >= 355;
-const alignedColor = “#22c55e”;
-const needleColor  = isAligned ? alignedColor : “hsl(var(–primary))”;
-const ringStroke   = isAligned ? “rgba(34,197,94,0.55)” : “rgba(255,255,255,0.10)”;
+
+const alignedColor = "#22c55e";
+const needleColor  = isAligned ? alignedColor : "hsl(var(--primary))";
+const ringStroke   = isAligned ? "rgba(34,197,94,0.55)" : "rgba(255,255,255,0.10)";
+
+// Kaaba position on the face at qiblaAngle from North (fixed)
 const kaabaRad = (qiblaAngle - 90) * (Math.PI / 180);
 const kaabaR   = 82;
 const kaabaX   = 120 + kaabaR * Math.cos(kaabaRad);
@@ -162,7 +183,7 @@ return (
       </p>
       {isAligned ? (
         <p className="text-base font-bold mt-2 animate-pulse flex items-center justify-center gap-2" style={{ color: "#22c55e" }} dir="rtl">
-‎          هذه هي القبلة
+          هذه هي القبلة
           <CheckCircle2 className="w-4 h-4 inline-block" />
         </p>
       ) : (
@@ -174,20 +195,24 @@ return (
 
 
 }
+// ── Desktop / no gyro — compass rose with fixed Qibla arrow ──────────────
 const qr = https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(appUrl)}&bgcolor=0d1a0f&color=c9a84c&qzone=2;
 return (
 <div className="flex flex-col items-center gap-4 w-full">
+{/* Badge */}
 <div className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border bg-primary/15 border-primary/25 text-primary">
 <span className="w-2 h-2 rounded-full bg-primary" />
 {t(“qiblaDirection”)}
 </div>
 
+  {/* Title */}
   <p className="text-base font-semibold text-foreground text-center leading-snug">
     {t("qiblaDesktopPre")}{" "}
     <span className="text-primary font-bold font-mono text-xl">{bearing}°</span>{" "}
     {t("qiblaDesktopSuf")}
   </p>
 
+  {/* Compass rose — North fixed at top, gold arrow at bearing */}
   <div className="relative w-64 h-64 select-none">
     <svg viewBox="0 0 240 240" className="w-full h-full" aria-label="Qibla direction compass">
       <defs>
@@ -196,8 +221,12 @@ return (
           <stop offset="100%" stopColor="hsl(156,50%,7%)"  />
         </radialGradient>
       </defs>
+      {/* Outer glow */}
       <circle cx="120" cy="120" r="118" fill="hsl(var(--primary))" opacity="0.07" />
+      {/* Face */}
       <circle cx="120" cy="120" r="108" fill="url(#roseBg)" stroke="rgba(255,255,255,0.10)" strokeWidth="1.5" />
+
+      {/* 16 tick marks */}
       {Array.from({ length: 16 }).map((_, i) => {
         const deg = i * 22.5;
         const isCard = deg % 90 === 0;
@@ -212,21 +241,33 @@ return (
           />
         );
       })}
+
+      {/* Cardinal labels */}
       <text x="120" y="30"  textAnchor="middle" dominantBaseline="middle" fill="#ef4444"                fontSize="17" fontWeight="800" fontFamily="Inter,system-ui,sans-serif">N</text>
       <text x="120" y="212" textAnchor="middle" dominantBaseline="middle" fill="rgba(255,255,255,0.35)" fontSize="14" fontWeight="600" fontFamily="Inter,system-ui,sans-serif">S</text>
       <text x="213" y="121" textAnchor="middle" dominantBaseline="middle" fill="rgba(255,255,255,0.35)" fontSize="14" fontWeight="600" fontFamily="Inter,system-ui,sans-serif">E</text>
       <text x="27"  y="121" textAnchor="middle" dominantBaseline="middle" fill="rgba(255,255,255,0.35)" fontSize="14" fontWeight="600" fontFamily="Inter,system-ui,sans-serif">W</text>
+
+      {/* Degree arc label */}
       <text x="120" y="145" textAnchor="middle" dominantBaseline="middle"
         fill="rgba(255,255,255,0.18)" fontSize="11" fontFamily="Inter,system-ui,sans-serif">
         {bearing}°
       </text>
+
+      {/* Center pivot */}
       <circle cx="120" cy="120" r="5" fill="hsl(var(--background))" stroke="hsl(var(--primary))" strokeWidth="2" />
+
+      {/* ── Gold Qibla arrow — rotated by bearing from North ── */}
       <g style={{ transform: `rotate(${bearing}deg)`, transformOrigin: "120px 120px" }}>
+        {/* Shaft glow */}
         <line x1="120" y1="120" x2="120" y2="36"
           stroke="hsl(var(--primary))" strokeWidth="8" strokeLinecap="round" opacity="0.10" />
+        {/* Shaft */}
         <line x1="120" y1="120" x2="120" y2="44"
           stroke="hsl(var(--primary))" strokeWidth="2.5" strokeLinecap="round" opacity="0.85" />
+        {/* Arrowhead */}
         <polygon points="120,18 110,46 130,46" fill="hsl(var(--primary))" opacity="0.95" />
+        {/* Kaaba icon at tip */}
         <rect x="111" y="14" width="18" height="14" rx="2"
           fill="#0d0d0d" stroke="hsl(var(--primary))" strokeWidth="1.5" />
         <rect x="111" y="19" width="18" height="3.5"
@@ -237,6 +278,7 @@ return (
     </svg>
   </div>
 
+  {/* Instruction card */}
   <div className="w-full max-w-sm bg-card border border-border rounded-2xl px-4 py-3 text-center">
     <p className="text-sm text-muted-foreground leading-relaxed">
       {t("findNorthPre")}{" "}
@@ -245,6 +287,7 @@ return (
     </p>
   </div>
 
+  {/* QR code section */}
   <div className="flex flex-col items-center gap-2 w-full max-w-sm">
     <button
       onClick={() => setShowQr(q => !q)}
@@ -259,7 +302,12 @@ return (
     </button>
     {showQr && (
       <div className="flex flex-col items-center gap-1.5 pt-1">
-        <img src={qr} alt="QR code" width={140} height={140} className="rounded-xl border border-primary/20" />
+        <img
+          src={qr}
+          alt="QR code"
+          width={140} height={140}
+          className="rounded-xl border border-primary/20"
+        />
         <p className="text-xs text-muted-foreground">{t("scanQr")}</p>
       </div>
     )}
@@ -269,6 +317,7 @@ return (
 
 );
 }
+// ── Init from prefs ────────────────────────────────────────────────────────
 function initFromPrefs() {
 const p = loadPrayerPrefs();
 return {
@@ -301,7 +350,9 @@ const isLoading = coords ? coordLoading : cityLoading;
 const apiError  = coords ? coordError  : cityError;
 const timings   = data?.timings ?? null;
 const timezone: string = data?.meta?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone;
-const { banner, dismissBanner, playFromTap } = useAdhanAlarm(timings, language);
+// Adhan alarm: plays audio + shows notification when prayer time arrives
+useAdhanAlarm(timings, language);
+// Save timings to localStorage so the SW and global hook can access them
 useEffect(() => {
 if (timings) savePrayerTimings(timings);
 }, [timings]);
@@ -317,9 +368,10 @@ useEffect(() => {
 const prefs = loadPrayerPrefs();
 if (prefs) savePrayerPrefs({ …prefs, method });
 }, [method]);
+// Auto-detect location on page load when no prefs exist (e.g. first visit on desktop)
 useEffect(() => {
 const prefs = loadPrayerPrefs();
-if (prefs) return;
+if (prefs) return; // already have a saved location
 if (!(“geolocation” in navigator)) return;
 navigator.geolocation.getCurrentPosition(
 pos => {
@@ -328,7 +380,7 @@ setCoords(c);
 setCityInput(””); setSubmittedCity(””); setSubmittedCountry(””);
 savePrayerPrefs({ type: “coords”, lat: c.lat, lng: c.lng, method: “3” });
 },
-() => {}
+() => {} // silently ignore — user can manually search
 );
 // eslint-disable-next-line react-hooks/exhaustive-deps
 }, []);
@@ -337,7 +389,7 @@ setLoadingLoc(true); setLocError(null);
 if (!(“geolocation” in navigator)) {
 setLoadingLoc(false);
 setLocError(language === “ar”
-‎? “الموقع الجغرافي غير مدعوم في هذا المتصفح.”
+? “الموقع الجغرافي غير مدعوم في هذا المتصفح.”
 : “Geolocation is not supported by your browser.”);
 return;
 }
@@ -351,15 +403,15 @@ savePrayerPrefs({ type: “coords”, lat: c.lat, lng: c.lng, method });
 setLoadingLoc(false);
 if (err.code === err.PERMISSION_DENIED) {
 setLocError(language === “ar”
-‎? “تم رفض إذن الموقع. افتح الإعدادات > الخصوصية > خدمات الموقع وفعّلها لهذا التطبيق.”
+? “تم رفض إذن الموقع. افتح الإعدادات > الخصوصية > خدمات الموقع وفعّلها لهذا التطبيق.”
 : “Location permission denied. Please open Settings → Privacy → Location Services and enable it for this browser.”);
 } else if (err.code === err.POSITION_UNAVAILABLE) {
 setLocError(language === “ar”
-‎? “تعذر تحديد الموقع. تأكد من تفعيل GPS.”
+? “تعذر تحديد الموقع. تأكد من تفعيل GPS.”
 : “Location unavailable. Ensure GPS is enabled and try again.”);
 } else {
 setLocError(language === “ar”
-‎? “انتهت مهلة طلب الموقع. حاول مرة أخرى.”
+? “انتهت مهلة طلب الموقع. حاول مرة أخرى.”
 : “Location request timed out. Please try again.”);
 }
 },
@@ -517,6 +569,7 @@ return (
               t={t}
             />
 
+            {/* Permission UI */}
             {permission === "unknown" && (
               <button
                 onClick={requestPermission}
@@ -559,45 +612,6 @@ return (
         className="mt-2 px-6 py-3 bg-primary text-primary-foreground rounded-xl font-semibold text-sm">
         {t("myLocation")}
       </button>
-    </div>
-  )}
-
-  {/* Adhan Banner */}
-  {banner.visible && (
-    <div
-      className="fixed bottom-20 left-4 right-4 z-50 rounded-2xl border border-primary/40 bg-card shadow-2xl shadow-primary/20 px-5 py-4 flex items-center justify-between gap-4"
-      style={{ backdropFilter: "blur(12px)" }}
-    >
-      <div>
-        <p className="text-xs text-muted-foreground font-semibold uppercase tracking-widest mb-0.5">
-          {language === "ar" ? "حان وقت الصلاة" : "Prayer Time"}
-        </p>
-        <p className="text-xl font-bold text-foreground">
-          {PRAYER_NAMES[lang][banner.prayer] ?? banner.prayer}
-        </p>
-        <p className="text-sm font-mono text-primary">{banner.time}</p>
-      </div>
-
-      <div className="flex flex-col items-end gap-2">
-        {banner.requiresTap ? (
-          <button
-            onClick={() => playFromTap(banner.audioUrl)}
-            className="px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-bold hover:bg-primary/90 transition"
-          >
-‎            اضغط لسماع الأذان
-          </button>
-        ) : (
-          <p className="text-xs text-primary font-semibold animate-pulse">
-            {language === "ar" ? "يُشغَّل الأذان..." : "Playing Adhan..."}
-          </p>
-        )}
-        <button
-          onClick={dismissBanner}
-          className="text-xs text-muted-foreground hover:text-foreground transition"
-        >
-          {language === "ar" ? "إغلاق" : "Dismiss"}
-        </button>
-      </div>
     </div>
   )}
 </div>
