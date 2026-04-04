@@ -28,23 +28,26 @@ function stripHtml(html: string): string {
 }
 
 function stripBismillah(text: string): string {
-  // Find الرحيم then take everything after it
-  // Works regardless of diacritics variant
-  const marker = "الرحيم";
-  // Search without diacritics by stripping them first for matching
-  const stripped = text.replace(/[\u064B-\u065F\u0610-\u061A]/g, "");
-  const idx = stripped.indexOf(marker);
+  const normalize = (s: string) =>
+    s.replace(/[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED\u06E1\u0671]/g, "")
+     .replace(/\s+/g, " ").trim();
+
+  const normalized = normalize(text);
+  const target = "\u0627\u0644\u0631\u062D\u064A\u0645";
+  const idx = normalized.indexOf(target);
   if (idx === -1) return text;
-  // Find the actual position in original text
-  let count = 0;
-  let realIdx = 0;
-  for (let i = 0; i < text.length; i++) {
-    const c = text[i];
-    const isDiacritic = c >= "\u064B" && c <= "\u065F" || c >= "\u0610" && c <= "\u061A";
-    if (!isDiacritic) count++;
-    if (count === idx + marker.length + 1) { realIdx = i; break; }
+
+  let origPos = 0;
+  let normCount = 0;
+  const endNorm = idx + target.length;
+  while (origPos < text.length && normCount < endNorm) {
+    const c = text[origPos];
+    const skip = /[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED\u06E1\u0671]/.test(c);
+    if (!skip) normCount++;
+    origPos++;
   }
-  return text.slice(realIdx).trim();
+  while (origPos < text.length && /[\s\n]/.test(text[origPos])) origPos++;
+  return text.slice(origPos).trim() || text;
 }
 
 
