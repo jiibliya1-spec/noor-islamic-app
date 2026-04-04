@@ -114,6 +114,14 @@ function QiblaCompass({ qiblaAngle, deviceHeading, isLive, t }: QiblaCompassProp
   if (isLive) {
     const needleRotation = deviceHeading ?? qiblaAngle;
 
+    // Alignment detection: within ±5 degrees of qibla
+    const diff = ((needleRotation - qiblaAngle + 360) % 360);
+    const isAligned = diff <= 5 || diff >= 355;
+
+    const alignedColor = "#22c55e";
+    const needleColor  = isAligned ? alignedColor : "hsl(var(--primary))";
+    const ringStroke   = isAligned ? "rgba(34,197,94,0.55)" : "rgba(255,255,255,0.10)";
+
     // Kaaba position on the face at qiblaAngle from North (fixed)
     const kaabaRad = (qiblaAngle - 90) * (Math.PI / 180);
     const kaabaR   = 82;
@@ -136,11 +144,13 @@ function QiblaCompass({ qiblaAngle, deviceHeading, isLive, t }: QiblaCompassProp
               </radialGradient>
               <radialGradient id="outerGlow" cx="50%" cy="50%" r="50%">
                 <stop offset="78%"  stopColor="transparent" />
-                <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity="0.15" />
+                <stop offset="100%" stopColor={isAligned ? "#22c55e" : "hsl(var(--primary))"} stopOpacity="0.20" />
               </radialGradient>
             </defs>
             <circle cx="120" cy="120" r="118" fill="url(#outerGlow)" />
-            <circle cx="120" cy="120" r="108" fill="url(#dialBg)" stroke="rgba(255,255,255,0.10)" strokeWidth="1.5" />
+            <circle cx="120" cy="120" r="108" fill="url(#dialBg)"
+              stroke={ringStroke} strokeWidth={isAligned ? 3 : 1.5}
+              style={{ transition: "stroke 0.4s ease, stroke-width 0.4s ease" }} />
             {Array.from({ length: 72 }).map((_, i) => {
               const deg = i * 5;
               const isCardinal = deg % 90 === 0;
@@ -165,18 +175,31 @@ function QiblaCompass({ qiblaAngle, deviceHeading, isLive, t }: QiblaCompassProp
             <rect x={kaabaX - 9} y={kaabaY - 2} width="18" height="4" fill="hsl(var(--primary))" opacity="0.75" />
             <path d={`M${kaabaX-3},${kaabaY+7} Q${kaabaX},${kaabaY+2} ${kaabaX+3},${kaabaY+7} L${kaabaX+3},${kaabaY+8} L${kaabaX-3},${kaabaY+8} Z`} fill="hsl(var(--primary))" opacity="0.55" />
             <g style={{ transform: `rotate(${needleRotation}deg)`, transformOrigin: "120px 120px", transition: "transform 0.10s linear" }}>
-              <ellipse cx="120" cy="50" rx="5" ry="9" fill="hsl(var(--primary))" opacity="0.22" />
-              <polygon points="120,28 127,82 113,82" fill="hsl(var(--primary))" opacity="0.95" />
+              <ellipse cx="120" cy="50" rx="5" ry="9" fill={needleColor} opacity="0.22"
+                style={{ transition: "fill 0.4s ease" }} />
+              <polygon points="120,28 127,82 113,82" fill={needleColor} opacity="0.95"
+                style={{ transition: "fill 0.4s ease" }} />
               <polygon points="120,212 125,162 115,162" fill="rgba(255,255,255,0.15)" />
-              <circle cx="120" cy="120" r="6" fill="hsl(var(--background))" stroke="hsl(var(--primary))" strokeWidth="2" />
-              <circle cx="120" cy="120" r="3" fill="hsl(var(--primary))" />
+              <circle cx="120" cy="120" r="6" fill="hsl(var(--background))" stroke={needleColor} strokeWidth="2"
+                style={{ transition: "stroke 0.4s ease" }} />
+              <circle cx="120" cy="120" r="3" fill={needleColor}
+                style={{ transition: "fill 0.4s ease" }} />
             </g>
           </svg>
         </div>
 
         <div className="text-center">
-          <p className="text-5xl font-bold text-primary font-mono leading-none">{bearing}°</p>
-          <p className="text-xs text-muted-foreground mt-2 max-w-[240px] leading-relaxed">{t("rotateToAlign")}</p>
+          <p className="text-5xl font-bold font-mono leading-none"
+            style={{ color: isAligned ? "#22c55e" : "hsl(var(--primary))", transition: "color 0.4s ease" }}>
+            {bearing}°
+          </p>
+          {isAligned ? (
+            <p className="text-base font-bold mt-2 animate-pulse" style={{ color: "#22c55e" }} dir="rtl">
+              هذه هي القبلة ✓
+            </p>
+          ) : (
+            <p className="text-xs text-muted-foreground mt-2 max-w-[240px] leading-relaxed">{t("rotateToAlign")}</p>
+          )}
         </div>
       </div>
     );

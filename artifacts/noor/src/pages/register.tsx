@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "wouter";
-import { Loader2, User, Mail, Lock, AlertCircle, CheckCircle } from "lucide-react";
+import { Loader2, User, Mail, Lock, AlertCircle, CheckCircle, ArrowLeft } from "lucide-react";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 
 export default function Register() {
@@ -61,6 +61,14 @@ export default function Register() {
         className="absolute inset-0 w-full h-full object-cover opacity-20"
       />
       <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent" />
+
+      <Link
+        href="/"
+        className="absolute top-5 left-5 z-20 flex items-center gap-2 px-4 py-2 rounded-xl bg-card/80 border border-border/50 text-foreground hover:bg-white/10 transition text-sm font-medium backdrop-blur-sm"
+      >
+        <ArrowLeft className="w-4 h-4" />
+        Back to Home
+      </Link>
 
       <div className="w-full max-w-md glass-card p-8 rounded-3xl relative z-10">
         <div className="flex flex-col items-center mb-8">
