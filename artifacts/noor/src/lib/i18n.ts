@@ -138,6 +138,15 @@ export const translations: Record<string, Record<Language, string>> = {
   quizCorrectly:      { en: "correctly",                  ar: "سؤالاً بشكل صحيح",             fr: "correctement",                de: "richtig" },
   quizQuestionOf:     { en: "Question",                   ar: "السؤال",                       fr: "Question",                    de: "Frage" },
   quizOf:             { en: "of",                         ar: "من",                           fr: "sur",                         de: "von" },
+  quizSelectDifficulty: { en: "Select Difficulty",        ar: "اختر المستوى",                 fr: "Choisir le niveau",           de: "Schwierigkeit wählen" },
+  quizEasy:           { en: "Easy",                       ar: "سهل",                          fr: "Facile",                      de: "Einfach" },
+  quizMedium:         { en: "Medium",                     ar: "متوسط",                        fr: "Moyen",                       de: "Mittel" },
+  quizHard:           { en: "Hard",                       ar: "صعب",                          fr: "Difficile",                   de: "Schwer" },
+  quizEasyDesc:       { en: "Basic Islamic knowledge — perfect for beginners", ar: "معلومات إسلامية أساسية — مناسبة للمبتدئين", fr: "Connaissances islamiques de base — parfait pour les débutants", de: "Grundlegendes islamisches Wissen — perfekt für Anfänger" },
+  quizMediumDesc:     { en: "Intermediate level — requires good Islamic knowledge", ar: "مستوى متوسط — يتطلب معرفة إسلامية جيدة", fr: "Niveau intermédiaire — nécessite de bonnes connaissances islamiques", de: "Mittleres Niveau — erfordert gutes islamisches Wissen" },
+  quizHardDesc:       { en: "Advanced level — detailed fiqh, history & hadith sciences", ar: "مستوى متقدم — فقه تفصيلي وتاريخ وعلوم الحديث", fr: "Niveau avancé — fiqh détaillé, histoire et sciences du hadith", de: "Fortgeschrittenes Niveau — detailliertes Fiqh, Geschichte & Hadiths" },
+  quizDifficultyLabel:{ en: "Difficulty",                 ar: "المستوى",                      fr: "Niveau",                      de: "Schwierigkeit" },
+  quizCorrectAnswer:  { en: "Correct answer:",            ar: "الإجابة الصحيحة:",             fr: "Bonne réponse:",              de: "Richtige Antwort:" },
 
   // Stories UI
   backToStories:   { en: "Back to Stories",       ar: "العودة إلى القصص",              fr: "Retour aux histoires",          de: "Zurück zu Geschichten" },
