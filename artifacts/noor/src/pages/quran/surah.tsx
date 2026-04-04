@@ -27,6 +27,14 @@ function stripHtml(html: string): string {
   return html.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
 }
 
+function stripBismillah(text: string): string {
+  return text
+    .replace(/^بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ\s*/, "")
+    .replace(/^بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ\s*/, "")
+    .replace(/^بسم الله الرحمن الرحيم\s*/, "")
+    .trim();
+}
+
 const TAFSIR_SOURCE: Record<string, string> = {
   ar: "التفسير الميسر — وزارة الشؤون الإسلامية السعودية",
   en: "Tafhim al-Quran — Sayyid Abul Ala Maududi",
@@ -116,6 +124,7 @@ export default function SurahDetail() {
 
   const sheetBookmarked = sheetAyah ? isBookmarked(surahNumber, sheetAyah.numberInSurah) : false;
   const isRtl = language === "ar";
+  const hasBismillah = surahNumber !== 1 && surahNumber !== 9;
 
   return (
     <div className="min-h-screen pb-28">
@@ -163,8 +172,8 @@ export default function SurahDetail() {
           </div>
         </div>
 
-        {/* Bismillah — on its own centered line, above verse 1 */}
-        {surahNumber !== 1 && surahNumber !== 9 && (
+        {/* Bismillah — سطر منفصل فوق الآيات */}
+        {hasBismillah && (
           <div
             className="text-center mb-8"
             style={{
@@ -193,17 +202,22 @@ export default function SurahDetail() {
         {/* Mushaf-style flowing Arabic */}
         <div className="glass-card rounded-3xl p-6 md:p-10 mb-8">
           <p className="font-quran leading-[2.6] text-right text-foreground text-3xl md:text-4xl" dir="rtl" lang="ar">
-            {surah.ayahs.map((ayah: AyahData) => (
-              <span key={ayah.number}>
-                {ayah.text}
-                <span
-                  className="inline-flex items-center justify-center mx-2 text-primary"
-                  style={{ fontFamily: "'Amiri', serif", fontSize: "0.8em", verticalAlign: "middle" }}
-                >
-                  ﴿{toArabicNumeral(ayah.numberInSurah)}﴾
-                </span>{" "}
-              </span>
-            ))}
+            {surah.ayahs.map((ayah: AyahData) => {
+              const verseText = (hasBismillah && ayah.numberInSurah === 1)
+                ? stripBismillah(ayah.text)
+                : ayah.text;
+              return (
+                <span key={ayah.number}>
+                  {verseText}
+                  <span
+                    className="inline-flex items-center justify-center mx-2 text-primary"
+                    style={{ fontFamily: "'Amiri', serif", fontSize: "0.8em", verticalAlign: "middle" }}
+                  >
+                    ﴿{toArabicNumeral(ayah.numberInSurah)}﴾
+                  </span>{" "}
+                </span>
+              );
+            })}
           </p>
         </div>
 
@@ -391,3 +405,4 @@ export default function SurahDetail() {
     </div>
   );
 }
+
