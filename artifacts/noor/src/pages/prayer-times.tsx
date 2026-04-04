@@ -96,16 +96,21 @@ function QiblaCompass({ qiblaAngle, deviceHeading, isLive, t }: QiblaCompassProp
   const appUrl = typeof window !== "undefined" ? window.location.href : "";
 
   if (isLive) {
-    const needleRotation = deviceHeading ?? qiblaAngle;
-    const diff = ((needleRotation - qiblaAngle + 360) % 360);
+    // ── LOGIC ──────────────────────────────────────────────────────────────
+    // Kaaba icon: FIXED at top (North position, y=38) — never moves
+    // Compass face (N/E/S/W labels): FIXED — never rotates
+    // Needle: rotates by -deviceHeading so it tracks phone orientation
+    //         When phone points to qiblaAngle, needle tip reaches top = Kaaba ✅
+    // Aligned: phone heading ≈ qiblaAngle (within ±5°)
+    // ────────────────────────────────────────────────────────────────────────
+    const heading = deviceHeading ?? 0;
+    const needleRotation = -heading; // counter-rotate to track real direction
+    const diff = ((heading - qiblaAngle + 360) % 360);
     const isAligned = diff <= 5 || diff >= 355;
+
     const alignedColor = "#22c55e";
     const needleColor  = isAligned ? alignedColor : "hsl(var(--primary))";
     const ringStroke   = isAligned ? "rgba(34,197,94,0.55)" : "rgba(255,255,255,0.10)";
-    const kaabaRad = (qiblaAngle - 90) * (Math.PI / 180);
-    const kaabaR   = 82;
-    const kaabaX   = 120 + kaabaR * Math.cos(kaabaRad);
-    const kaabaY   = 120 + kaabaR * Math.sin(kaabaRad);
 
     return (
       <div className="flex flex-col items-center gap-5">
@@ -126,10 +131,16 @@ function QiblaCompass({ qiblaAngle, deviceHeading, isLive, t }: QiblaCompassProp
                 <stop offset="100%" stopColor={isAligned ? "#22c55e" : "hsl(var(--primary))"} stopOpacity="0.20" />
               </radialGradient>
             </defs>
+
+            {/* Outer glow ring */}
             <circle cx="120" cy="120" r="118" fill="url(#outerGlow)" />
+
+            {/* Compass face — FIXED */}
             <circle cx="120" cy="120" r="108" fill="url(#dialBg)"
               stroke={ringStroke} strokeWidth={isAligned ? 3 : 1.5}
               style={{ transition: "stroke 0.4s ease, stroke-width 0.4s ease" }} />
+
+            {/* Tick marks — FIXED */}
             {Array.from({ length: 72 }).map((_, i) => {
               const deg = i * 5;
               const isCardinal = deg % 90 === 0;
@@ -145,14 +156,20 @@ function QiblaCompass({ qiblaAngle, deviceHeading, isLive, t }: QiblaCompassProp
                 />
               );
             })}
+
+            {/* Cardinal labels — FIXED */}
             <text x="120" y="30"  textAnchor="middle" dominantBaseline="middle" fill="#ef4444"                fontSize="16" fontWeight="800" fontFamily="Inter,system-ui,sans-serif">N</text>
             <text x="120" y="212" textAnchor="middle" dominantBaseline="middle" fill="rgba(255,255,255,0.40)" fontSize="13" fontWeight="600" fontFamily="Inter,system-ui,sans-serif">S</text>
             <text x="213" y="121" textAnchor="middle" dominantBaseline="middle" fill="rgba(255,255,255,0.40)" fontSize="13" fontWeight="600" fontFamily="Inter,system-ui,sans-serif">E</text>
             <text x="27"  y="121" textAnchor="middle" dominantBaseline="middle" fill="rgba(255,255,255,0.40)" fontSize="13" fontWeight="600" fontFamily="Inter,system-ui,sans-serif">W</text>
-            <circle cx={kaabaX} cy={kaabaY} r="13" fill="hsl(var(--primary))" opacity="0.18" />
-            <rect x={kaabaX - 9} y={kaabaY - 8} width="18" height="15" rx="2" fill="#0d0d0d" stroke="hsl(var(--primary))" strokeWidth="1.6" />
-            <rect x={kaabaX - 9} y={kaabaY - 2} width="18" height="4" fill="hsl(var(--primary))" opacity="0.75" />
-            <path d={`M${kaabaX-3},${kaabaY+7} Q${kaabaX},${kaabaY+2} ${kaabaX+3},${kaabaY+7} L${kaabaX+3},${kaabaY+8} L${kaabaX-3},${kaabaY+8} Z`} fill="hsl(var(--primary))" opacity="0.55" />
+
+            {/* Kaaba icon — FIXED at top (North = Qibla target) */}
+            <circle cx="120" cy="38" r="13" fill="hsl(var(--primary))" opacity="0.18" />
+            <rect x="111" y="28" width="18" height="15" rx="2" fill="#0d0d0d" stroke="hsl(var(--primary))" strokeWidth="1.6" />
+            <rect x="111" y="34" width="18" height="4" fill="hsl(var(--primary))" opacity="0.75" />
+            <path d="M117,43 Q120,38 123,43 L123,44 L117,44 Z" fill="hsl(var(--primary))" opacity="0.55" />
+
+            {/* Needle — rotates by -deviceHeading */}
             <g style={{ transform: `rotate(${needleRotation}deg)`, transformOrigin: "120px 120px", transition: "transform 0.10s linear" }}>
               <ellipse cx="120" cy="50" rx="5" ry="9" fill={needleColor} opacity="0.22"
                 style={{ transition: "fill 0.4s ease" }} />
@@ -185,6 +202,7 @@ function QiblaCompass({ qiblaAngle, deviceHeading, isLive, t }: QiblaCompassProp
     );
   }
 
+  // ── Desktop / static compass ──────────────────────────────────────────────
   const qr = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(appUrl)}&bgcolor=0d1a0f&color=c9a84c&qzone=2`;
 
   return (
@@ -541,7 +559,6 @@ export default function PrayerTimes() {
                   isLive={compassLive}
                   t={t}
                 />
-
                 {permission === "unknown" && (
                   <button
                     onClick={requestPermission}
@@ -602,7 +619,6 @@ export default function PrayerTimes() {
             </p>
             <p className="text-sm font-mono text-primary">{banner.time}</p>
           </div>
-
           <div className="flex flex-col items-end gap-2">
             {banner.requiresTap ? (
               <button
@@ -628,4 +644,3 @@ export default function PrayerTimes() {
     </div>
   );
 }
-
