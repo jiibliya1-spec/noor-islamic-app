@@ -28,12 +28,12 @@ function stripHtml(html: string): string {
 }
 
 function stripBismillah(text: string): string {
-  return text
-    .replace(/^بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ\s*/, "")
-    .replace(/^بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ\s*/, "")
-    .replace(/^بسم الله الرحمن الرحيم\s*/, "")
+  const stripped = text
+    .replace(/^[\u0600-\u06FF\u0610-\u061A\u064B-\u065F\s]*بسم[\u0600-\u06FF\u0610-\u061A\u064B-\u065F\s]*الله[\u0600-\u06FF\u0610-\u061A\u064B-\u065F\s]*الرحم[\u0600-\u06FF\u0610-\u061A\u064B-\u065F\u0646]*[\u0600-\u06FF\u0610-\u061A\u064B-\u065F\s]*الرحيم[^\u0600-\u06FF]*/, "")
     .trim();
+  return stripped || text;
 }
+
 
 const TAFSIR_SOURCE: Record<string, string> = {
   ar: "التفسير الميسر — وزارة الشؤون الإسلامية السعودية",
