@@ -1,9 +1,37 @@
 import { useState } from "react";
-import { ChevronLeft, ChevronRight, BookOpen } from "lucide-react";
+import {
+  ChevronLeft, ChevronRight, BookOpen,
+  Volume2, Shuffle, RefreshCw, Wind, Mic2, Layers,
+  MoveHorizontal, SlidersHorizontal, ArrowLeftRight,
+  Zap, Music2, SunMoon, PauseCircle, Type,
+} from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { TAJWEED_RULES, TAJWEED_CATEGORIES, RULE_CATEGORY } from "@/data/tajweed-data";
+import type { LucideIcon } from "lucide-react";
 
 type Lang = "en" | "ar" | "fr" | "de";
+
+const RULE_ICONS: Record<string, LucideIcon> = {
+  "noon-izhar":     Volume2,
+  "noon-idgham":    Shuffle,
+  "noon-iqlab":     RefreshCw,
+  "noon-ikhfa":     Wind,
+  "qalqalah":       Mic2,
+  "shaddah":        Layers,
+  "madd":           MoveHorizontal,
+  "ghunnah":        SlidersHorizontal,
+  "lam-shamsiyyah": SunMoon,
+  "lam-qamariyyah": SunMoon,
+  "qaf":            Zap,
+  "meem-sakinah":   Music2,
+  "waqf":           PauseCircle,
+  "hamzatul-wasl":  Type,
+  "alif-lam":       ArrowLeftRight,
+};
+
+function getRuleIcon(id: string): LucideIcon {
+  return RULE_ICONS[id] ?? BookOpen;
+}
 
 export default function Tajweed() {
   const { language } = useI18n();
@@ -24,6 +52,7 @@ export default function Tajweed() {
   if (selected) {
     const prev = selectedIdx > 0 ? filtered[selectedIdx - 1] : null;
     const next = selectedIdx < filtered.length - 1 ? filtered[selectedIdx + 1] : null;
+    const SelectedIcon = getRuleIcon(selected.id);
 
     return (
       <div className="p-4 md:p-8 max-w-3xl mx-auto min-h-full pb-24" dir={dir}>
@@ -52,7 +81,12 @@ export default function Tajweed() {
                 {selected.name[lang]}
               </h1>
             </div>
-            <span className="text-4xl select-none mt-1">{selected.emoji}</span>
+            <div
+              className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 mt-1"
+              style={{ background: `${selected.color}25` }}
+            >
+              <SelectedIcon className="w-6 h-6" style={{ color: selected.color }} />
+            </div>
           </div>
         </div>
 
@@ -161,41 +195,49 @@ export default function Tajweed() {
 
       {/* Rules grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {filtered.map(rule => (
-          <button
-            key={rule.id}
-            onClick={() => setSelectedId(rule.id)}
-            className="glass-card border border-border/30 rounded-2xl p-5 text-start hover:border-primary/40 transition-all group"
-          >
-            <div className="flex items-start justify-between gap-3 mb-3">
-              <div
-                className="text-3xl font-bold font-quran"
-                style={{ color: rule.color }}
-              >
-                {rule.arabicName}
-              </div>
-              <span className="text-2xl">{rule.emoji}</span>
-            </div>
-            <h3 className="font-bold text-foreground text-sm mb-1 group-hover:text-primary transition-colors">
-              {rule.name[lang]}
-            </h3>
-            <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
-              {rule.explanation[lang].slice(0, 100)}…
-            </p>
-            <div className="flex items-center gap-1 mt-3">
-              {rule.examples.slice(0, 3).map((ex, i) => (
-                <span
-                  key={i}
-                  className="text-sm font-quran px-2 py-0.5 rounded-lg"
-                  style={{ background: `${rule.color}18`, color: rule.color }}
-                  dir="rtl"
+        {filtered.map(rule => {
+          const RuleIcon = getRuleIcon(rule.id);
+          return (
+            <button
+              key={rule.id}
+              onClick={() => setSelectedId(rule.id)}
+              className="glass-card border border-border/30 rounded-2xl p-5 text-start hover:border-primary/40 transition-all group"
+            >
+              <div className="flex items-start justify-between gap-3 mb-3">
+                <div
+                  className="text-3xl font-bold font-quran"
+                  style={{ color: rule.color }}
                 >
-                  {ex.arabic}
-                </span>
-              ))}
-            </div>
-          </button>
-        ))}
+                  {rule.arabicName}
+                </div>
+                <div
+                  className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+                  style={{ background: `${rule.color}20` }}
+                >
+                  <RuleIcon className="w-4.5 h-4.5" style={{ color: rule.color }} />
+                </div>
+              </div>
+              <h3 className="font-bold text-foreground text-sm mb-1 group-hover:text-primary transition-colors">
+                {rule.name[lang]}
+              </h3>
+              <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
+                {rule.explanation[lang].slice(0, 100)}…
+              </p>
+              <div className="flex items-center gap-1 mt-3">
+                {rule.examples.slice(0, 3).map((ex, i) => (
+                  <span
+                    key={i}
+                    className="text-sm font-quran px-2 py-0.5 rounded-lg"
+                    style={{ background: `${rule.color}18`, color: rule.color }}
+                    dir="rtl"
+                  >
+                    {ex.arabic}
+                  </span>
+                ))}
+              </div>
+            </button>
+          );
+        })}
       </div>
     </div>
   );

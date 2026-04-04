@@ -1,5 +1,9 @@
 import { useState, useCallback, useEffect } from "react";
-import { RotateCcw, CheckCircle2, ChevronRight, ChevronLeft, BookOpen } from "lucide-react";
+import {
+  RotateCcw, CheckCircle2, ChevronRight, ChevronLeft, BookOpen,
+  Sunrise, Sunset, Moon, Sparkles, BedDouble, UtensilsCrossed,
+  Plane, Sun, Building2, HandHeart, ShieldCheck, Heart,
+} from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { useToast } from "@/hooks/use-toast";
 import { ADHKAR_DATA, CATEGORY_META } from "@/data/adhkar-data";
@@ -9,6 +13,21 @@ import {
   incrementAdhkarTotal,
 } from "@/hooks/use-adhkar-progress";
 import { bumpStreak } from "@/hooks/use-streak";
+import type { LucideIcon } from "lucide-react";
+
+const CATEGORY_ICONS: Record<string, LucideIcon> = {
+  morning:     Sunrise,
+  evening:     Sunset,
+  afterPrayer: Heart,
+  sleep:       BedDouble,
+  eating:      UtensilsCrossed,
+  travel:      Plane,
+  wakeup:      Sun,
+  masjid:      Building2,
+  dua:         HandHeart,
+  protection:  ShieldCheck,
+  gratitude:   Sparkles,
+};
 
 export default function Adhkar() {
   const { language, t } = useI18n();
@@ -16,7 +35,6 @@ export default function Adhkar() {
   const [dhikrIndex, setDhikrIndex] = useState(0);
   const [count, setCount] = useState(0);
 
-  // Initialise from today's localStorage progress (resets on new day automatically)
   const [completedIds, setCompletedIds] = useState<Set<string>>(() =>
     loadAdhkarDayProgress()
   );
@@ -28,7 +46,6 @@ export default function Adhkar() {
   const progressPct = Math.min((count / dhikr.count) * 100, 100);
   const strokeDash  = 2 * Math.PI * 110;
 
-  // Persist completion state whenever it changes
   useEffect(() => {
     saveAdhkarDayProgress(completedIds);
   }, [completedIds]);
@@ -44,11 +61,10 @@ export default function Adhkar() {
         const newSet = new Set([...prev, dhikr.id]);
         return newSet;
       });
-      // Persist lifetime total and bump streak
       incrementAdhkarTotal();
       bumpStreak();
       toast({
-        title: t("adhkarDone") + " 🌟",
+        title: t("adhkarDone"),
         description: dhikr.arabic,
       });
     }
@@ -57,7 +73,6 @@ export default function Adhkar() {
   const goNext = () => {
     if (dhikrIndex < list.length - 1) {
       setDhikrIndex(i => i + 1);
-      // Restore count if we've already completed the next dhikr today
       const nextDhikr = list[dhikrIndex + 1];
       setCount(completedIds.has(nextDhikr.id) ? nextDhikr.count : 0);
     }
@@ -95,6 +110,7 @@ export default function Adhkar() {
           const meta  = CATEGORY_META[cat];
           const label = meta[language as keyof typeof meta] ?? meta.en;
           const done  = ADHKAR_DATA[cat].every(d => completedIds.has(d.id));
+          const CatIcon = CATEGORY_ICONS[cat] ?? Heart;
           return (
             <button
               key={cat}
@@ -105,7 +121,7 @@ export default function Adhkar() {
                   : "bg-card text-muted-foreground hover:bg-white/10 border border-border/40"
               }`}
             >
-              <span className="text-base">{meta.icon}</span>
+              <CatIcon className="w-4 h-4" />
               {done && <CheckCircle2 className="w-3.5 h-3.5" />}
               {label}
             </button>
@@ -251,7 +267,7 @@ export default function Adhkar() {
                   <div className={`w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs shrink-0 ${
                     done ? "bg-primary text-primary-foreground" : active ? "bg-primary/20 text-primary" : "bg-white/10 text-muted-foreground"
                   }`}>
-                    {done ? "✓" : i + 1}
+                    {done ? <CheckCircle2 className="w-4 h-4" /> : i + 1}
                   </div>
                   <div className="flex-1 min-w-0">
                     <span className="text-xs font-quran text-foreground truncate block" dir="rtl">

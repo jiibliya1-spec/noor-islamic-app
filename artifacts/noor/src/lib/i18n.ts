@@ -85,6 +85,12 @@ export const translations: Record<string, Record<Language, string>> = {
   chooseTheme:  { en: "Choose your display theme", ar: "اختر مظهر التطبيق", fr: "Choisissez votre thème", de: "Wählen Sie Ihr Design" },
   chooseLanguage: { en: "Choose your preferred language", ar: "اختر لغتك المفضلة", fr: "Choisissez votre langue", de: "Wählen Sie Ihre Sprache" },
 
+  // Adhan toggle
+  adhanToggleTitle:  { en: "Prayer Adhan", ar: "تفعيل أذان التطبيق", fr: "Adhan des Prières", de: "Gebets-Adhan" },
+  adhanToggleOn:     { en: "Adhan will play at prayer times", ar: "سيُشغَّل الأذان عند كل صلاة", fr: "L'adhan sera joué aux heures de prière", de: "Adhan wird zu Gebetszeiten abgespielt" },
+  adhanToggleOff:    { en: "Adhan is disabled", ar: "الأذان معطّل حالياً", fr: "L'adhan est désactivé", de: "Adhan ist deaktiviert" },
+  adhanNotifBlocked: { en: "Notifications blocked — allow them in browser settings", ar: "الإشعارات محجوبة — افتح إعدادات المتصفح", fr: "Notifications bloquées — activez-les dans les paramètres", de: "Benachrichtigungen blockiert — in den Browser-Einstellungen erlauben" },
+
   // Calendar
   addEvent:     { en: "Add Event",         ar: "إضافة حدث",          fr: "Ajouter un événement", de: "Ereignis hinzufügen" },
   islamicCalendar: { en: "Islamic Calendar", ar: "التقويم الإسلامي", fr: "Calendrier Islamique", de: "Islamischer Kalender" },
@@ -130,7 +136,7 @@ export const translations: Record<string, Record<Language, string>> = {
   quizNextQuestion:   { en: "Next Question",              ar: "السؤال التالي",                 fr: "Question suivante",           de: "Nächste Frage" },
   quizSeeResults:     { en: "See Results",                ar: "عرض النتائج",                  fr: "Voir les résultats",          de: "Ergebnisse sehen" },
   quizMoreQuestions:  { en: "More Questions",             ar: "أسئلة جديدة",                  fr: "Plus de questions",           de: "Mehr Fragen" },
-  quizAllDone:        { en: "✓ All answered",             ar: "✓ اكتملت جميعها",              fr: "✓ Tout répondu",              de: "✓ Alle beantwortet" },
+  quizAllDone:        { en: "All answered",               ar: "اكتملت جميعها",                fr: "Tout répondu",                de: "Alle beantwortet" },
   quizRemaining:      { en: "remaining",                  ar: "متبقية",                       fr: "restantes",                   de: "verbleibend" },
   quizNeverRepeat:    { en: "Questions you answered won't appear again until you've seen them all", ar: "الأسئلة التي أجبت عليها لن تظهر مرة أخرى", fr: "Les questions répondues ne réapparaîtront pas avant que vous les ayez toutes vues", de: "Beantwortete Fragen erscheinen erst wieder, wenn du alle gesehen hast" },
   quizAnswered:       { en: "You answered",               ar: "أجبت بشكل صحيح على",           fr: "Vous avez répondu",           de: "Du hast beantwortet" },

@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/auth";
 import { Link } from "wouter";
-import { Loader2, Heart, Award, Activity, Flame, BookMarked } from "lucide-react";
+import {
+  Loader2, Heart, Award, Activity, Flame, BookMarked,
+  BookOpen, Clock, HandHeart, Star,
+} from "lucide-react";
 import { loadStreakData, bumpStreak } from "@/hooks/use-streak";
 import { getAdhkarTotal } from "@/hooks/use-adhkar-progress";
 
-// Raw localStorage read to avoid importing the full hook
 function getBookmarkCount(): number {
   try {
     const raw = localStorage.getItem("noor_quran_bookmarks");
@@ -19,12 +21,10 @@ function getBookmarkCount(): number {
 export default function Dashboard() {
   const { user, loading } = useAuth();
 
-  // Bump streak on dashboard visit (counts as app activity)
-  const [streakData]     = useState(() => bumpStreak());
-  const [adhkarTotal]    = useState(() => getAdhkarTotal());
-  const [bookmarkCount]  = useState(() => getBookmarkCount());
+  const [streakData]    = useState(() => bumpStreak());
+  const [adhkarTotal]   = useState(() => getAdhkarTotal());
+  const [bookmarkCount] = useState(() => getBookmarkCount());
 
-  // Suppress unused-variable lint for streakData dependency
   useEffect(() => {}, [streakData]);
 
   if (loading) return (
@@ -39,29 +39,36 @@ export default function Dashboard() {
 
   const stats = [
     {
-      label:    "Adhkar Completed",
-      labelAr:  "أذكار مكتملة",
-      value:    adhkarTotal.toString(),
-      icon:     Activity,
+      label:     "Adhkar Completed",
+      labelAr:   "أذكار مكتملة",
+      value:     adhkarTotal.toString(),
+      icon:      Activity,
       iconColor: "text-primary",
-      bgColor:  "bg-primary/20",
+      bgColor:   "bg-primary/20",
     },
     {
-      label:    "Saved Bookmarks",
-      labelAr:  "الآيات المحفوظة",
-      value:    bookmarkCount.toString(),
-      icon:     BookMarked,
+      label:     "Saved Bookmarks",
+      labelAr:   "الآيات المحفوظة",
+      value:     bookmarkCount.toString(),
+      icon:      BookMarked,
       iconColor: "text-rose-400",
-      bgColor:  "bg-rose-500/20",
+      bgColor:   "bg-rose-500/20",
     },
     {
-      label:    "Day Streak",
-      labelAr:  "أيام متتالية",
-      value:    `${streakData.streak} ${streakData.streak === 1 ? "Day" : "Days"}`,
-      icon:     Flame,
+      label:     "Day Streak",
+      labelAr:   "أيام متتالية",
+      value:     `${streakData.streak} ${streakData.streak === 1 ? "Day" : "Days"}`,
+      icon:      Flame,
       iconColor: "text-emerald-400",
-      bgColor:  "bg-emerald-500/20",
+      bgColor:   "bg-emerald-500/20",
     },
+  ];
+
+  const quickActions = [
+    { label: "Read Quran",   href: "/quran",        icon: BookOpen,   color: "text-primary",     bg: "bg-primary/20" },
+    { label: "Adhkar",       href: "/adhkar",        icon: HandHeart,  color: "text-rose-400",    bg: "bg-rose-500/20" },
+    { label: "Prayer Times", href: "/prayer-times",  icon: Clock,      color: "text-amber-400",   bg: "bg-amber-500/20" },
+    { label: "Quran Duas",   href: "/quran/duas",    icon: Star,       color: "text-indigo-400",  bg: "bg-indigo-500/20" },
   ];
 
   return (
@@ -99,8 +106,8 @@ export default function Dashboard() {
           <div>
             <p className="font-bold text-foreground">
               {streakData.streak === 1
-                ? "Welcome back! Your streak starts today 🌟"
-                : `${streakData.streak}-day streak — keep it going! 🔥`}
+                ? "Welcome back! Your streak starts today."
+                : `${streakData.streak}-day streak — keep it going!`}
             </p>
             <p className="text-sm text-muted-foreground mt-0.5">
               Opening the app or completing adhkar counts toward your daily streak.
@@ -112,18 +119,15 @@ export default function Dashboard() {
       {/* Quick actions */}
       <h3 className="text-2xl font-bold mb-4 text-foreground">Quick Actions</h3>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        {[
-          { label: "Read Quran",     href: "/quran",        icon: "📖" },
-          { label: "Adhkar",         href: "/adhkar",       icon: "🤲" },
-          { label: "Prayer Times",   href: "/prayer-times", icon: "🕌" },
-          { label: "Quranic Duas",   href: "/quran/duas",   icon: "✨" },
-        ].map(a => (
+        {quickActions.map(a => (
           <Link
             key={a.href}
             href={a.href}
-            className="glass-card rounded-2xl p-5 flex flex-col items-center gap-2 text-center hover:border-primary/30 transition-colors cursor-pointer active:scale-[0.98]"
+            className="glass-card rounded-2xl p-5 flex flex-col items-center gap-3 text-center hover:border-primary/30 transition-colors cursor-pointer active:scale-[0.98]"
           >
-            <span className="text-3xl">{a.icon}</span>
+            <div className={`w-12 h-12 rounded-full ${a.bg} flex items-center justify-center`}>
+              <a.icon className={`w-6 h-6 ${a.color}`} />
+            </div>
             <span className="text-sm font-semibold text-foreground">{a.label}</span>
           </Link>
         ))}
@@ -138,27 +142,34 @@ export default function Dashboard() {
             Create a free account to sync your streak, adhkar, and Quran bookmarks across devices.
           </p>
           <div className="flex gap-3 justify-center">
-            <Link href="/register" className="bg-primary text-primary-foreground px-6 py-3 rounded-xl font-bold text-sm">
+            <Link
+              href="/register"
+              className="px-6 py-3 bg-primary text-primary-foreground rounded-2xl font-semibold shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all text-sm"
+            >
               Create Account
             </Link>
-            <Link href="/login" className="border border-border text-foreground px-6 py-3 rounded-xl font-bold text-sm hover:bg-white/5 transition">
-              Log In
+            <Link
+              href="/login"
+              className="px-6 py-3 border border-border/50 rounded-2xl font-semibold hover:bg-white/5 transition text-sm text-foreground"
+            >
+              Sign In
             </Link>
           </div>
         </div>
       )}
 
-      {/* Bookmarks count link */}
-      {bookmarkCount > 0 && (
-        <div className="mt-6">
-          <Link href="/quran" className="text-sm text-primary hover:underline">
-            View your {bookmarkCount} saved verse{bookmarkCount !== 1 ? "s" : ""} →
-          </Link>
+      {/* Achievements placeholder */}
+      {user && (
+        <div className="glass-card rounded-3xl p-6 border border-primary/10">
+          <div className="flex items-center gap-3 mb-4">
+            <Award className="w-6 h-6 text-primary" />
+            <h3 className="text-lg font-bold text-foreground">Achievements</h3>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            Complete adhkar, read Quran, and maintain your streak to earn achievements.
+          </p>
         </div>
       )}
-
-      {/* Award icon still visible for future achievements */}
-      <div className="hidden"><Award /></div>
     </div>
   );
 }

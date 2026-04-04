@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronLeft, ChevronRight, Plus, X, Trash2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus, X, Trash2, Moon } from "lucide-react";
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, getDay } from "date-fns";
 import { useI18n } from "@/lib/i18n";
 
@@ -203,7 +203,10 @@ export default function IslamicCalendar() {
                   <div className={`rounded-xl p-3 mb-4 text-sm font-semibold ${
                     isEidFitr(hi.day, hi.month) || isEidAdha(hi.day, hi.month) ? "bg-amber-400/20 text-amber-300" : "bg-blue-400/20 text-blue-300"
                   }`}>
-                    🌙 {ev || "Ramadan"}
+                    <span className="inline-flex items-center gap-1.5">
+                      <Moon className="w-4 h-4 inline-block" />
+                      {ev || "Ramadan"}
+                    </span>
                   </div>
                 ) : null;
               })()}

@@ -1,19 +1,27 @@
 import { useState } from "react";
-import { Clock, ChevronLeft, ChevronRight, BookOpen, Star } from "lucide-react";
+import {
+  Clock, ChevronLeft, ChevronRight, BookOpen, Star,
+  BookMarked, Users, Sparkles, ScrollText, Lightbulb, Library,
+} from "lucide-react";
 import { useI18n } from "@/lib/i18n";
+import type { LucideIcon } from "lucide-react";
 
 import { ISLAMIC_STORIES, STORY_CATEGORIES } from "@/data/stories-data";
 
 type StoryCategory = typeof STORY_CATEGORIES[number]["id"];
 
-/* Per-category styling: emoji + accent colour */
-const CAT_META: Record<string, { emoji: string; color: string; activeClass: string; badgeClass: string }> = {
-  all:        { emoji: "📖", color: "#4ade80", activeClass: "bg-primary text-primary-foreground shadow-primary/30",        badgeClass: "bg-white/25" },
-  prophet:    { emoji: "🕌", color: "#f59e0b", activeClass: "bg-amber-500  text-white          shadow-amber-500/30",       badgeClass: "bg-white/25" },
-  companions: { emoji: "🌙", color: "#818cf8", activeClass: "bg-indigo-500 text-white          shadow-indigo-500/30",      badgeClass: "bg-white/25" },
-  prophets:   { emoji: "⭐", color: "#f472b6", activeClass: "bg-pink-500   text-white          shadow-pink-500/30",        badgeClass: "bg-white/25" },
-  history:    { emoji: "📜", color: "#fb923c", activeClass: "bg-orange-500 text-white          shadow-orange-500/30",      badgeClass: "bg-white/25" },
-  moral:      { emoji: "💡", color: "#34d399", activeClass: "bg-emerald-500 text-white         shadow-emerald-500/30",     badgeClass: "bg-white/25" },
+const CAT_META: Record<string, {
+  icon: LucideIcon;
+  color: string;
+  activeClass: string;
+  badgeClass: string;
+}> = {
+  all:        { icon: Library,     color: "#4ade80", activeClass: "bg-primary text-primary-foreground shadow-primary/30",        badgeClass: "bg-white/25" },
+  prophet:    { icon: BookMarked,  color: "#f59e0b", activeClass: "bg-amber-500  text-white          shadow-amber-500/30",       badgeClass: "bg-white/25" },
+  companions: { icon: Users,       color: "#818cf8", activeClass: "bg-indigo-500 text-white          shadow-indigo-500/30",      badgeClass: "bg-white/25" },
+  prophets:   { icon: Sparkles,    color: "#f472b6", activeClass: "bg-pink-500   text-white          shadow-pink-500/30",        badgeClass: "bg-white/25" },
+  history:    { icon: ScrollText,  color: "#fb923c", activeClass: "bg-orange-500 text-white          shadow-orange-500/30",      badgeClass: "bg-white/25" },
+  moral:      { icon: Lightbulb,   color: "#34d399", activeClass: "bg-emerald-500 text-white         shadow-emerald-500/30",     badgeClass: "bg-white/25" },
 };
 
 export default function Stories() {
@@ -31,6 +39,9 @@ export default function Stories() {
 
   /* ─── Story detail view ─── */
   if (selected) {
+    const catMeta = CAT_META[selected.category] ?? CAT_META.all;
+    const CatIcon = catMeta.icon;
+
     return (
       <div className="p-4 md:p-8 max-w-3xl mx-auto w-full pb-24" dir={isDir}>
         {/* Back */}
@@ -47,9 +58,11 @@ export default function Stories() {
           className="rounded-3xl mb-5 overflow-hidden shadow-lg"
           style={{ background: selected.bg || "linear-gradient(135deg,#1a472a 0%,#2d6a4f 100%)" }}
         >
-          {selected.emoji && (
-            <div className="flex justify-center pt-8 pb-2 text-7xl select-none">{selected.emoji}</div>
-          )}
+          <div className="flex justify-center pt-8 pb-2">
+            <div className="w-20 h-20 rounded-full bg-white/15 flex items-center justify-center">
+              <CatIcon className="w-10 h-10 text-white/90" />
+            </div>
+          </div>
           <div className="p-6 md:p-8">
             <div className="flex items-start justify-between gap-4 mb-4">
               <div>
@@ -151,6 +164,7 @@ export default function Stories() {
       >
         {STORY_CATEGORIES.map((cat) => {
           const meta = CAT_META[cat.id] ?? CAT_META.all;
+          const CatIcon = meta.icon;
           const isActive = category === cat.id;
           const count = cat.id === "all"
             ? ISLAMIC_STORIES.length
@@ -170,7 +184,7 @@ export default function Stories() {
                 }
               `}
             >
-              <span className="text-base leading-none">{meta.emoji}</span>
+              <CatIcon className="w-4 h-4" />
               <span>{label}</span>
               <span
                 className={`
@@ -194,18 +208,21 @@ export default function Stories() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {filtered.map((story) => {
             const meta = CAT_META[story.category] ?? CAT_META.all;
+            const StoryIcon = meta.icon;
             return (
               <button
                 key={story.id}
                 onClick={() => setSelectedId(story.id)}
                 className="glass-card rounded-2xl overflow-hidden text-left hover:border-primary/30 border border-transparent transition-all duration-200 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/10 active:scale-[0.99] group"
               >
-                {/* Emoji banner */}
+                {/* Icon banner */}
                 <div
-                  className="h-24 flex items-center justify-center text-5xl select-none"
+                  className="h-24 flex items-center justify-center"
                   style={{ background: story.bg || "linear-gradient(135deg,#1a472a 0%,#2d6a4f 100%)" }}
                 >
-                  {story.emoji ?? meta.emoji}
+                  <div className="w-14 h-14 rounded-full bg-white/15 flex items-center justify-center">
+                    <StoryIcon className="w-7 h-7 text-white/90" />
+                  </div>
                 </div>
 
                 <div className="p-5">
@@ -215,7 +232,7 @@ export default function Stories() {
                       className="flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full"
                       style={{ background: `${meta.color}22`, color: meta.color }}
                     >
-                      {meta.emoji}
+                      <StoryIcon className="w-3 h-3" />
                       {(() => {
                         const cat = STORY_CATEGORIES.find(c => c.id === story.category);
                         return cat ? ((cat as Record<string, string>)[language] ?? cat.label) : "";

@@ -2,11 +2,11 @@ import { useState, useEffect } from "react";
 import { usePrayerTimesByCoords, usePrayerTimes } from "@/hooks/use-external-api";
 import { loadPrayerPrefs, savePrayerPrefs } from "@/hooks/use-prayer-prefs";
 import { useDeviceCompass } from "@/hooks/use-device-compass";
-import { useAdhanAlarm } from "@/hooks/use-adhan-alarm";
+import { useAdhanAlarm, savePrayerTimings } from "@/hooks/use-adhan-alarm";
 import {
   MapPin, Loader2, Compass, Search,
   Sunrise, Sun, Cloud, Sunset, Moon,
-  AlertCircle, Navigation2,
+  AlertCircle, Navigation2, CheckCircle2,
 } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 
@@ -194,8 +194,9 @@ function QiblaCompass({ qiblaAngle, deviceHeading, isLive, t }: QiblaCompassProp
             {bearing}°
           </p>
           {isAligned ? (
-            <p className="text-base font-bold mt-2 animate-pulse" style={{ color: "#22c55e" }} dir="rtl">
-              هذه هي القبلة ✓
+            <p className="text-base font-bold mt-2 animate-pulse flex items-center justify-center gap-2" style={{ color: "#22c55e" }} dir="rtl">
+              هذه هي القبلة
+              <CheckCircle2 className="w-4 h-4 inline-block" />
             </p>
           ) : (
             <p className="text-xs text-muted-foreground mt-2 max-w-[240px] leading-relaxed">{t("rotateToAlign")}</p>
@@ -367,6 +368,11 @@ export default function PrayerTimes() {
 
   // Adhan alarm: plays audio + shows notification when prayer time arrives
   useAdhanAlarm(timings, language);
+
+  // Save timings to localStorage so the SW and global hook can access them
+  useEffect(() => {
+    if (timings) savePrayerTimings(timings);
+  }, [timings]);
 
   useEffect(() => {
     if (coords) setQiblaAngle(calculateQibla(coords.lat, coords.lng));

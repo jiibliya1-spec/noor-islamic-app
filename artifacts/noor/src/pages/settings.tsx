@@ -1,7 +1,9 @@
+import { useState, useEffect } from "react";
 import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth";
-import { Globe, Bell, LogIn, LogOut, LayoutDashboard, MapPin, User, Sun, Moon, Monitor } from "lucide-react";
+import { Globe, Bell, BellOff, LogIn, LogOut, LayoutDashboard, MapPin, User, Sun, Moon, Monitor } from "lucide-react";
 import { Link } from "wouter";
+import { isAdhanEnabled, setAdhanEnabled } from "@/hooks/use-adhan-alarm";
 
 const LANGUAGES = [
   { code: "en", label: "English",  short: "EN" },
@@ -19,10 +21,27 @@ const THEMES = [
 export default function Settings() {
   const { language, setLanguage, t, dir, theme, setTheme } = useI18n();
   const { user, signOut } = useAuth();
+  const [adhanOn, setAdhanOn] = useState(() => isAdhanEnabled());
+  const [notifStatus, setNotifStatus] = useState<NotificationPermission | "unsupported">("unsupported");
+
+  useEffect(() => {
+    if ("Notification" in window) {
+      setNotifStatus(Notification.permission);
+    }
+  }, []);
 
   const handleLogout = async () => {
     await signOut();
     window.location.href = "/";
+  };
+
+  const toggleAdhan = () => {
+    const next = !adhanOn;
+    setAdhanOn(next);
+    setAdhanEnabled(next);
+    if (next && "Notification" in window && Notification.permission === "default") {
+      Notification.requestPermission().then(p => setNotifStatus(p));
+    }
   };
 
   return (
@@ -56,7 +75,7 @@ export default function Settings() {
         )}
       </div>
 
-      {/* Auth buttons — mobile (hidden on desktop where sidebar shows them) */}
+      {/* Auth buttons — mobile only */}
       <div className="grid grid-cols-2 gap-3 mb-6 md:hidden">
         {user ? (
           <>
@@ -86,7 +105,7 @@ export default function Settings() {
         )}
       </div>
 
-      {/* Appearance / Theme */}
+      {/* Appearance */}
       <div className="glass-card rounded-2xl p-5 mb-4">
         <div className="flex items-center gap-3 mb-4">
           <div className="w-10 h-10 bg-primary/20 rounded-xl flex items-center justify-center">
@@ -148,19 +167,36 @@ export default function Settings() {
         </div>
       </div>
 
-      {/* Notifications */}
+      {/* Adhan / Notifications toggle */}
       <div className="glass-card rounded-2xl p-5 mb-4">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-primary/20 rounded-xl flex items-center justify-center">
-            <Bell className="w-5 h-5 text-primary" />
+            {adhanOn ? <Bell className="w-5 h-5 text-primary" /> : <BellOff className="w-5 h-5 text-muted-foreground" />}
           </div>
           <div className="flex-1">
-            <h3 className="font-bold text-foreground">{t("prayerNotifications")}</h3>
-            <p className="text-muted-foreground text-xs">{t("comingSoon")}</p>
+            <h3 className="font-bold text-foreground">{t("adhanToggleTitle")}</h3>
+            <p className="text-muted-foreground text-xs">
+              {notifStatus === "denied"
+                ? t("adhanNotifBlocked")
+                : adhanOn
+                ? t("adhanToggleOn")
+                : t("adhanToggleOff")}
+            </p>
           </div>
-          <div className="w-10 h-6 rounded-full bg-border relative">
-            <div className="w-4 h-4 rounded-full bg-muted-foreground absolute top-1 left-1" />
-          </div>
+          <button
+            onClick={toggleAdhan}
+            disabled={notifStatus === "denied"}
+            aria-label="Toggle Adhan"
+            className={`w-12 h-6 rounded-full relative transition-colors duration-200 ${
+              adhanOn && notifStatus !== "denied" ? "bg-primary" : "bg-border"
+            } disabled:opacity-50`}
+          >
+            <span
+              className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-all duration-200 ${
+                adhanOn && notifStatus !== "denied" ? "left-7" : "left-1"
+              }`}
+            />
+          </button>
         </div>
       </div>
 

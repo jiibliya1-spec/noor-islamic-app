@@ -26,7 +26,8 @@ import Dashboard from "@/pages/dashboard";
 import Settings from "@/pages/settings";
 import Login from "@/pages/login";
 import Register from "@/pages/register";
-import { requestAdhanPermission } from "@/hooks/use-adhan-alarm";
+import { useAdhanAlarm, isAdhanEnabled } from "@/hooks/use-adhan-alarm";
+import { AdhanBanner, AdhanPermissionPrompt } from "@/components/adhan-banner";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -34,12 +35,11 @@ const queryClient = new QueryClient({
   },
 });
 
-const LS_KEY   = "noor_sidebar_open";
-const SIDEBAR_W = 272; // px
+const LS_KEY    = "noor_sidebar_open";
+const NOTIF_KEY = "noor_notif_asked";
+const SIDEBAR_W  = 272;
 const DESKTOP_BP = "(min-width: 768px)";
 
-// Tracks whether we are in the desktop layout (≥ 768px).
-// Avoids applying sidebar padding on mobile where the sidebar is hidden.
 function useIsDesktop(): boolean {
   const [isDesktop, setIsDesktop] = useState<boolean>(() => {
     if (typeof window === "undefined") return true;
@@ -58,8 +58,8 @@ function useIsDesktop(): boolean {
 
 function AppLayout() {
   const { language } = useI18n();
-  const isRTL      = language === "ar";
-  const isDesktop  = useIsDesktop();
+  const isRTL     = language === "ar";
+  const isDesktop = useIsDesktop();
 
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(() => {
     try {
@@ -70,6 +70,44 @@ function AppLayout() {
     }
   });
 
+  const [showNotifPrompt, setShowNotifPrompt] = useState(false);
+
+  const { banner, dismissBanner } = useAdhanAlarm(undefined, language);
+
+  useEffect(() => {
+    bumpStreak();
+
+    const alreadyAsked = localStorage.getItem(NOTIF_KEY);
+    if (!alreadyAsked && "Notification" in window && Notification.permission === "default") {
+      const timer = setTimeout(() => setShowNotifPrompt(true), 3000);
+      return () => clearTimeout(timer);
+    }
+    return undefined;
+  }, []);
+
+  useEffect(() => {
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.addEventListener("message", (event) => {
+        if (event.data?.type === "ADHAN_TIME") {
+          // SW already triggers via the hook's own interval; just log
+        }
+      });
+    }
+  }, []);
+
+  const handleAllowNotif = () => {
+    setShowNotifPrompt(false);
+    localStorage.setItem(NOTIF_KEY, "true");
+    if ("Notification" in window) {
+      Notification.requestPermission();
+    }
+  };
+
+  const handleDismissPrompt = () => {
+    setShowNotifPrompt(false);
+    localStorage.setItem(NOTIF_KEY, "true");
+  };
+
   const toggleSidebar = () => {
     setSidebarOpen((prev) => {
       const next = !prev;
@@ -78,12 +116,6 @@ function AppLayout() {
     });
   };
 
-  useEffect(() => {
-    bumpStreak();
-    requestAdhanPermission();
-  }, []);
-
-  // Physical CSS properties don't flip with dir="rtl" — compute explicitly.
   const sideEdge = isRTL ? "right"        : "left";
   const padEdge  = isRTL ? "paddingRight" : "paddingLeft";
   const slideOut = isRTL
@@ -91,7 +123,6 @@ function AppLayout() {
     : `translateX(-${SIDEBAR_W}px)`;
   const easing = "300ms cubic-bezier(0.4,0,0.2,1)";
 
-  // Only offset the main content when we're on desktop and the sidebar is visible.
   const contentPad = isDesktop && sidebarOpen ? SIDEBAR_W : 0;
 
   return (
@@ -99,7 +130,6 @@ function AppLayout() {
       dir={isRTL ? "rtl" : "ltr"}
       className="relative flex min-h-screen w-full bg-background text-foreground overflow-x-hidden"
     >
-      {/* ── Desktop sidebar ── hidden below 768 px ── */}
       <aside
         className="hidden md:flex flex-col fixed top-0 h-full z-40"
         style={{
@@ -113,7 +143,6 @@ function AppLayout() {
         <AppSidebar />
       </aside>
 
-      {/* ── Main content column ── */}
       <div
         className="flex flex-col flex-1 w-full min-w-0"
         style={{
@@ -121,7 +150,6 @@ function AppLayout() {
           transition: `${padEdge === "paddingRight" ? "padding-right" : "padding-left"} ${easing}`,
         }}
       >
-        {/* Desktop-only top bar with hamburger — hidden below 768 px */}
         <div className="hidden md:flex items-center h-12 px-3 border-b border-border/20 bg-background/90 backdrop-blur-sm sticky top-0 z-30 shrink-0">
           <button
             onClick={toggleSidebar}
@@ -133,8 +161,6 @@ function AppLayout() {
           </button>
         </div>
 
-        {/* Page content */}
-        {/* pb-20 leaves room for mobile bottom nav; md:pb-4 removes extra space on desktop */}
         <main className="flex-1 overflow-y-auto pb-20 md:pb-4">
           <Switch key={language}>
             <Route path="/"              component={Home}          />
@@ -155,10 +181,14 @@ function AppLayout() {
         </main>
       </div>
 
-      {/* Mobile bottom navigation — hidden on desktop (≥ 768 px) */}
       <div className="md:hidden">
         <BottomNav />
       </div>
+
+      <AdhanBanner banner={banner} onDismiss={dismissBanner} />
+      {showNotifPrompt && isAdhanEnabled() && (
+        <AdhanPermissionPrompt onAllow={handleAllowNotif} onDismiss={handleDismissPrompt} />
+      )}
     </div>
   );
 }

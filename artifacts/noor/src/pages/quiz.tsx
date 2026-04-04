@@ -1,5 +1,8 @@
 import { useState, useMemo } from "react";
-import { CheckCircle2, XCircle, RotateCcw, Trophy, ChevronRight, BookOpen, HelpCircle, Star, RefreshCw } from "lucide-react";
+import {
+  CheckCircle2, XCircle, RotateCcw, Trophy, ChevronRight,
+  BookOpen, HelpCircle, Star, RefreshCw, PartyPopper, ThumbsUp, BookMarked,
+} from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { QUIZ_QUESTIONS, QUIZ_CATEGORIES } from "@/data/quiz-data";
 
@@ -37,6 +40,13 @@ function shuffle<T>(arr: T[]): T[] {
     [a[i], a[j]] = [a[j], a[i]];
   }
   return a;
+}
+
+function GradeIcon({ pct }: { pct: number }) {
+  if (pct >= 90) return <Trophy className="w-16 h-16 text-primary" />;
+  if (pct >= 70) return <ThumbsUp className="w-16 h-16 text-emerald-400" />;
+  if (pct >= 50) return <BookMarked className="w-16 h-16 text-blue-400" />;
+  return <RotateCcw className="w-16 h-16 text-muted-foreground" />;
 }
 
 export default function Quiz() {
@@ -124,7 +134,9 @@ export default function Quiz() {
     return (
       <div className="p-4 md:p-8 max-w-3xl mx-auto min-h-full pb-24 flex flex-col items-center" dir={isDir}>
         <div className="glass-card rounded-3xl p-10 w-full text-center">
-          <div className="text-7xl mb-4">🎉</div>
+          <div className="flex justify-center mb-4">
+            <PartyPopper className="w-16 h-16 text-primary" />
+          </div>
           <h2 className="text-3xl font-bold text-foreground mb-3">{t("quizCongrats")}</h2>
           <p className="text-muted-foreground mb-8 text-sm leading-relaxed">{t("quizAllAnswered")}</p>
           <div className="flex gap-3 justify-center">
@@ -199,7 +211,6 @@ export default function Quiz() {
 
   // ── Results screen ──────────────────────────────────────────────────────
   if (finished) {
-    const grade = pct >= 90 ? "🌟" : pct >= 70 ? "👍" : pct >= 50 ? "📚" : "🔄";
     const gradeLabel = pct >= 90 ? t("quizExcellent")
       : pct >= 70 ? t("quizVeryGood")
       : pct >= 50 ? t("quizKeepLearning")
@@ -208,7 +219,9 @@ export default function Quiz() {
     return (
       <div className="p-4 md:p-8 max-w-3xl mx-auto min-h-full pb-24 flex flex-col items-center" dir={isDir}>
         <div className="glass-card rounded-3xl p-8 w-full text-center mb-6">
-          <div className="text-7xl mb-4">{grade}</div>
+          <div className="flex justify-center mb-4">
+            <GradeIcon pct={pct} />
+          </div>
           <h2 className="text-3xl font-bold text-foreground mb-2">{gradeLabel}</h2>
           <p className="text-muted-foreground mb-6">
             {t("quizAnswered")} {score} {t("quizOutOf")} {total} {t("quizCorrectly")}
