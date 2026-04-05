@@ -11,7 +11,6 @@ import {
 import { useI18n } from "@/lib/i18n";
 
 const PRAYERS = ["Fajr", "Sunrise", "Dhuhr", "Asr", "Maghrib", "Isha"];
-
 type Lang = "en" | "ar" | "fr" | "de";
 
 const PRAYER_NAMES: Record<Lang, Record<string, string>> = {
@@ -97,9 +96,13 @@ function QiblaCompass({ qiblaAngle, deviceHeading, isLive, t }: QiblaCompassProp
 
   if (isLive) {
     const heading = deviceHeading ?? 0;
-    const needleRotation = -heading;
+    // السهم يدور عكس heading باش يبقى ثابت جغرافيا
+    // الكعبة ثابتة فوق (North)
+    // فاش heading = qiblaAngle، السهم يشير للكعبة
+    const needleRotation = qiblaAngle - heading;
     const diff = Math.abs(((heading - qiblaAngle + 540) % 360) - 180);
     const isAligned = diff <= 5;
+
     const alignedColor = "#22c55e";
     const needleColor = isAligned ? alignedColor : "hsl(var(--primary))";
     const ringStroke = isAligned ? "rgba(34,197,94,0.55)" : "rgba(255,255,255,0.10)";
@@ -123,10 +126,12 @@ function QiblaCompass({ qiblaAngle, deviceHeading, isLive, t }: QiblaCompassProp
                 <stop offset="100%" stopColor={isAligned ? "#22c55e" : "hsl(var(--primary))"} stopOpacity="0.20" />
               </radialGradient>
             </defs>
+
             <circle cx="120" cy="120" r="118" fill="url(#outerGlow)" />
             <circle cx="120" cy="120" r="108" fill="url(#dialBg)"
               stroke={ringStroke} strokeWidth={isAligned ? 3 : 1.5}
               style={{ transition: "stroke 0.4s ease, stroke-width 0.4s ease" }} />
+
             {Array.from({ length: 72 }).map((_, i) => {
               const deg = i * 5;
               const isCardinal = deg % 90 === 0;
@@ -142,23 +147,26 @@ function QiblaCompass({ qiblaAngle, deviceHeading, isLive, t }: QiblaCompassProp
                 />
               );
             })}
+
             <text x="120" y="30" textAnchor="middle" dominantBaseline="middle" fill="#ef4444" fontSize="16" fontWeight="800" fontFamily="Inter,system-ui,sans-serif">N</text>
             <text x="120" y="212" textAnchor="middle" dominantBaseline="middle" fill="rgba(255,255,255,0.40)" fontSize="13" fontWeight="600" fontFamily="Inter,system-ui,sans-serif">S</text>
             <text x="213" y="121" textAnchor="middle" dominantBaseline="middle" fill="rgba(255,255,255,0.40)" fontSize="13" fontWeight="600" fontFamily="Inter,system-ui,sans-serif">E</text>
             <text x="27" y="121" textAnchor="middle" dominantBaseline="middle" fill="rgba(255,255,255,0.40)" fontSize="13" fontWeight="600" fontFamily="Inter,system-ui,sans-serif">W</text>
-            <circle cx="120" cy="38" r="13" fill="hsl(var(--primary))" opacity="0.18" />
-            <rect x="111" y="28" width="18" height="15" rx="2" fill="#0d0d0d" stroke="hsl(var(--primary))" strokeWidth="1.6" />
-            <rect x="111" y="34" width="18" height="4" fill="hsl(var(--primary))" opacity="0.75" />
-            <path d="M117,43 Q120,38 123,43 L123,44 L117,44 Z" fill="hsl(var(--primary))" opacity="0.55" />
-            <g style={{ transform: `rotate(${needleRotation}deg)`, transformOrigin: "120px 120px", transition: "transform 0.10s linear" }}>
-              <ellipse cx="120" cy="50" rx="5" ry="9" fill={needleColor} opacity="0.22"
+
+            {/* الكعبة ثابتة فوق دايما */}
+            <circle cx="120" cy="36" r="14" fill="hsl(var(--primary))" opacity="0.15" />
+            <rect x="111" y="26" width="18" height="16" rx="2" fill="#0a0a0a" stroke="hsl(var(--primary))" strokeWidth="1.8" />
+            <rect x="111" y="32" width="18" height="4" fill="hsl(var(--primary))" opacity="0.8" />
+            <path d="M114,42 Q120,36 126,42 L126,43 L114,43 Z" fill="hsl(var(--primary))" opacity="0.6" />
+
+            {/* السهم يدور بـ needleRotation */}
+            <g style={{ transform: "rotate(" + needleRotation + "deg)", transformOrigin: "120px 120px", transition: "transform 0.10s linear" }}>
+              <polygon points="120,32 127,82 113,82" fill={needleColor} opacity="0.95"
                 style={{ transition: "fill 0.4s ease" }} />
-              <polygon points="120,28 127,82 113,82" fill={needleColor} opacity="0.95"
-                style={{ transition: "fill 0.4s ease" }} />
-              <polygon points="120,212 125,162 115,162" fill="rgba(255,255,255,0.15)" />
-              <circle cx="120" cy="120" r="6" fill="hsl(var(--background))" stroke={needleColor} strokeWidth="2"
+              <polygon points="120,210 125,162 115,162" fill="rgba(255,255,255,0.12)" />
+              <circle cx="120" cy="120" r="7" fill="hsl(var(--background))" stroke={needleColor} strokeWidth="2.5"
                 style={{ transition: "stroke 0.4s ease" }} />
-              <circle cx="120" cy="120" r="3" fill={needleColor}
+              <circle cx="120" cy="120" r="3.5" fill={needleColor}
                 style={{ transition: "fill 0.4s ease" }} />
             </g>
           </svg>
@@ -299,25 +307,17 @@ export default function PrayerTimes() {
 
   const { banner, dismissBanner, playFromTap } = useAdhanAlarm(timings, language);
 
-  useEffect(() => {
-    if (timings) savePrayerTimings(timings);
-  }, [timings]);
-
-  useEffect(() => {
-    if (coords) setQiblaAngle(calculateQibla(coords.lat, coords.lng));
-  }, [coords]);
-
+  useEffect(() => { if (timings) savePrayerTimings(timings); }, [timings]);
+  useEffect(() => { if (coords) setQiblaAngle(calculateQibla(coords.lat, coords.lng)); }, [coords]);
   useEffect(() => {
     const lat = cityData?.meta?.latitude ? parseFloat(cityData.meta.latitude) : null;
     const lng = cityData?.meta?.longitude ? parseFloat(cityData.meta.longitude) : null;
     if (lat !== null && lng !== null) setQiblaAngle(calculateQibla(lat, lng));
   }, [cityData]);
-
   useEffect(() => {
     const prefs = loadPrayerPrefs();
     if (prefs) savePrayerPrefs({ ...prefs, method });
   }, [method]);
-
   useEffect(() => {
     const prefs = loadPrayerPrefs();
     if (prefs) return;
@@ -418,8 +418,7 @@ export default function PrayerTimes() {
 
       {locError && (
         <div className="flex items-start gap-2 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 mb-6 text-sm text-red-400">
-          <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-          <span>{locError}</span>
+          <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" /><span>{locError}</span>
         </div>
       )}
       {apiError && !isLoading && (
@@ -440,9 +439,7 @@ export default function PrayerTimes() {
             </div>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               {data?.date?.readable && <span>{data.date.readable}</span>}
-              {timezone && (
-                <span className="px-2 py-0.5 bg-primary/10 text-primary rounded-full text-xs font-medium">{timezone}</span>
-              )}
+              {timezone && <span className="px-2 py-0.5 bg-primary/10 text-primary rounded-full text-xs font-medium">{timezone}</span>}
             </div>
           </div>
 
@@ -463,8 +460,7 @@ export default function PrayerTimes() {
             {PRAYERS.map(prayer => {
               const isCurrent = prayer === currentPrayer, isNext = prayer === nextPrayer;
               return (
-                <div key={prayer}
-                  className={"glass-card rounded-2xl p-6 text-center transition-all " + (isCurrent ? "border-primary/60 bg-primary/10" : isNext ? "border-primary/30" : "border-white/5")}>
+                <div key={prayer} className={"glass-card rounded-2xl p-6 text-center transition-all " + (isCurrent ? "border-primary/60 bg-primary/10" : isNext ? "border-primary/30" : "border-white/5")}>
                   <div className={"flex justify-center mb-2 " + (isCurrent || isNext ? "text-primary" : "text-muted-foreground")}>
                     <PrayerIcon prayer={prayer} className="w-7 h-7" />
                   </div>
@@ -482,18 +478,12 @@ export default function PrayerTimes() {
               <div className="flex flex-col items-center gap-6">
                 <QiblaCompass qiblaAngle={qiblaAngle} deviceHeading={deviceHeading} isLive={compassLive} t={t} />
                 {permission === "unknown" && (
-                  <button onClick={requestPermission}
-                    className="flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:bg-primary/90 transition shadow-lg shadow-primary/20">
-                    <Navigation2 className="w-4 h-4" />
-                    {t("liveCompass")}
+                  <button onClick={requestPermission} className="flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:bg-primary/90 transition shadow-lg shadow-primary/20">
+                    <Navigation2 className="w-4 h-4" />{t("liveCompass")}
                   </button>
                 )}
-                {permission === "denied" && (
-                  <p className="text-xs text-muted-foreground text-center max-w-xs">{t("enableCompassLive")}</p>
-                )}
-                {permission === "unavailable" && (
-                  <p className="text-xs text-muted-foreground text-center">{t("staticBearing")}</p>
-                )}
+                {permission === "denied" && <p className="text-xs text-muted-foreground text-center max-w-xs">{t("enableCompassLive")}</p>}
+                {permission === "unavailable" && <p className="text-xs text-muted-foreground text-center">{t("staticBearing")}</p>}
               </div>
             ) : (
               <div className="flex flex-col items-center gap-4 text-center py-4">
@@ -511,39 +501,26 @@ export default function PrayerTimes() {
         <div className="flex flex-col items-center justify-center py-20 text-center text-muted-foreground gap-4">
           <MapPin className="w-16 h-16 text-primary/30" />
           <p className="text-lg font-medium">{t("searchCity")}</p>
-          <button onClick={handleDetectLocation}
-            className="mt-2 px-6 py-3 bg-primary text-primary-foreground rounded-xl font-semibold text-sm">
-            {t("myLocation")}
-          </button>
+          <button onClick={handleDetectLocation} className="mt-2 px-6 py-3 bg-primary text-primary-foreground rounded-xl font-semibold text-sm">{t("myLocation")}</button>
         </div>
       )}
 
       {banner.visible && (
-        <div
-          className="fixed bottom-20 left-4 right-4 z-50 rounded-2xl border border-primary/40 bg-card shadow-2xl shadow-primary/20 px-5 py-4 flex items-center justify-between gap-4"
-          style={{ backdropFilter: "blur(12px)" }}
-        >
+        <div className="fixed bottom-20 left-4 right-4 z-50 rounded-2xl border border-primary/40 bg-card shadow-2xl shadow-primary/20 px-5 py-4 flex items-center justify-between gap-4" style={{ backdropFilter: "blur(12px)" }}>
           <div>
-            <p className="text-xs text-muted-foreground font-semibold uppercase tracking-widest mb-0.5">
-              {language === "ar" ? "حان وقت الصلاة" : "Prayer Time"}
-            </p>
+            <p className="text-xs text-muted-foreground font-semibold uppercase tracking-widest mb-0.5">{language === "ar" ? "حان وقت الصلاة" : "Prayer Time"}</p>
             <p className="text-xl font-bold text-foreground">{PRAYER_NAMES[lang][banner.prayer] ?? banner.prayer}</p>
             <p className="text-sm font-mono text-primary">{banner.time}</p>
           </div>
           <div className="flex flex-col items-end gap-2">
             {banner.requiresTap ? (
-              <button onClick={() => playFromTap(banner.audioUrl)}
-                className="px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-bold hover:bg-primary/90 transition">
+              <button onClick={() => playFromTap(banner.audioUrl)} className="px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-bold hover:bg-primary/90 transition">
                 اضغط لسماع الأذان
               </button>
             ) : (
-              <p className="text-xs text-primary font-semibold animate-pulse">
-                {language === "ar" ? "يُشغَّل الأذان..." : "Playing Adhan..."}
-              </p>
+              <p className="text-xs text-primary font-semibold animate-pulse">{language === "ar" ? "يُشغَّل الأذان..." : "Playing Adhan..."}</p>
             )}
-            <button onClick={dismissBanner} className="text-xs text-muted-foreground hover:text-foreground transition">
-              {language === "ar" ? "إغلاق" : "Dismiss"}
-            </button>
+            <button onClick={dismissBanner} className="text-xs text-muted-foreground hover:text-foreground transition">{language === "ar" ? "إغلاق" : "Dismiss"}</button>
           </div>
         </div>
       )}
