@@ -28,9 +28,10 @@ function stripHtml(html: string): string {
 }
 
 function stripBismillah(text: string): string {
-  const bismillahPattern = /^[\s\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED\u06E1\u0671]*بِسْمِ\s*ٱللَّهِ\s*ٱلرَّحْمَٰنِ\s*ٱلرَّحِيمِ[\s\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED\u06E1\u0671]*/i;
-  const cleaned = text.replace(bismillahPattern, '').trim();
-  return cleaned || text;
+  // إزالة البسملة من بداية النص
+  let result = text.replace(/^[\s\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED\u06E1\u0671]*بِسْمِ[\s\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED\u06E1\u0671]*ٱللَّهِ[\s\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED\u06E1\u0671]*ٱلرَّحْمَٰنِ[\s\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED\u06E1\u0671]*ٱلرَّحِيمِ[\s\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED\u06E1\u0671]*/i, '');
+  result = result.trim();
+  return result || text;
 }
 
 const TAFSIR_SOURCE: Record<string, string> = {
@@ -201,9 +202,11 @@ export default function SurahDetail() {
         <div className="glass-card rounded-3xl p-6 md:p-10 mb-8">
           <p className="font-quran leading-[2.6] text-right text-foreground text-3xl md:text-4xl" dir="rtl" lang="ar">
             {surah.ayahs.map((ayah: AyahData) => {
-              const verseText = (hasBismillah && ayah.numberInSurah === 1)
-                ? stripBismillah(ayah.text)
-                : ayah.text;
+              // إزالة البسملة من أول آية فقط إذا كانت السورة تبدأ بالبسملة
+              let verseText = ayah.text;
+              if (hasBismillah && ayah.numberInSurah === 1) {
+                verseText = ayah.text.replace(/بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ/g, '').trim();
+              }
               return (
                 <span key={ayah.number}>
                   {verseText}
