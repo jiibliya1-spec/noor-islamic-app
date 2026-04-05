@@ -1,1331 +1,527 @@
-export type Lang = "en" | "ar" | "fr" | "de";
-export type L = Record<Lang, string>;
-export type L4 = Record<Lang, [string, string, string, string]>;
-export type Difficulty = "easy" | "medium" | "hard";
-
-export interface QuizQuestion {
-  id: string;
-  category: "history" | "quran" | "fiqh" | "prophets" | "companions";
-  difficulty: Difficulty;
-  question: L;
-  options: L4;
-  answer: 0 | 1 | 2 | 3;
-  explanation: L;
-}
-
 export const QUIZ_QUESTIONS: QuizQuestion[] = [
-
-  // ═══════════════════════════════════════════════════════════════
-  // EASY — HISTORY (he1–he20)
-  // ═══════════════════════════════════════════════════════════════
-  { id:"he1", category:"history", difficulty:"easy",
-    question:{en:"In which city was the Prophet Muhammad ﷺ born?",ar:"في أي مدينة وُلد النبي محمد ﷺ؟",fr:"Dans quelle ville le Prophète Muhammad ﷺ est-il né?",de:"In welcher Stadt wurde der Prophet Muhammad ﷺ geboren?"},
-    options:{en:["Medina","Jerusalem","Mecca","Ta'if"],ar:["المدينة المنورة","القدس","مكة المكرمة","الطائف"],fr:["Médine","Jérusalem","La Mecque","Taïf"],de:["Medina","Jerusalem","Mekka","Ta'if"]},
-    answer:2,
-    explanation:{en:"The Prophet Muhammad ﷺ was born in Mecca in 570 CE, known as the Year of the Elephant.",ar:"وُلد النبي محمد ﷺ في مكة المكرمة عام 570م، المعروف بعام الفيل.",fr:"Le Prophète Muhammad ﷺ est né à La Mecque en 570 EC, connue comme l'Année de l'Éléphant.",de:"Der Prophet Muhammad ﷺ wurde 570 n. Chr. in Mekka geboren, bekannt als das Jahr des Elefanten."} },
-
-  { id:"he2", category:"history", difficulty:"easy",
-    question:{en:"What is the Islamic calendar also known as?",ar:"بماذا يُعرف التقويم الإسلامي أيضاً؟",fr:"Comment est également appelé le calendrier islamique?",de:"Wie wird der islamische Kalender auch genannt?"},
-    options:{en:["Solar calendar","Gregorian calendar","Hijri calendar","Julian calendar"],ar:["التقويم الشمسي","التقويم الميلادي","التقويم الهجري","التقويم اليولياني"],fr:["Calendrier solaire","Calendrier grégorien","Calendrier hégirien","Calendrier julien"],de:["Sonnenkalender","Gregorianischer Kalender","Hijri-Kalender","Julianischer Kalender"]},
-    answer:2,
-    explanation:{en:"The Islamic calendar is called the Hijri calendar, named after the Prophet's migration (Hijra) from Mecca to Medina in 622 CE.",ar:"يُسمى التقويم الإسلامي بالتقويم الهجري، نسبةً إلى هجرة النبي ﷺ من مكة إلى المدينة عام 622م.",fr:"Le calendrier islamique s'appelle le calendrier hégirien, nommé d'après l'émigration du Prophète de La Mecque à Médine en 622 EC.",de:"Der islamische Kalender heißt Hijri-Kalender, benannt nach der Migration des Propheten von Mekka nach Medina 622 n. Chr."} },
-
-  { id:"he3", category:"history", difficulty:"easy",
-    question:{en:"Who was the first Caliph after the Prophet Muhammad ﷺ?",ar:"من كان أول خليفة بعد النبي محمد ﷺ؟",fr:"Qui fut le premier Calife après le Prophète Muhammad ﷺ?",de:"Wer war der erste Kalif nach dem Propheten Muhammad ﷺ?"},
-    options:{en:["Umar ibn al-Khattab","Uthman ibn Affan","Ali ibn Abi Talib","Abu Bakr al-Siddiq"],ar:["عمر بن الخطاب","عثمان بن عفان","علي بن أبي طالب","أبو بكر الصديق"],fr:["Umar ibn al-Khattab","Uthman ibn Affan","Ali ibn Abi Talib","Abu Bakr al-Siddiq"],de:["Umar ibn al-Khattab","Uthman ibn Affan","Ali ibn Abi Talib","Abu Bakr al-Siddiq"]},
-    answer:3,
-    explanation:{en:"Abu Bakr al-Siddiq (RA) was elected as the first Caliph of Islam after the Prophet's death in 632 CE. He served for approximately 2 years.",ar:"انتُخب أبو بكر الصديق رضي الله عنه أول خليفة للإسلام بعد وفاة النبي ﷺ عام 632م.",fr:"Abu Bakr al-Siddiq (RA) fut élu premier Calife de l'Islam après la mort du Prophète en 632 EC.",de:"Abu Bakr al-Siddiq (ra) wurde nach dem Tod des Propheten 632 n. Chr. zum ersten Kalifen des Islams gewählt."} },
-
-  { id:"he4", category:"history", difficulty:"easy",
-    question:{en:"What year did the Prophet ﷺ migrate from Mecca to Medina (the Hijra)?",ar:"في أي عام هاجر النبي ﷺ من مكة إلى المدينة (الهجرة)؟",fr:"En quelle année le Prophète ﷺ a-t-il émigré de La Mecque à Médine (l'Hégire)?",de:"In welchem Jahr wanderte der Prophet ﷺ von Mekka nach Medina aus?"},
-    options:{en:["610 CE","615 CE","622 CE","630 CE"],ar:["610 م","615 م","622 م","630 م"],fr:["610 EC","615 EC","622 EC","630 EC"],de:["610 n. Chr.","615 n. Chr.","622 n. Chr.","630 n. Chr."]},
-    answer:2,
-    explanation:{en:"The Hijra took place in 622 CE and marks year 1 of the Islamic (Hijri) calendar.",ar:"وقعت الهجرة عام 622م وتُعدّ السنة الأولى من التقويم الهجري.",fr:"L'Hégire eut lieu en 622 EC et marque l'an 1 du calendrier islamique.",de:"Die Hidschra fand 622 n. Chr. statt und markiert Jahr 1 des islamischen Kalenders."} },
-
-  { id:"he5", category:"history", difficulty:"easy",
-    question:{en:"What was the name of the first mosque built in Islam?",ar:"ما اسم أول مسجد بُني في الإسلام؟",fr:"Quel est le nom de la première mosquée construite en Islam?",de:"Wie heißt die erste Moschee, die im Islam gebaut wurde?"},
-    options:{en:["Masjid al-Haram","Masjid an-Nabawi","Masjid al-Aqsa","Masjid Quba"],ar:["المسجد الحرام","المسجد النبوي","المسجد الأقصى","مسجد قباء"],fr:["Masjid al-Haram","Masjid an-Nabawi","Masjid al-Aqsa","Masjid Quba"],de:["Masjid al-Haram","Masjid an-Nabawi","Masjid al-Aqsa","Masjid Quba"]},
-    answer:3,
-    explanation:{en:"Masjid Quba was built by the Prophet ﷺ in 622 CE upon his arrival in Medina — it is the first mosque in Islam.",ar:"بُني مسجد قباء عام 622م عند وصول النبي ﷺ إلى المدينة، وهو أول مسجد في الإسلام.",fr:"La mosquée de Quba fut construite par le Prophète ﷺ en 622 EC à son arrivée à Médine — c'est la première mosquée de l'Islam.",de:"Die Quba-Moschee wurde 622 n. Chr. vom Propheten ﷺ bei seiner Ankunft in Medina erbaut — sie ist die erste Moschee des Islams."} },
-
-  { id:"he6", category:"history", difficulty:"easy",
-    question:{en:"Which battle is known as the first major battle of Islam, fought in 624 CE?",ar:"أي المعارك تُعرف بأنها أول معركة كبرى في الإسلام عام 624م؟",fr:"Quelle bataille est connue comme la première grande bataille de l'Islam en 624 EC?",de:"Welche Schlacht gilt als erste große Schlacht des Islams, 624 n. Chr.?"},
-    options:{en:["Battle of Uhud","Battle of Khandaq","Battle of Badr","Battle of Hunayn"],ar:["غزوة أحد","غزوة الخندق","غزوة بدر","غزوة حنين"],fr:["Bataille d'Uhud","Bataille de Khandaq","Bataille de Badr","Bataille de Hunayn"],de:["Schlacht von Uhud","Grabenschlacht","Schlacht von Badr","Schlacht von Hunayn"]},
-    answer:2,
-    explanation:{en:"The Battle of Badr (2 AH / 624 CE) was the first major armed conflict between the Muslims and the Quraysh. The Muslims were victorious despite being outnumbered.",ar:"غزوة بدر (2هـ / 624م) كانت أول مواجهة مسلحة كبرى بين المسلمين والمشركين، وانتصر فيها المسلمون.",fr:"La bataille de Badr (2 H / 624 EC) fut le premier grand conflit armé entre les musulmans et les Quraysh.",de:"Die Schlacht von Badr (2 n. H. / 624 n. Chr.) war der erste große bewaffnete Konflikt zwischen den Muslimen und den Quraisch."} },
-
-  { id:"he7", category:"history", difficulty:"easy",
-    question:{en:"How many years did the Prophet Muhammad ﷺ live?",ar:"كم عاماً عاش النبي محمد ﷺ؟",fr:"Combien d'années a vécu le Prophète Muhammad ﷺ?",de:"Wie viele Jahre lebte der Prophet Muhammad ﷺ?"},
-    options:{en:["50 years","55 years","60 years","63 years"],ar:["50 سنة","55 سنة","60 سنة","63 سنة"],fr:["50 ans","55 ans","60 ans","63 ans"],de:["50 Jahre","55 Jahre","60 Jahre","63 Jahre"]},
-    answer:3,
-    explanation:{en:"The Prophet Muhammad ﷺ was born in 570 CE and passed away in 632 CE, living for 63 years.",ar:"وُلد النبي ﷺ عام 570م وتوفي عام 632م، عاش 63 سنة.",fr:"Le Prophète Muhammad ﷺ est né en 570 EC et est décédé en 632 EC, à l'âge de 63 ans.",de:"Der Prophet Muhammad ﷺ wurde 570 n. Chr. geboren und starb 632 n. Chr., er lebte 63 Jahre."} },
-
-  { id:"he8", category:"history", difficulty:"easy",
-    question:{en:"What was the name of the Prophet's ﷺ first wife?",ar:"ما اسم زوجة النبي ﷺ الأولى؟",fr:"Quel était le nom de la première épouse du Prophète ﷺ?",de:"Wie hieß die erste Frau des Propheten ﷺ?"},
-    options:{en:["Aisha","Hafsa","Khadijah","Zaynab"],ar:["عائشة","حفصة","خديجة","زينب"],fr:["Aïcha","Hafsa","Khadija","Zaynab"],de:["Aisha","Hafsa","Khadija","Zaynab"]},
-    answer:2,
-    explanation:{en:"Khadijah bint Khuwaylid (RA) was the Prophet's ﷺ first wife and the first person to embrace Islam. They were married for 25 years.",ar:"خديجة بنت خويلد رضي الله عنها كانت زوجة النبي ﷺ الأولى، وأول من أسلم. تزوجا 25 سنة.",fr:"Khadija bint Khuwaylid (RA) fut la première épouse du Prophète ﷺ et la première personne à embrasser l'Islam.",de:"Khadija bint Khuwailid (ra) war die erste Frau des Propheten ﷺ und die erste Person, die den Islam annahm."} },
-
-  { id:"he9", category:"history", difficulty:"easy",
-    question:{en:"The Mecca conquest (Fath Makkah) took place in which year?",ar:"في أي عام وقع فتح مكة المكرمة؟",fr:"En quelle année eut lieu la conquête de La Mecque (Fath Makkah)?",de:"In welchem Jahr fand die Eroberung Mekkas statt?"},
-    options:{en:["624 CE","627 CE","630 CE","632 CE"],ar:["624 م","627 م","630 م","632 م"],fr:["624 EC","627 EC","630 EC","632 EC"],de:["624 n. Chr.","627 n. Chr.","630 n. Chr.","632 n. Chr."]},
-    answer:2,
-    explanation:{en:"The Prophet ﷺ conquered Mecca in 630 CE (8 AH) without significant bloodshed, forgiving most of the Quraysh.",ar:"فتح النبي ﷺ مكة المكرمة عام 630م (8هـ) دون إراقة دماء تقريباً.",fr:"Le Prophète ﷺ conquit La Mecque en 630 EC (8 H) sans effusion de sang significative.",de:"Der Prophet ﷺ eroberte Mekka 630 n. Chr. (8 n. H.) fast ohne Blutvergießen."} },
-
-  { id:"he10", category:"history", difficulty:"easy",
-    question:{en:"How many Rightly Guided Caliphs (Khulafa Rashidun) were there?",ar:"كم كان عدد الخلفاء الراشدين؟",fr:"Combien de Califes Bien Guidés (Khulafa Rashidun) y avait-il?",de:"Wie viele rechtgeleitete Kalifen (Khulafa Rashidun) gab es?"},
-    options:{en:["2","3","4","5"],ar:["2","3","4","5"],fr:["2","3","4","5"],de:["2","3","4","5"]},
-    answer:2,
-    explanation:{en:"There were 4 Rightly Guided Caliphs: Abu Bakr, Umar, Uthman, and Ali (may Allah be pleased with them all).",ar:"كان هناك 4 خلفاء راشدون: أبو بكر وعمر وعثمان وعلي رضي الله عنهم.",fr:"Il y avait 4 Califes Bien Guidés: Abu Bakr, Umar, Uthman et Ali (qu'Allah soit satisfait d'eux).",de:"Es gab 4 rechtgeleitete Kalifen: Abu Bakr, Umar, Uthman und Ali (möge Allah mit ihnen zufrieden sein)."} },
-
-  { id:"he11", category:"history", difficulty:"easy",
-    question:{en:"In which year did the Prophet ﷺ receive the first revelation?",ar:"في أي عام نزل أول وحي على النبي ﷺ؟",fr:"En quelle année le Prophète ﷺ reçut-il la première révélation?",de:"In welchem Jahr erhielt der Prophet ﷺ die erste Offenbarung?"},
-    options:{en:["605 CE","608 CE","610 CE","615 CE"],ar:["605 م","608 م","610 م","615 م"],fr:["605 EC","608 EC","610 EC","615 EC"],de:["605 n. Chr.","608 n. Chr.","610 n. Chr.","615 n. Chr."]},
-    answer:2,
-    explanation:{en:"The first revelation came in 610 CE in the Cave of Hira on Mount Nur, near Mecca, when Jibreel (AS) revealed the first verses of Surah Al-Alaq.",ar:"نزل الوحي الأول عام 610م في غار حراء بجبل النور قرب مكة، حين جاء جبريل بأوائل سورة العلق.",fr:"La première révélation descendit en 610 EC dans la grotte de Hira, sur le mont Nur près de La Mecque.",de:"Die erste Offenbarung kam 610 n. Chr. in der Höhle Hira auf dem Berg Nur nahe Mekka."} },
-
-  { id:"he12", category:"history", difficulty:"easy",
-    question:{en:"Where did the first Muslims migrate to escape persecution in Mecca?",ar:"إلى أين هاجر أوائل المسلمين هرباً من اضطهاد قريش؟",fr:"Où les premiers musulmans ont-ils émigré pour fuir la persécution à La Mecque?",de:"Wohin wanderten die ersten Muslime aus, um der Verfolgung in Mekka zu entkommen?"},
-    options:{en:["Syria","Yemen","Persia","Abyssinia (Ethiopia)"],ar:["الشام","اليمن","فارس","الحبشة (إثيوبيا)"],fr:["La Syrie","Le Yémen","La Perse","L'Abyssinie (Éthiopie)"],de:["Syrien","Jemen","Persien","Abessinien (Äthiopien)"]},
-    answer:3,
-    explanation:{en:"The first Muslims migrated to Abyssinia (Ethiopia) in 615 CE, seeking refuge with the Christian king Negus (al-Najashi), who protected them.",ar:"هاجر المسلمون الأوائل إلى الحبشة عام 615م ليحتموا بالملك النجاشي الذي أكرم وفادتهم.",fr:"Les premiers musulmans émigrèrent en Abyssinie en 615 EC, cherchant refuge auprès du roi chrétien Négus.",de:"Die ersten Muslime wanderten 615 n. Chr. nach Abessinien aus und suchten Zuflucht beim christlichen König Negus."} },
-
-  { id:"he13", category:"history", difficulty:"easy",
-    question:{en:"Which city did the Prophet ﷺ migrate to during the Hijra?",ar:"إلى أي مدينة هاجر النبي ﷺ في الهجرة؟",fr:"Dans quelle ville le Prophète ﷺ a-t-il émigré lors de l'Hégire?",de:"In welche Stadt wanderte der Prophet ﷺ während der Hidschra aus?"},
-    options:{en:["Mecca","Ta'if","Jerusalem","Medina"],ar:["مكة","الطائف","القدس","المدينة المنورة"],fr:["La Mecque","Taïf","Jérusalem","Médine"],de:["Mekka","Ta'if","Jerusalem","Medina"]},
-    answer:3,
-    explanation:{en:"The Prophet ﷺ migrated to Medina (formerly called Yathrib) in 622 CE, marking the start of the Islamic calendar.",ar:"هاجر النبي ﷺ إلى المدينة المنورة (يثرب سابقاً) عام 622م.",fr:"Le Prophète ﷺ émigra à Médine (anciennement appelée Yathrib) en 622 EC.",de:"Der Prophet ﷺ wanderte nach Medina (früher Yathrib genannt) im Jahr 622 n. Chr. aus."} },
-
-  { id:"he14", category:"history", difficulty:"easy",
-    question:{en:"What was the name of the treaty signed between the Muslims and Quraysh in 628 CE?",ar:"ما اسم المعاهدة التي أُبرمت بين المسلمين وقريش عام 628م؟",fr:"Quel était le nom du traité signé entre les musulmans et les Quraysh en 628 EC?",de:"Wie hieß der Vertrag, der 628 n. Chr. zwischen den Muslimen und den Quraisch unterzeichnet wurde?"},
-    options:{en:["Treaty of Medina","Treaty of Ta'if","Treaty of Hudaybiyyah","Treaty of Tabuk"],ar:["وثيقة المدينة","معاهدة الطائف","صلح الحديبية","معاهدة تبوك"],fr:["Traité de Médine","Traité de Taïf","Traité de Hudaybiyyah","Traité de Tabuk"],de:["Vertrag von Medina","Vertrag von Ta'if","Vertrag von Hudaibiyya","Vertrag von Tabuk"]},
-    answer:2,
-    explanation:{en:"The Treaty of Hudaybiyyah (6 AH / 628 CE) was a peace agreement between the Prophet ﷺ and the Quraysh, which the Quran called 'a clear victory.'",ar:"صلح الحديبية (6هـ / 628م) هو اتفاقية سلام بين النبي ﷺ وقريش، وصفها القرآن بـ'الفتح المبين'.",fr:"Le traité de Hudaybiyyah (6 H / 628 EC) fut un accord de paix que le Coran appela 'une victoire éclatante'.",de:"Der Vertrag von Hudaibiyya (6 n. H. / 628 n. Chr.) war ein Friedensabkommen, das der Quran als 'klarer Sieg' bezeichnete."} },
-
-  { id:"he15", category:"history", difficulty:"easy",
-    question:{en:"In which city is the Prophet's ﷺ mosque (Masjid an-Nabawi) located?",ar:"في أي مدينة يقع المسجد النبوي الشريف؟",fr:"Dans quelle ville se trouve la mosquée du Prophète ﷺ (Masjid an-Nabawi)?",de:"In welcher Stadt befindet sich die Prophetenmoschee (Masjid an-Nabawi)?"},
-    options:{en:["Mecca","Jerusalem","Ta'if","Medina"],ar:["مكة المكرمة","القدس","الطائف","المدينة المنورة"],fr:["La Mecque","Jérusalem","Taïf","Médine"],de:["Mekka","Jerusalem","Ta'if","Medina"]},
-    answer:3,
-    explanation:{en:"Masjid an-Nabawi is located in Medina, Saudi Arabia. It was built by the Prophet ﷺ after the Hijra and is the second holiest site in Islam.",ar:"يقع المسجد النبوي في المدينة المنورة بالمملكة العربية السعودية، بناه النبي ﷺ بعد الهجرة.",fr:"Masjid an-Nabawi se trouve à Médine en Arabie Saoudite. Il fut construit par le Prophète ﷺ après l'Hégire.",de:"Masjid an-Nabawi befindet sich in Medina, Saudi-Arabien, und wurde vom Propheten ﷺ nach der Hidschra gebaut."} },
-
-  { id:"he16", category:"history", difficulty:"easy",
-    question:{en:"What is the Kaaba?",ar:"ما هي الكعبة المشرفة؟",fr:"Qu'est-ce que la Kaaba?",de:"Was ist die Kaaba?"},
-    options:{en:["The Prophet's tomb","The first university in Islam","The cubic structure in Masjid al-Haram that Muslims face in prayer","The mountain where the first revelation came"],ar:["قبر النبي ﷺ","أول جامعة في الإسلام","البناء الكعبي في المسجد الحرام الذي يتجه إليه المسلمون في صلاتهم","الجبل الذي نزل فيه الوحي"],fr:["Le tombeau du Prophète","La première université islamique","La structure cubique dans Masjid al-Haram vers laquelle les musulmans prient","La montagne où la première révélation est descendue"],de:["Das Grab des Propheten","Die erste Universität im Islam","Das würfelförmige Gebäude in Masjid al-Haram zu dem Muslime im Gebet blicken","Der Berg wo die erste Offenbarung kam"]},
-    answer:2,
-    explanation:{en:"The Kaaba is the cubic structure located in Masjid al-Haram in Mecca. It is the direction (Qibla) that all Muslims face during prayer and is considered the holiest site in Islam.",ar:"الكعبة المشرفة هي البناء الكعبي الموجود في المسجد الحرام بمكة، وهي القبلة التي يتجه إليها المسلمون في صلاتهم.",fr:"La Kaaba est la structure cubique du Masjid al-Haram à La Mecque. C'est la direction (Qibla) vers laquelle tous les musulmans prient.",de:"Die Kaaba ist das würfelförmige Gebäude in Masjid al-Haram in Mekka. Es ist die Richtung (Qibla) zu der alle Muslime beim Gebet blicken."} },
-
-  { id:"he17", category:"history", difficulty:"easy",
-    question:{en:"What is the name of the cave where the Prophet ﷺ received the first revelation?",ar:"ما اسم الغار الذي تلقى فيه النبي ﷺ الوحي الأول؟",fr:"Quel est le nom de la grotte où le Prophète ﷺ reçut la première révélation?",de:"Wie heißt die Höhle, in der der Prophet ﷺ die erste Offenbarung empfing?"},
-    options:{en:["Cave of Thawr","Cave of Hira","Cave of Uhud","Cave of Quba"],ar:["غار ثور","غار حراء","غار أحد","غار قباء"],fr:["Grotte de Thawr","Grotte de Hira","Grotte d'Uhud","Grotte de Quba"],de:["Höhle Thawr","Höhle Hira","Höhle Uhud","Höhle Quba"]},
-    answer:1,
-    explanation:{en:"The Cave of Hira (Ghar Hira) on Mount Nur near Mecca is where the Prophet ﷺ received the first revelation of the Quran from Angel Jibreel.",ar:"غار حراء في جبل النور قرب مكة هو المكان الذي نزل فيه جبريل على النبي ﷺ بأول آيات القرآن.",fr:"La grotte de Hira sur le mont Nur près de La Mecque est l'endroit où le Prophète ﷺ reçut la première révélation du Coran.",de:"Die Höhle Hira auf dem Berg Nur nahe Mekka ist der Ort, wo der Prophet ﷺ die erste Offenbarung des Qurans erhielt."} },
-
-  { id:"he18", category:"history", difficulty:"easy",
-    question:{en:"What event is known as 'Isra wal Mi'raj'?",ar:"ما الحدث المعروف بـ'الإسراء والمعراج'؟",fr:"Quel événement est connu sous le nom d'Isra wal Mi'raj?",de:"Welches Ereignis ist als 'Isra wal Mi'raj' bekannt?"},
-    options:{en:["The Battle of Badr","The migration to Medina","The night journey and ascension of the Prophet ﷺ to the heavens","The conquest of Mecca"],ar:["غزوة بدر","الهجرة إلى المدينة","الرحلة الليلية وصعود النبي ﷺ إلى السماء","فتح مكة"],fr:["La bataille de Badr","La migration à Médine","Le voyage nocturne et l'ascension du Prophète ﷺ aux cieux","La conquête de La Mecque"],de:["Die Schlacht von Badr","Die Migration nach Medina","Die Nachtreise und Himmelfahrt des Propheten ﷺ","Die Eroberung Mekkas"]},
-    answer:2,
-    explanation:{en:"Isra wal Mi'raj refers to the miraculous night journey of the Prophet ﷺ from Mecca to Jerusalem (Isra), then his ascension through the heavens (Mi'raj), where the 5 daily prayers were prescribed.",ar:"الإسراء والمعراج هو الرحلة المعجزة من مكة إلى القدس (الإسراء) ثم الصعود إلى السماوات (المعراج) حيث فُرضت الصلوات الخمس.",fr:"L'Isra wal Mi'raj désigne le voyage nocturne miraculeux du Prophète ﷺ de La Mecque à Jérusalem (Isra), puis son ascension à travers les cieux (Mi'raj).",de:"Isra wal Mi'raj bezeichnet die wundersame Nachtreise des Propheten ﷺ von Mekka nach Jerusalem (Isra) und dann die Himmelfahrt (Mi'raj)."} },
-
-  { id:"he19", category:"history", difficulty:"easy",
-    question:{en:"What was the name of the Angel who brought revelations to the Prophet ﷺ?",ar:"ما اسم الملك الذي كان يُنزِّل الوحي على النبي ﷺ؟",fr:"Quel était le nom de l'Ange qui apportait les révélations au Prophète ﷺ?",de:"Wie hieß der Engel, der dem Propheten ﷺ die Offenbarungen brachte?"},
-    options:{en:["Israfil","Mikail","Jibreel","Azrael"],ar:["إسرافيل","ميكائيل","جبريل","عزرائيل"],fr:["Israfil","Mikail","Jibreel","Azraël"],de:["Israfil","Mikail","Jibreel","Azrael"]},
-    answer:2,
-    explanation:{en:"Jibreel (Gabriel, AS) was the Angel of Revelation who brought the words of Allah to the Prophet Muhammad ﷺ over 23 years.",ar:"جبريل عليه السلام هو ملك الوحي الذي أنزل كلام الله على النبي محمد ﷺ على مدى 23 سنة.",fr:"Jibreel (Gabriel, AS) était l'Ange de la Révélation qui apporta la parole d'Allah au Prophète Muhammad ﷺ pendant 23 ans.",de:"Jibreel (Gabriel, AS) war der Engel der Offenbarung, der dem Propheten Muhammad ﷺ 23 Jahre lang Allahs Worte brachte."} },
-
-  { id:"he20", category:"history", difficulty:"easy",
-    question:{en:"Which sea did Prophet Musa (AS) miraculously part to save the Children of Israel?",ar:"أي بحر شقّه النبي موسى عليه السلام معجزةً لإنقاذ بني إسرائيل؟",fr:"Quelle mer le Prophète Moussa (AS) sépara-t-il miraculeusement pour sauver les Enfants d'Israël?",de:"Welches Meer teilte Prophet Musa (AS) wundersam, um die Kinder Israels zu retten?"},
-    options:{en:["Arabian Sea","Mediterranean Sea","Red Sea","Dead Sea"],ar:["بحر العرب","البحر الأبيض المتوسط","البحر الأحمر","البحر الميت"],fr:["Mer d'Arabie","Mer Méditerranée","Mer Rouge","Mer Morte"],de:["Arabisches Meer","Mittelmeer","Rotes Meer","Totes Meer"]},
-    answer:2,
-    explanation:{en:"Allah parted the Red Sea for Prophet Musa (AS) and the Children of Israel to escape from Pharaoh's army, as described in Surah Al-Baqarah and Surah Taha.",ar:"شق الله البحر الأحمر لنبي الله موسى عليه السلام وبني إسرائيل هرباً من فرعون، كما ورد في سورتَي البقرة وطه.",fr:"Allah sépara la Mer Rouge pour le Prophète Moussa (AS) et les Enfants d'Israël pour leur permettre d'échapper à l'armée du Pharaon.",de:"Allah teilte das Rote Meer für Prophet Musa (AS) und die Kinder Israels, um der Armee des Pharaos zu entkommen."} },
-
-  // ═══════════════════════════════════════════════════════════════
-  // EASY — QURAN (qe1–qe20)
-  // ═══════════════════════════════════════════════════════════════
-  { id:"qe1", category:"quran", difficulty:"easy",
-    question:{en:"How many surahs (chapters) are in the Quran?",ar:"كم سورة في القرآن الكريم؟",fr:"Combien de sourates (chapitres) y a-t-il dans le Coran?",de:"Wie viele Suren (Kapitel) enthält der Quran?"},
-    options:{en:["100","110","114","120"],ar:["100","110","114","120"],fr:["100","110","114","120"],de:["100","110","114","120"]},
-    answer:2,
-    explanation:{en:"The Quran contains exactly 114 surahs. The first is Al-Fatiha (The Opening) and the last is An-Nas (Mankind).",ar:"القرآن الكريم يتكون من 114 سورة، أولها الفاتحة وآخرها الناس.",fr:"Le Coran contient exactement 114 sourates. La première est Al-Fatiha (L'Ouverture) et la dernière est An-Nas (Les Hommes).",de:"Der Quran enthält genau 114 Suren. Die erste ist Al-Fatiha (die Öffnung) und die letzte ist An-Nas (die Menschen)."} },
-
-  { id:"qe2", category:"quran", difficulty:"easy",
-    question:{en:"What is the first surah of the Quran?",ar:"ما أول سورة في القرآن الكريم؟",fr:"Quelle est la première sourate du Coran?",de:"Was ist die erste Sure des Qurans?"},
-    options:{en:["Al-Baqarah","Al-Ikhlas","Al-Fatiha","Al-Kahf"],ar:["البقرة","الإخلاص","الفاتحة","الكهف"],fr:["Al-Baqarah","Al-Ikhlas","Al-Fatiha","Al-Kahf"],de:["Al-Baqarah","Al-Ikhlas","Al-Fatiha","Al-Kahf"]},
-    answer:2,
-    explanation:{en:"Al-Fatiha (The Opening) is the first surah of the Quran. It has 7 verses and is recited in every rak'ah of prayer.",ar:"الفاتحة (فاتحة الكتاب) هي أول سورة في القرآن، تتكون من 7 آيات وتُقرأ في كل ركعة من الصلاة.",fr:"Al-Fatiha (L'Ouverture) est la première sourate du Coran. Elle compte 7 versets et est récitée à chaque rak'a de la prière.",de:"Al-Fatiha (Die Öffnung) ist die erste Sure des Qurans. Sie hat 7 Verse und wird in jeder Gebetseinheit rezitiert."} },
-
-  { id:"qe3", category:"quran", difficulty:"easy",
-    question:{en:"Which is the longest surah in the Quran?",ar:"ما أطول سورة في القرآن الكريم؟",fr:"Quelle est la plus longue sourate du Coran?",de:"Welches ist die längste Sure des Qurans?"},
-    options:{en:["Al-Imran","Al-Baqarah","An-Nisa","Al-Ma'idah"],ar:["آل عمران","البقرة","النساء","المائدة"],fr:["Al-Imran","Al-Baqarah","An-Nisa","Al-Ma'idah"],de:["Al-Imran","Al-Baqarah","An-Nisa","Al-Ma'idah"]},
-    answer:1,
-    explanation:{en:"Al-Baqarah (The Cow) is the longest surah in the Quran with 286 verses. It contains Ayat al-Kursi (verse 255), the greatest verse of the Quran.",ar:"البقرة هي أطول سورة في القرآن بـ 286 آية، وتحتوي على آية الكرسي (الآية 255).",fr:"Al-Baqarah (La Vache) est la plus longue sourate du Coran avec 286 versets. Elle contient Ayat al-Kursi (verset 255).",de:"Al-Baqarah (Die Kuh) ist die längste Sure des Qurans mit 286 Versen. Sie enthält Ayat al-Kursi (Vers 255)."} },
-
-  { id:"qe4", category:"quran", difficulty:"easy",
-    question:{en:"What was the first word revealed to the Prophet ﷺ in the Quran?",ar:"ما أول كلمة نزلت على النبي ﷺ في القرآن؟",fr:"Quel fut le premier mot révélé au Prophète ﷺ dans le Coran?",de:"Was war das erste Wort, das dem Propheten ﷺ im Quran offenbart wurde?"},
-    options:{en:["Bismillah","Alhamdulillah","Iqra (Read)","Qul (Say)"],ar:["بسم الله","الحمد لله","اقرأ","قل"],fr:["Bismillah","Alhamdulillah","Iqra (Lis)","Qul (Dis)"],de:["Bismillah","Alhamdulillah","Iqra (Lies)","Qul (Sag)"]},
-    answer:2,
-    explanation:{en:"The first word revealed was 'Iqra' (Read/Recite) — the opening of Surah Al-Alaq. Jibreel (AS) commanded the Prophet ﷺ to read in the Cave of Hira.",ar:"أول كلمة نزلت في القرآن هي 'اقرأ' — مطلع سورة العلق. أمر جبريل النبي ﷺ بالقراءة في غار حراء.",fr:"Le premier mot révélé était 'Iqra' (Lis/Récite) — l'ouverture de Sourate Al-Alaq. Jibreel (AS) ordonna au Prophète de lire dans la Grotte de Hira.",de:"Das erste offenbarte Wort war 'Iqra' (Lies/Rezitiere) — der Beginn von Surah Al-Alaq. Jibreel (AS) befahl dem Propheten ﷺ in der Höhle Hira zu lesen."} },
-
-  { id:"qe5", category:"quran", difficulty:"easy",
-    question:{en:"Which surah is known as the 'Heart of the Quran'?",ar:"أي سورة تُعرف بـ'قلب القرآن'؟",fr:"Quelle sourate est connue comme le 'Cœur du Coran'?",de:"Welche Sure ist als das 'Herz des Qurans' bekannt?"},
-    options:{en:["Al-Fatiha","Al-Ikhlas","Yasin","Al-Kahf"],ar:["الفاتحة","الإخلاص","يس","الكهف"],fr:["Al-Fatiha","Al-Ikhlas","Yasin","Al-Kahf"],de:["Al-Fatiha","Al-Ikhlas","Yasin","Al-Kahf"]},
-    answer:2,
-    explanation:{en:"Surah Yasin (Chapter 36) is called the 'Heart of the Quran.' The Prophet ﷺ said: 'Everything has a heart, and the heart of the Quran is Yasin.' (Ahmad, Abu Dawud)",ar:"سورة يس تُعرف بـ'قلب القرآن'. قال النبي ﷺ: 'إن لكل شيء قلبًا وقلب القرآن يس.' (رواه أحمد وأبو داود)",fr:"La sourate Yasin (chapitre 36) est appelée le 'Cœur du Coran.' Le Prophète ﷺ dit: 'Tout a un cœur, et le cœur du Coran est Yasin.'",de:"Surah Yasin (Kapitel 36) wird das 'Herz des Qurans' genannt. Der Prophet ﷺ sagte: 'Alles hat ein Herz, und das Herz des Qurans ist Yasin.'"} },
-
-  { id:"qe6", category:"quran", difficulty:"easy",
-    question:{en:"Which surah means 'The Purity' or 'Sincerity' and describes Allah's oneness?",ar:"أي سورة تعني 'الإخلاص' وتصف توحيد الله؟",fr:"Quelle sourate signifie 'La Pureté' ou 'La Sincérité' et décrit l'unicité d'Allah?",de:"Welche Sure bedeutet 'Reinheit' oder 'Aufrichtigkeit' und beschreibt Allahs Einheit?"},
-    options:{en:["Al-Falaq","An-Nas","Al-Ikhlas","Al-Kawthar"],ar:["الفلق","الناس","الإخلاص","الكوثر"],fr:["Al-Falaq","An-Nas","Al-Ikhlas","Al-Kawthar"],de:["Al-Falaq","An-Nas","Al-Ikhlas","Al-Kawthar"]},
-    answer:2,
-    explanation:{en:"Surah Al-Ikhlas (Chapter 112) affirms the absolute oneness of Allah. The Prophet ﷺ said it is equal to one-third of the Quran in reward.",ar:"سورة الإخلاص (الفصل 112) تؤكد توحيد الله المطلق. قال النبي ﷺ إنها تعدل ثلث القرآن.",fr:"La sourate Al-Ikhlas (chapitre 112) affirme l'unicité absolue d'Allah. Le Prophète ﷺ dit qu'elle équivaut à un tiers du Coran.",de:"Surah Al-Ikhlas (Kapitel 112) bekräftigt die absolute Einheit Allahs. Der Prophet ﷺ sagte, sie entspricht einem Drittel des Qurans."} },
-
-  { id:"qe7", category:"quran", difficulty:"easy",
-    question:{en:"The Quran was revealed over how many years?",ar:"على مدى كم سنة نزل القرآن الكريم؟",fr:"Le Coran fut révélé sur combien d'années?",de:"Über wie viele Jahre wurde der Quran offenbart?"},
-    options:{en:["10 years","15 years","20 years","23 years"],ar:["10 سنوات","15 سنة","20 سنة","23 سنة"],fr:["10 ans","15 ans","20 ans","23 ans"],de:["10 Jahre","15 Jahre","20 Jahre","23 Jahre"]},
-    answer:3,
-    explanation:{en:"The Quran was revealed over approximately 23 years — 13 years in Mecca (610–622 CE) and 10 years in Medina (622–632 CE).",ar:"نزل القرآن على مدى 23 سنة تقريباً — 13 سنة في مكة و10 سنوات في المدينة.",fr:"Le Coran fut révélé sur environ 23 ans — 13 ans à La Mecque et 10 ans à Médine.",de:"Der Quran wurde über ca. 23 Jahre offenbart — 13 Jahre in Mekka und 10 Jahre in Medina."} },
-
-  { id:"qe8", category:"quran", difficulty:"easy",
-    question:{en:"What is 'Ayat al-Kursi'?",ar:"ما هي آية الكرسي؟",fr:"Qu'est-ce qu'Ayat al-Kursi?",de:"Was ist 'Ayat al-Kursi'?"},
-    options:{en:["The last verse of the Quran","The first verse of Al-Fatiha","Verse 255 of Al-Baqarah — the greatest verse of the Quran","The verse about the five pillars"],ar:["آخر آية في القرآن","أول آية من الفاتحة","الآية 255 من البقرة — أعظم آية في القرآن","الآية المتعلقة بأركان الإسلام"],fr:["Le dernier verset du Coran","Le premier verset d'Al-Fatiha","Le verset 255 d'Al-Baqarah — le plus grand verset du Coran","Le verset sur les cinq piliers"],de:["Der letzte Vers des Qurans","Der erste Vers der Al-Fatiha","Vers 255 der Al-Baqarah — der größte Vers des Qurans","Der Vers über die fünf Säulen"]},
-    answer:2,
-    explanation:{en:"Ayat al-Kursi is verse 255 of Surah Al-Baqarah. The Prophet ﷺ said it is the greatest verse in the Quran. Reciting it after prayers brings protection.",ar:"آية الكرسي هي الآية 255 من سورة البقرة. قال النبي ﷺ إنها أعظم آية في القرآن، وقراءتها بعد الصلاة تجلب الحماية.",fr:"Ayat al-Kursi est le verset 255 de Sourate Al-Baqarah. Le Prophète ﷺ dit que c'est le plus grand verset du Coran.",de:"Ayat al-Kursi ist Vers 255 der Sure Al-Baqarah. Der Prophet ﷺ sagte, es ist der größte Vers im Quran."} },
-
-  { id:"qe9", category:"quran", difficulty:"easy",
-    question:{en:"Which surah is recommended to be read every Friday?",ar:"أي سورة يُستحب قراءتها كل يوم جمعة؟",fr:"Quelle sourate est recommandée à lire chaque vendredi?",de:"Welche Sure wird empfohlen, jeden Freitag zu lesen?"},
-    options:{en:["Al-Baqarah","Al-Mulk","Al-Kahf","Yasin"],ar:["البقرة","الملك","الكهف","يس"],fr:["Al-Baqarah","Al-Mulk","Al-Kahf","Yasin"],de:["Al-Baqarah","Al-Mulk","Al-Kahf","Yasin"]},
-    answer:2,
-    explanation:{en:"The Prophet ﷺ said: 'Whoever reads Surah Al-Kahf on Friday, a light will shine for him from one Friday to the next.' (Al-Hakim, Al-Bayhaqi)",ar:"قال النبي ﷺ: 'من قرأ سورة الكهف يوم الجمعة أضاء له من النور ما بين الجمعتين.' (رواه الحاكم والبيهقي)",fr:"Le Prophète ﷺ dit: 'Quiconque lit la sourate Al-Kahf le vendredi, une lumière brillera pour lui d'un vendredi à l'autre.'",de:"Der Prophet ﷺ sagte: 'Wer die Sure Al-Kahf am Freitag liest, dem wird von einem Freitag zum nächsten ein Licht leuchten.'"} },
-
-  { id:"qe10", category:"quran", difficulty:"easy",
-    question:{en:"What does 'Bismillah ir-Rahman ir-Rahim' mean?",ar:"ما معنى 'بسم الله الرحمن الرحيم'؟",fr:"Que signifie 'Bismillah ir-Rahman ir-Rahim'?",de:"Was bedeutet 'Bismillah ir-Rahman ir-Rahim'?"},
-    options:{en:["Praise be to Allah","In the name of Allah, the Most Gracious, the Most Merciful","There is no god but Allah","Allah is the Greatest"],ar:["الحمد لله","بسم الله الرحمن الرحيم","لا إله إلا الله","الله أكبر"],fr:["Louange à Allah","Au nom d'Allah, le Très Miséricordieux, le Miséricordieux","Il n'y a pas de dieu sauf Allah","Allah est le plus Grand"],de:["Lob sei Allah","Im Namen Allahs, des Allerbarmers, des Barmherzigen","Es gibt keinen Gott außer Allah","Allah ist der Größte"]},
-    answer:1,
-    explanation:{en:"'Bismillah ir-Rahman ir-Rahim' means 'In the name of Allah, the Most Gracious, the Most Merciful.' It begins 113 of the 114 surahs of the Quran.",ar:"'بسم الله الرحمن الرحيم' تعني 'بسم الله الرحمن الرحيم'. تبدأ 113 من 114 سورة في القرآن.",fr:"'Bismillah ir-Rahman ir-Rahim' signifie 'Au nom d'Allah, le Très Miséricordieux, le Miséricordieux.' Cette formule commence 113 des 114 sourates.",de:"'Bismillah ir-Rahman ir-Rahim' bedeutet 'Im Namen Allahs, des Allerbarmers, des Barmherzigen.' Es beginnt 113 der 114 Suren."} },
-
-  { id:"qe11", category:"quran", difficulty:"easy",
-    question:{en:"Which angel delivered the Quran to the Prophet ﷺ?",ar:"أي ملك أوصل القرآن إلى النبي ﷺ؟",fr:"Quel ange a transmis le Coran au Prophète ﷺ?",de:"Welcher Engel brachte den Quran zum Propheten ﷺ?"},
-    options:{en:["Mikail","Israfil","Jibreel","Maalik"],ar:["ميكائيل","إسرافيل","جبريل","مالك"],fr:["Mikail","Israfil","Jibreel","Maalik"],de:["Mikail","Israfil","Jibreel","Maalik"]},
-    answer:2,
-    explanation:{en:"Jibreel (Gabriel, AS) — the Angel of Revelation — delivered the words of the Quran from Allah to the Prophet Muhammad ﷺ over 23 years.",ar:"جبريل عليه السلام — ملك الوحي — أوصل كلام القرآن من الله إلى النبي محمد ﷺ على مدى 23 سنة.",fr:"Jibreel (Gabriel, AS) — l'Ange de la Révélation — transmit les paroles du Coran d'Allah au Prophète Muhammad ﷺ pendant 23 ans.",de:"Jibreel (Gabriel, AS) — der Engel der Offenbarung — übermittelte die Worte des Qurans von Allah 23 Jahre lang an den Propheten Muhammad ﷺ."} },
-
-  { id:"qe12", category:"quran", difficulty:"easy",
-    question:{en:"What is the shortest surah in the Quran?",ar:"ما أقصر سورة في القرآن الكريم؟",fr:"Quelle est la plus courte sourate du Coran?",de:"Was ist die kürzeste Sure des Qurans?"},
-    options:{en:["An-Nas","Al-Falaq","Al-Kawthar","Al-Asr"],ar:["الناس","الفلق","الكوثر","العصر"],fr:["An-Nas","Al-Falaq","Al-Kawthar","Al-Asr"],de:["An-Nas","Al-Falaq","Al-Kawthar","Al-Asr"]},
-    answer:2,
-    explanation:{en:"Surah Al-Kawthar (Chapter 108) is the shortest surah in the Quran with only 3 verses. It grants the river Al-Kawthar in paradise to the Prophet ﷺ.",ar:"سورة الكوثر (الفصل 108) هي أقصر سورة في القرآن بـ 3 آيات فقط.",fr:"La sourate Al-Kawthar (chapitre 108) est la plus courte sourate du Coran avec seulement 3 versets.",de:"Surah Al-Kawthar (Kapitel 108) ist die kürzeste Sure des Qurans mit nur 3 Versen."} },
-
-  { id:"qe13", category:"quran", difficulty:"easy",
-    question:{en:"What language was the Quran originally revealed in?",ar:"بأي لغة نزل القرآن الكريم أصلاً؟",fr:"Dans quelle langue le Coran a-t-il été révélé à l'origine?",de:"In welcher Sprache wurde der Quran ursprünglich offenbart?"},
-    options:{en:["Aramaic","Hebrew","Arabic","Persian"],ar:["الآرامية","العبرية","العربية","الفارسية"],fr:["L'araméen","L'hébreu","L'arabe","Le persan"],de:["Aramäisch","Hebräisch","Arabisch","Persisch"]},
-    answer:2,
-    explanation:{en:"The Quran was revealed in Arabic. Allah says: 'Indeed, We have sent it down as an Arabic Quran that you might understand.' (Surah Yusuf, 12:2)",ar:"نزل القرآن باللغة العربية. يقول الله تعالى: {إِنَّا أَنزَلْنَاهُ قُرْآنًا عَرَبِيًّا لَّعَلَّكُمْ تَعْقِلُونَ} (يوسف:2).",fr:"Le Coran fut révélé en arabe. Allah dit: 'Nous l'avons fait descendre comme un Coran en arabe afin que vous raisonniez.' (Sourate Yusuf, 12:2)",de:"Der Quran wurde auf Arabisch offenbart. Allah sagt: 'Wir haben ihn als arabischen Quran herabgesandt, damit ihr versteht.' (Sure Yusuf, 12:2)"} },
-
-  { id:"qe14", category:"quran", difficulty:"easy",
-    question:{en:"Which surah is called the 'mother of the Quran' (Umm al-Quran)?",ar:"أي سورة تُعرف بـ'أم القرآن'؟",fr:"Quelle sourate est appelée la 'mère du Coran' (Umm al-Quran)?",de:"Welche Sure wird 'Mutter des Qurans' (Umm al-Quran) genannt?"},
-    options:{en:["Al-Baqarah","Yasin","Al-Fatiha","Al-Ikhlas"],ar:["البقرة","يس","الفاتحة","الإخلاص"],fr:["Al-Baqarah","Yasin","Al-Fatiha","Al-Ikhlas"],de:["Al-Baqarah","Yasin","Al-Fatiha","Al-Ikhlas"]},
-    answer:2,
-    explanation:{en:"Al-Fatiha is called Umm al-Quran (Mother of the Quran), Umm al-Kitab, and As-Sab' al-Mathani (Seven Oft-Repeated Verses), as it summarises the entire message of the Quran.",ar:"الفاتحة تُعرف بـ'أم القرآن' و'أم الكتاب' و'السبع المثاني' لأنها تلخص رسالة القرآن كلها.",fr:"Al-Fatiha est appelée Umm al-Quran, Umm al-Kitab et As-Sab' al-Mathani car elle résume tout le message du Coran.",de:"Al-Fatiha wird Umm al-Quran (Mutter des Qurans), Umm al-Kitab und As-Sab' al-Mathani genannt, da sie die gesamte Botschaft des Qurans zusammenfasst."} },
-
-  { id:"qe15", category:"quran", difficulty:"easy",
-    question:{en:"Which surah tells the story of Prophet Yusuf (Joseph)?",ar:"أي سورة تحكي قصة النبي يوسف عليه السلام؟",fr:"Quelle sourate raconte l'histoire du Prophète Yusuf (Joseph)?",de:"Welche Sure erzählt die Geschichte des Propheten Yusuf (Josef)?"},
-    options:{en:["Surah Maryam","Surah Yusuf","Surah Ibrahim","Surah Luqman"],ar:["سورة مريم","سورة يوسف","سورة إبراهيم","سورة لقمان"],fr:["Sourate Maryam","Sourate Yusuf","Sourate Ibrahim","Sourate Luqman"],de:["Sure Maryam","Sure Yusuf","Sure Ibrahim","Sure Luqman"]},
-    answer:1,
-    explanation:{en:"Surah Yusuf (Chapter 12) tells the complete story of Prophet Yusuf (Joseph, AS). Allah calls it 'the best of stories' (ahsan al-qasas) in verse 3.",ar:"سورة يوسف (الفصل 12) تحكي قصة النبي يوسف عليه السلام كاملة. وصفها الله بـ'أحسن القصص' في الآية 3.",fr:"La sourate Yusuf (chapitre 12) raconte l'histoire complète du Prophète Yusuf (Joseph, AS). Allah l'appelle 'le meilleur des récits' au verset 3.",de:"Sure Yusuf (Kapitel 12) erzählt die vollständige Geschichte des Propheten Yusuf (Josef, AS). Allah nennt sie 'die beste der Geschichten' in Vers 3."} },
-
-  { id:"qe16", category:"quran", difficulty:"easy",
-    question:{en:"What does 'Alhamdulillah' mean?",ar:"ما معنى 'الحمد لله'؟",fr:"Que signifie 'Alhamdulillah'?",de:"Was bedeutet 'Alhamdulillah'?"},
-    options:{en:["Allah is the Greatest","Praise be to Allah","In the name of Allah","There is no god but Allah"],ar:["الله أكبر","الحمد لله","بسم الله","لا إله إلا الله"],fr:["Allah est le plus Grand","Louange à Allah","Au nom d'Allah","Il n'y a pas de dieu sauf Allah"],de:["Allah ist der Größte","Lob sei Allah","Im Namen Allahs","Es gibt keinen Gott außer Allah"]},
-    answer:1,
-    explanation:{en:"'Alhamdulillah' means 'Praise be to Allah' or 'All praise is due to Allah.' It is the second verse of Al-Fatiha and one of the most frequently used Islamic phrases.",ar:"'الحمد لله' تعني 'جميع الحمد لله'. وهي الآية الثانية من الفاتحة.",fr:"'Alhamdulillah' signifie 'Louange à Allah.' C'est le deuxième verset d'Al-Fatiha.",de:"'Alhamdulillah' bedeutet 'Lob sei Allah.' Es ist der zweite Vers der Al-Fatiha."} },
-
-  { id:"qe17", category:"quran", difficulty:"easy",
-    question:{en:"Which surah contains the verse of the Throne (Ayat al-Kursi)?",ar:"أي سورة تحتوي على آية الكرسي؟",fr:"Quelle sourate contient le verset du Trône (Ayat al-Kursi)?",de:"Welche Sure enthält den Thronvers (Ayat al-Kursi)?"},
-    options:{en:["Al-Imran","Al-Fatiha","Al-Baqarah","An-Nisa"],ar:["آل عمران","الفاتحة","البقرة","النساء"],fr:["Al-Imran","Al-Fatiha","Al-Baqarah","An-Nisa"],de:["Al-Imran","Al-Fatiha","Al-Baqarah","An-Nisa"]},
-    answer:2,
-    explanation:{en:"Ayat al-Kursi is verse 255 of Surah Al-Baqarah (Chapter 2). It describes Allah's attributes and His sovereignty over all creation.",ar:"آية الكرسي هي الآية 255 من سورة البقرة، وتصف صفات الله وسيادته على جميع الخلق.",fr:"Ayat al-Kursi est le verset 255 de Sourate Al-Baqarah (chapitre 2). Elle décrit les attributs d'Allah et Sa souveraineté sur toute la création.",de:"Ayat al-Kursi ist Vers 255 der Sure Al-Baqarah (Kapitel 2). Er beschreibt Allahs Eigenschaften und Seine Herrschaft über die gesamte Schöpfung."} },
-
-  { id:"qe18", category:"quran", difficulty:"easy",
-    question:{en:"How many verses does Surah Al-Fatiha have?",ar:"كم آية في سورة الفاتحة؟",fr:"Combien de versets compte Sourate Al-Fatiha?",de:"Wie viele Verse hat Sure Al-Fatiha?"},
-    options:{en:["5","6","7","8"],ar:["5","6","7","8"],fr:["5","6","7","8"],de:["5","6","7","8"]},
-    answer:2,
-    explanation:{en:"Surah Al-Fatiha has 7 verses. It is also called As-Sab' al-Mathani — the Seven Oft-Repeated Verses — because it is recited in every rak'ah of prayer.",ar:"سورة الفاتحة تتكون من 7 آيات، ولذلك تُسمى أيضاً السبع المثاني لأنها تُكرر في كل ركعة.",fr:"La sourate Al-Fatiha compte 7 versets. Elle est aussi appelée As-Sab' al-Mathani — les Sept Versets Souvent Répétés — car elle est récitée à chaque rak'a.",de:"Sure Al-Fatiha hat 7 Verse. Sie wird auch As-Sab' al-Mathani genannt — die Sieben Oft-Wiederholten Verse — weil sie in jeder Gebetseinheit rezitiert wird."} },
-
-  { id:"qe19", category:"quran", difficulty:"easy",
-    question:{en:"Which surah is named after the mother of Prophet Isa (Jesus)?",ar:"أي سورة سُميت باسم أم النبي عيسى عليه السلام؟",fr:"Quelle sourate porte le nom de la mère du Prophète Isa (Jésus)?",de:"Welche Sure ist nach der Mutter des Propheten Isa (Jesus) benannt?"},
-    options:{en:["Surah Isa","Surah Imran","Surah Maryam","Surah Zakariyya"],ar:["سورة عيسى","سورة عمران","سورة مريم","سورة زكريا"],fr:["Sourate Isa","Sourate Imran","Sourate Maryam","Sourate Zakariyya"],de:["Sure Isa","Sure Imran","Sure Maryam","Sure Zakariyya"]},
-    answer:2,
-    explanation:{en:"Surah Maryam (Chapter 19) is named after Maryam (Mary), the mother of Prophet Isa (Jesus). It tells her story and the miraculous birth of Isa.",ar:"سورة مريم (الفصل 19) سُميت باسم مريم، أم النبي عيسى، وتروي قصتها وميلاد عيسى المعجزي.",fr:"La sourate Maryam (chapitre 19) est nommée d'après Maryam (Marie), la mère du Prophète Isa (Jésus), et raconte sa naissance miraculeuse.",de:"Sure Maryam (Kapitel 19) ist nach Maryam (Maria), der Mutter des Propheten Isa (Jesus), benannt und erzählt seine wundersame Geburt."} },
-
-  { id:"qe20", category:"quran", difficulty:"easy",
-    question:{en:"What does 'SubhanAllah' mean?",ar:"ما معنى 'سبحان الله'؟",fr:"Que signifie 'SubhanAllah'?",de:"Was bedeutet 'SubhanAllah'?"},
-    options:{en:["Praise be to Allah","Allah is the Greatest","Glory be to Allah","There is no god but Allah"],ar:["الحمد لله","الله أكبر","سبحان الله","لا إله إلا الله"],fr:["Louange à Allah","Allah est le plus Grand","Gloire à Allah","Il n'y a pas de dieu sauf Allah"],de:["Lob sei Allah","Allah ist der Größte","Ehre sei Allah","Es gibt keinen Gott außer Allah"]},
-    answer:2,
-    explanation:{en:"'SubhanAllah' means 'Glory be to Allah' or 'Exalted is Allah.' It is used to praise and exalt Allah, affirming that He is free of all imperfections.",ar:"'سبحان الله' تعني 'الله منزّه عن كل نقص'. تُستخدم لتسبيح الله وتعظيمه.",fr:"'SubhanAllah' signifie 'Gloire à Allah' ou 'Exalté soit Allah.' Elle est utilisée pour louer et glorifier Allah.",de:"'SubhanAllah' bedeutet 'Ehre sei Allah' oder 'Gepriesen sei Allah.' Es wird verwendet, um Allah zu preisen und zu erhöhen."} },
-
-  // ═══════════════════════════════════════════════════════════════
-  // EASY — FIQH (fe1–fe20)
-  // ═══════════════════════════════════════════════════════════════
-  { id:"fe1", category:"fiqh", difficulty:"easy",
-    question:{en:"How many pillars (arkan) of Islam are there?",ar:"كم ركناً من أركان الإسلام؟",fr:"Combien de piliers (arkan) de l'Islam y a-t-il?",de:"Wie viele Säulen (Arkan) des Islams gibt es?"},
-    options:{en:["3","4","5","6"],ar:["3","4","5","6"],fr:["3","4","5","6"],de:["3","4","5","6"]},
-    answer:2,
-    explanation:{en:"There are 5 pillars of Islam: the Shahada (testimony of faith), Salah (prayer), Zakat (charity), Sawm (fasting), and Hajj (pilgrimage).",ar:"أركان الإسلام الخمسة هي: الشهادة والصلاة والزكاة والصيام والحج.",fr:"Les 5 piliers de l'Islam sont: la Shahada (témoignage de foi), la Salah (prière), la Zakat (charité), le Sawm (jeûne) et le Hajj (pèlerinage).",de:"Die 5 Säulen des Islams sind: Shahada (Glaubenszeugnis), Salah (Gebet), Zakat (Almosen), Sawm (Fasten) und Hajj (Pilgerfahrt)."} },
-
-  { id:"fe2", category:"fiqh", difficulty:"easy",
-    question:{en:"How many times a day do Muslims pray?",ar:"كم مرة يصلي المسلمون في اليوم؟",fr:"Combien de fois par jour les musulmans prient-ils?",de:"Wie oft täglich beten Muslime?"},
-    options:{en:["3 times","4 times","5 times","6 times"],ar:["3 مرات","4 مرات","5 مرات","6 مرات"],fr:["3 fois","4 fois","5 fois","6 fois"],de:["3 Mal","4 Mal","5 Mal","6 Mal"]},
-    answer:2,
-    explanation:{en:"Muslims pray 5 times daily: Fajr (dawn), Dhuhr (midday), Asr (afternoon), Maghrib (sunset), and Isha (night). The 5 prayers were prescribed during Isra wal Mi'raj.",ar:"يصلي المسلمون 5 مرات يومياً: الفجر والظهر والعصر والمغرب والعشاء. فُرضت الصلوات ليلة الإسراء والمعراج.",fr:"Les musulmans prient 5 fois par jour: Fajr (aube), Dhuhr (midi), Asr (après-midi), Maghrib (coucher du soleil) et Isha (nuit).",de:"Muslime beten 5 Mal täglich: Fajr (Morgengrauen), Dhuhr (Mittag), Asr (Nachmittag), Maghrib (Sonnenuntergang) und Isha (Nacht)."} },
-
-  { id:"fe3", category:"fiqh", difficulty:"easy",
-    question:{en:"What is 'Wudu'?",ar:"ما هو الوضوء؟",fr:"Qu'est-ce que le Wudu?",de:"Was ist 'Wudu'?"},
-    options:{en:["The Friday prayer","The ritual purification (ablution) required before prayer","The fasting intention","The charity given at Eid"],ar:["صلاة الجمعة","الطهارة الشعائرية (الوضوء) المطلوبة قبل الصلاة","نية الصيام","الصدقة التي تُعطى في العيد"],fr:["La prière du vendredi","La purification rituelle (ablution) requise avant la prière","L'intention du jeûne","L'aumône donnée à l'Aïd"],de:["Das Freitagsgebet","Die rituelle Reinigung (Waschung) die vor dem Gebet erforderlich ist","Die Fastenabsicht","Die Almosen die an Eid gegeben werden"]},
-    answer:1,
-    explanation:{en:"Wudu (ablution) is the ritual washing of hands, face, arms, and feet required before performing Salah (prayer). Allah says: 'O believers! When you rise up for prayer, wash your faces and your hands up to the elbows.' (5:6)",ar:"الوضوء هو غسل اليدين والوجه والذراعين والقدمين المطلوب قبل الصلاة. قال الله تعالى: {إِذَا قُمْتُمْ إِلَى الصَّلَاةِ فَاغْسِلُوا وُجُوهَكُمْ وَأَيْدِيَكُمْ إِلَى الْمَرَافِقِ} (5:6).",fr:"Le Wudu (ablution) est le lavage rituel des mains, du visage, des bras et des pieds requis avant d'accomplir la Salah. Allah dit: 'Ô croyants! Quand vous vous levez pour prier, lavez vos visages et vos mains jusqu'aux coudes.' (5:6)",de:"Wudu (Waschung) ist das rituelle Waschen von Händen, Gesicht, Armen und Füßen, das vor dem Gebet erforderlich ist. Allah sagt: 'O Gläubige! Wenn ihr zum Gebet aufsteht, wascht eure Gesichter und Hände bis zu den Ellbogen.' (5:6)"} },
-
-  { id:"fe4", category:"fiqh", difficulty:"easy",
-    question:{en:"During which month do Muslims fast?",ar:"في أي شهر يصوم المسلمون؟",fr:"Durant quel mois les musulmans jeûnent-ils?",de:"In welchem Monat fasten Muslime?"},
-    options:{en:["Muharram","Sha'ban","Ramadan","Dhul Hijjah"],ar:["محرم","شعبان","رمضان","ذو الحجة"],fr:["Mouharram","Sha'ban","Ramadan","Dhul Hijja"],de:["Muharram","Sha'ban","Ramadan","Dhul Hijjah"]},
-    answer:2,
-    explanation:{en:"Muslims fast during the month of Ramadan — the ninth month of the Islamic calendar. Fasting from dawn to sunset is obligatory for all adult Muslims.",ar:"يصوم المسلمون في شهر رمضان — الشهر التاسع من التقويم الإسلامي. الصيام من الفجر إلى المغرب فريضة على كل مسلم بالغ.",fr:"Les musulmans jeûnent durant le mois de Ramadan — le neuvième mois du calendrier islamique.",de:"Muslime fasten im Monat Ramadan — dem neunten Monat des islamischen Kalenders. Das Fasten von Morgengrauen bis Sonnenuntergang ist für alle erwachsenen Muslime Pflicht."} },
-
-  { id:"fe5", category:"fiqh", difficulty:"easy",
-    question:{en:"What is the Shahada?",ar:"ما هي الشهادة؟",fr:"Qu'est-ce que la Shahada?",de:"Was ist die Shahada?"},
-    options:{en:["The Islamic prayer","The testimony of faith: 'There is no god but Allah and Muhammad is His Messenger'","The annual pilgrimage to Mecca","The obligatory charity"],ar:["الصلاة الإسلامية","كلمة التوحيد: 'لا إله إلا الله محمد رسول الله'","الحج السنوي إلى مكة","الزكاة الواجبة"],fr:["La prière islamique","Le témoignage de foi: 'Il n'y a pas de dieu sauf Allah et Muhammad est Son Messager'","Le pèlerinage annuel à La Mecque","L'aumône obligatoire"],de:["Das islamische Gebet","Das Glaubenszeugnis: 'Es gibt keinen Gott außer Allah und Muhammad ist Sein Gesandter'","Die jährliche Pilgerfahrt nach Mekka","Die Pflichtalmosen"]},
-    answer:1,
-    explanation:{en:"The Shahada is the Islamic declaration of faith: 'Ash-hadu an la ilaha illa Allah, wa ash-hadu anna Muhammadan rasulullah' (I bear witness that there is no god but Allah, and Muhammad is His Messenger).",ar:"الشهادة هي: 'أشهد أن لا إله إلا الله وأشهد أن محمداً رسول الله'، وهي أول ركن من أركان الإسلام.",fr:"La Shahada est la déclaration de foi islamique: 'Ash-hadu an la ilaha illa Allah, wa ash-hadu anna Muhammadan rasulullah.'",de:"Die Shahada ist das islamische Glaubenszeugnis: 'Ash-hadu an la ilaha illa Allah, wa ash-hadu anna Muhammadan rasulullah.'"} },
-
-  { id:"fe6", category:"fiqh", difficulty:"easy",
-    question:{en:"What is Zakat?",ar:"ما هي الزكاة؟",fr:"Qu'est-ce que la Zakat?",de:"Was ist Zakat?"},
-    options:{en:["Voluntary charity","The obligatory annual tax on savings given to the poor","The Friday prayer","The fasting of Ramadan"],ar:["الصدقة الطوعية","الضريبة السنوية الواجبة على المدخرات تُعطى للفقراء","صلاة الجمعة","صيام رمضان"],fr:["La charité volontaire","L'impôt annuel obligatoire sur l'épargne donné aux pauvres","La prière du vendredi","Le jeûne de Ramadan"],de:["Freiwillige Almosen","Die jährliche Pflichtsteuer auf Ersparnisse die den Armen gegeben wird","Das Freitagsgebet","Das Ramadanfasten"]},
-    answer:1,
-    explanation:{en:"Zakat is the third pillar of Islam — an obligatory annual payment of 2.5% of one's accumulated savings (above the nisab threshold) given to those in need.",ar:"الزكاة هي الركن الثالث من أركان الإسلام — وهي دفع سنوي واجب بنسبة 2.5% من المدخرات المتراكمة (فوق النصاب) للمحتاجين.",fr:"La Zakat est le troisième pilier de l'Islam — un paiement annuel obligatoire de 2,5% de l'épargne accumulée (au-dessus du seuil du nisab) donné aux nécessiteux.",de:"Zakat ist die dritte Säule des Islams — eine jährliche Pflichtzahlung von 2,5% der angesammelten Ersparnisse (über der Nisab-Schwelle) an Bedürftige."} },
-
-  { id:"fe7", category:"fiqh", difficulty:"easy",
-    question:{en:"What is Hajj?",ar:"ما هو الحج؟",fr:"Qu'est-ce que le Hajj?",de:"Was ist Hajj?"},
-    options:{en:["Daily prayer","Monthly fasting","The annual pilgrimage to Mecca — obligatory once in a lifetime if able","Voluntary charity"],ar:["الصلاة اليومية","الصيام الشهري","الحج السنوي إلى مكة — فريضة مرة في العمر لمن استطاع","الصدقة الطوعية"],fr:["La prière quotidienne","Le jeûne mensuel","Le pèlerinage annuel à La Mecque — obligatoire une fois dans une vie pour ceux qui le peuvent","La charité volontaire"],de:["Das tägliche Gebet","Monatliches Fasten","Die jährliche Pilgerfahrt nach Mekka — einmal im Leben Pflicht wenn man es sich leisten kann","Freiwillige Almosen"]},
-    answer:2,
-    explanation:{en:"Hajj is the fifth pillar of Islam — the pilgrimage to Mecca required of every Muslim who is physically and financially able, to be performed at least once in their lifetime, during the month of Dhul Hijjah.",ar:"الحج هو الركن الخامس من أركان الإسلام — حج مكة المكرمة مطلوب من كل مسلم مستطيع جسدياً ومالياً، مرة في العمر، في شهر ذي الحجة.",fr:"Le Hajj est le cinquième pilier de l'Islam — le pèlerinage à La Mecque requis de tout musulman physiquement et financièrement capable, au moins une fois dans sa vie.",de:"Hajj ist die fünfte Säule des Islams — die Pilgerfahrt nach Mekka, die von jedem Muslim verlangt wird, der körperlich und finanziell dazu in der Lage ist, einmal im Leben, im Monat Dhul Hijjah."} },
-
-  { id:"fe8", category:"fiqh", difficulty:"easy",
-    question:{en:"What direction do Muslims face when praying?",ar:"في أي اتجاه يتجه المسلمون عند الصلاة؟",fr:"Dans quelle direction les musulmans se tournent-ils pour prier?",de:"In welche Richtung wenden sich Muslime beim Beten?"},
-    options:{en:["North","East","Towards Medina","Towards the Kaaba in Mecca (Qibla)"],ar:["الشمال","الشرق","نحو المدينة المنورة","نحو الكعبة في مكة (القبلة)"],fr:["Le Nord","L'Est","Vers Médine","Vers la Kaaba à La Mecque (Qibla)"],de:["Norden","Osten","Nach Medina","Zur Kaaba in Mekka (Qibla)"]},
-    answer:3,
-    explanation:{en:"Muslims face the Qibla — the direction of the Kaaba in Mecca — when praying. This was changed from Jerusalem to Mecca in the second year after the Hijra.",ar:"يتجه المسلمون نحو القبلة — اتجاه الكعبة في مكة — عند الصلاة. غُيِّر الاتجاه من القدس إلى مكة في السنة الثانية للهجرة.",fr:"Les musulmans font face à la Qibla — la direction de la Kaaba à La Mecque — en priant. Cela fut changé de Jérusalem à La Mecque la deuxième année après l'Hégire.",de:"Muslime wenden sich der Qibla zu — der Richtung der Kaaba in Mekka — beim Beten. Dies wurde im zweiten Jahr nach der Hidschra von Jerusalem nach Mekka geändert."} },
-
-  { id:"fe9", category:"fiqh", difficulty:"easy",
-    question:{en:"What is the name of the call to prayer in Islam?",ar:"ما اسم النداء إلى الصلاة في الإسلام؟",fr:"Quel est le nom de l'appel à la prière en Islam?",de:"Wie heißt der Gebetsruf im Islam?"},
-    options:{en:["Salah","Adhan","Iqama","Takbir"],ar:["الصلاة","الأذان","الإقامة","التكبير"],fr:["Salah","Adhan","Iqama","Takbir"],de:["Salah","Adhan","Iqama","Takbir"]},
-    answer:1,
-    explanation:{en:"The Adhan (also spelled Azan) is the Islamic call to prayer. It is recited by the Mu'adhdhin (caller) to announce that prayer time has begun.",ar:"الأذان هو النداء الإسلامي للصلاة، يُعلنه المؤذن لإعلام المسلمين بدخول وقت الصلاة.",fr:"L'Adhan (également orthographié Azan) est l'appel islamique à la prière, récité par le Mu'adhdhin pour annoncer que le moment de la prière est arrivé.",de:"Der Adhan (auch Azan geschrieben) ist der islamische Gebetsruf. Er wird vom Mu'adhdhin rezitiert, um anzukündigen, dass die Gebetszeit begonnen hat."} },
-
-  { id:"fe10", category:"fiqh", difficulty:"easy",
-    question:{en:"Who was the first person to call the Adhan (call to prayer) in Islam?",ar:"من كان أول شخص يؤذن في الإسلام؟",fr:"Qui fut la première personne à appeler l'Adhan (appel à la prière) en Islam?",de:"Wer war die erste Person, die den Adhan im Islam rief?"},
-    options:{en:["Abu Bakr","Umar ibn al-Khattab","Bilal ibn Rabah","Ali ibn Abi Talib"],ar:["أبو بكر","عمر بن الخطاب","بلال بن رباح","علي بن أبي طالب"],fr:["Abu Bakr","Umar ibn al-Khattab","Bilal ibn Rabah","Ali ibn Abi Talib"],de:["Abu Bakr","Umar ibn al-Khattab","Bilal ibn Rabah","Ali ibn Abi Talib"]},
-    answer:2,
-    explanation:{en:"Bilal ibn Rabah (RA) was appointed by the Prophet ﷺ as the first Mu'adhdhin (caller to prayer) in Islam. He was a freed Abyssinian slave known for his powerful voice.",ar:"بلال بن رباح رضي الله عنه عيَّنه النبي ﷺ أول مؤذن في الإسلام، وكان عبداً حبشياً مُعتَقاً مشهوراً بصوته القوي.",fr:"Bilal ibn Rabah (RA) fut désigné par le Prophète ﷺ comme premier Mu'adhdhin de l'Islam, un esclave abyssinien affranchi connu pour sa voix puissante.",de:"Bilal ibn Rabah (ra) wurde vom Propheten ﷺ als erster Mu'adhdhin des Islams ernannt. Er war ein befreiter abessinischer Sklave, bekannt für seine kräftige Stimme."} },
-
-  { id:"fe11", category:"fiqh", difficulty:"easy",
-    question:{en:"What is 'Sadaqa'?",ar:"ما هي الصدقة؟",fr:"Qu'est-ce que la Sadaqa?",de:"Was ist 'Sadaqa'?"},
-    options:{en:["Obligatory prayer","Voluntary charity given freely for the sake of Allah","The obligatory Zakat","The annual pilgrimage"],ar:["الصلاة الواجبة","الصدقة الطوعية التي تُعطى لوجه الله","الزكاة الواجبة","الحج السنوي"],fr:["La prière obligatoire","La charité volontaire donnée librement pour l'amour d'Allah","La Zakat obligatoire","Le pèlerinage annuel"],de:["Das Pflichtgebet","Freiwillige Almosen die frei für Allahs Willen gegeben werden","Die Pflicht-Zakat","Die jährliche Pilgerfahrt"]},
-    answer:1,
-    explanation:{en:"Sadaqa refers to any voluntary charitable act done for the sake of Allah. Unlike Zakat which is obligatory, Sadaqa is voluntary and includes any good deed, not just financial gifts.",ar:"الصدقة هي أي عمل خيري طوعي يُؤدَّى لوجه الله. بخلاف الزكاة الواجبة، الصدقة طوعية وتشمل أي عمل صالح.",fr:"La Sadaqa désigne tout acte charitable volontaire accompli pour l'amour d'Allah. Contrairement à la Zakat obligatoire, la Sadaqa est volontaire.",de:"Sadaqa bezieht sich auf jede freiwillige Wohltätigkeitstat für Allahs Willen. Im Gegensatz zur Pflicht-Zakat ist Sadaqa freiwillig und umfasst jede gute Tat."} },
-
-  { id:"fe12", category:"fiqh", difficulty:"easy",
-    question:{en:"What is 'Ghusl'?",ar:"ما هو الغسل؟",fr:"Qu'est-ce que le Ghusl?",de:"Was ist 'Ghusl'?"},
-    options:{en:["The short ablution before prayer","The full ritual bath of the whole body","The Islamic burial prayer","The prayer during Ramadan nights"],ar:["الوضوء القصير قبل الصلاة","الغسل الكامل للجسم","صلاة الجنازة","صلاة التراويح"],fr:["La courte ablution avant la prière","Le bain rituel complet de tout le corps","La prière funèbre islamique","La prière des nuits du Ramadan"],de:["Die kurze Waschung vor dem Gebet","Das vollständige rituelle Baden des gesamten Körpers","Das islamische Begräbnisgebet","Das Gebet in den Ramadan-Nächten"]},
-    answer:1,
-    explanation:{en:"Ghusl is the full ritual bath of the entire body required in situations of major ritual impurity (e.g., after marital relations, post-menstrual period, and Friday Ghusl which is recommended).",ar:"الغسل هو الاستحمام الكامل المطلوب في حالات الحدث الأكبر (مثل الجماع وبعد الدورة الشهرية، وغسل الجمعة المستحب).",fr:"Le Ghusl est le bain rituel complet requis dans les situations d'impureté rituelle majeure (après les relations conjugales, après les menstrues, etc.).",de:"Ghusl ist das vollständige Ritualbad des gesamten Körpers, das in Situationen großer ritueller Unreinheit erforderlich ist."} },
-
-  { id:"fe13", category:"fiqh", difficulty:"easy",
-    question:{en:"What is 'Tarawih'?",ar:"ما هي صلاة التراويح؟",fr:"Qu'est-ce que la Tarawih?",de:"Was ist 'Tarawih'?"},
-    options:{en:["The Friday prayer","The funeral prayer","Optional night prayers performed during Ramadan","The dawn prayer"],ar:["صلاة الجمعة","صلاة الجنازة","صلوات نافلة تُؤدَّى في ليالي رمضان","صلاة الفجر"],fr:["La prière du vendredi","La prière funèbre","Les prières nocturnes facultatives effectuées pendant le Ramadan","La prière de l'aube"],de:["Das Freitagsgebet","Das Totengebet","Optionale Nachtgebete die während des Ramadans verrichtet werden","Das Morgengebet"]},
-    answer:2,
-    explanation:{en:"Tarawih are voluntary night prayers performed after Isha during Ramadan. The Prophet ﷺ led them some nights and encouraged them. They typically consist of 8 or 20 rak'ahs.",ar:"صلاة التراويح هي صلوات نافلة تُؤدَّى بعد العشاء في رمضان. صلاها النبي ﷺ بعض الليالي وحث عليها. وعادةً ما تكون 8 أو 20 ركعة.",fr:"Les Tarawih sont des prières nocturnes volontaires effectuées après Isha pendant le Ramadan. Le Prophète ﷺ les dirigea certaines nuits et les encouragea.",de:"Tarawih sind freiwillige Nachtgebete, die nach Isha während des Ramadans verrichtet werden. Der Prophet ﷺ leitete sie einige Nächte lang und ermutigte dazu."} },
-
-  { id:"fe14", category:"fiqh", difficulty:"easy",
-    question:{en:"What is forbidden (haram) for Muslims to eat?",ar:"ما الذي يُحرَّم على المسلمين أكله؟",fr:"Qu'est-il interdit (haram) aux musulmans de manger?",de:"Was ist für Muslime zu essen verboten (haram)?"},
-    options:{en:["Fish and seafood","Fruits and vegetables","Pork and its products","Halal-slaughtered beef"],ar:["السمك والمأكولات البحرية","الفاكهة والخضروات","لحم الخنزير ومنتجاته","اللحم البقري المذبوح حلالاً"],fr:["Le poisson et les fruits de mer","Les fruits et légumes","Le porc et ses produits","Le bœuf abattu halal"],de:["Fisch und Meeresfrüchte","Obst und Gemüse","Schweinefleisch und seine Produkte","Halal geschlachtetes Rindfleisch"]},
-    answer:2,
-    explanation:{en:"Pork (and all its products) is haram (forbidden) in Islam. Allah says in the Quran: 'He has forbidden you only carrion, blood, the flesh of swine, and that over which other than Allah has been invoked.' (2:173)",ar:"لحم الخنزير ومنتجاته حرام في الإسلام. قال الله: {إِنَّمَا حَرَّمَ عَلَيْكُمُ الْمَيْتَةَ وَالدَّمَ وَلَحْمَ الْخِنزِيرِ وَمَا أُهِلَّ بِهِ لِغَيْرِ اللَّهِ} (2:173).",fr:"Le porc (et tous ses produits) est haram (interdit) en Islam. Allah dit: 'Il vous a seulement interdit la charogne, le sang, la chair de porc.' (2:173)",de:"Schweinefleisch (und alle seine Produkte) ist haram (verboten) im Islam. Allah sagt: 'Er hat euch nur das Gefallene, Blut, das Schweinefleisch und das verboten, worüber ein anderer als Allah angerufen wurde.' (2:173)"} },
-
-  { id:"fe15", category:"fiqh", difficulty:"easy",
-    question:{en:"What is 'Eid al-Fitr'?",ar:"ما هو عيد الفطر؟",fr:"Qu'est-ce que l'Aïd al-Fitr?",de:"Was ist 'Eid al-Fitr'?"},
-    options:{en:["A festival celebrating the end of Hajj","The Islamic New Year celebration","The festival marking the end of Ramadan fasting","The Prophet's birthday celebration"],ar:["عيد يُحتفل به في نهاية الحج","الاحتفال بالسنة الإسلامية الجديدة","العيد الذي يُحتفل به في نهاية صيام رمضان","الاحتفال بمولد النبي"],fr:["Une fête célébrant la fin du Hajj","La célébration du Nouvel An islamique","La fête marquant la fin du jeûne du Ramadan","La célébration de l'anniversaire du Prophète"],de:["Ein Fest zum Ende der Pilgerfahrt","Das islamische Neujahrssfest","Das Fest das das Ende des Ramadan-Fastens markiert","Die Feier zum Geburtstag des Propheten"]},
-    answer:2,
-    explanation:{en:"Eid al-Fitr is the Festival of Breaking the Fast — celebrated on the first day of Shawwal (month after Ramadan). Muslims perform a special prayer, give Zakat al-Fitr (charity), and celebrate together.",ar:"عيد الفطر هو عيد إفطار الصيام — يُحتفل به في أول يوم من شوال. يؤدي المسلمون صلاة العيد ويُؤدُّون زكاة الفطر ويحتفلون.",fr:"L'Aïd al-Fitr est la Fête de la Rupture du Jeûne — célébrée le premier jour de Shawwal. Les musulmans accomplissent une prière spéciale, donnent la Zakat al-Fitr.",de:"Eid al-Fitr ist das Fest des Fastenbrechens — gefeiert am ersten Tag des Shawwal. Muslime verrichten ein Sondergebet, geben Zakat al-Fitr und feiern gemeinsam."} },
-
-  { id:"fe16", category:"fiqh", difficulty:"easy",
-    question:{en:"What is 'Eid al-Adha'?",ar:"ما هو عيد الأضحى؟",fr:"Qu'est-ce que l'Aïd al-Adha?",de:"Was ist 'Eid al-Adha'?"},
-    options:{en:["The festival marking the end of Ramadan","The Festival of Sacrifice — commemorating Prophet Ibrahim's willingness to sacrifice his son","The Islamic New Year","A celebration of the Prophet's birthday"],ar:["العيد الذي يُحتفل به في نهاية رمضان","عيد الأضحى — إحياءً لذكرى استعداد النبي إبراهيم لذبح ابنه","السنة الإسلامية الجديدة","الاحتفال بمولد النبي"],fr:["La fête marquant la fin du Ramadan","La Fête du Sacrifice — commémorant la disposition du Prophète Ibrahim à sacrifier son fils","Le Nouvel An islamique","Une célébration de l'anniversaire du Prophète"],de:["Das Fest zum Ende des Ramadans","Das Opferfest — zum Gedenken an Propheten Ibrahims Bereitschaft seinen Sohn zu opfern","Das islamische Neujahr","Eine Feier zum Geburtstag des Propheten"]},
-    answer:1,
-    explanation:{en:"Eid al-Adha is the Festival of Sacrifice, celebrated on the 10th of Dhul Hijjah — the day after the climax of Hajj at Arafah. Muslims sacrifice an animal (Udhiyah) to commemorate Prophet Ibrahim's (AS) devotion.",ar:"عيد الأضحى عيد الأضحية، يُحتفل به في العاشر من ذي الحجة. يُضحي المسلمون بحيوان (الأضحية) إحياءً لذكرى تضحية النبي إبراهيم.",fr:"L'Aïd al-Adha est la Fête du Sacrifice, célébrée le 10 Dhul Hijja. Les musulmans sacrifient un animal (Udhiyah) pour commémorer la dévotion du Prophète Ibrahim.",de:"Eid al-Adha ist das Opferfest, am 10. Dhul Hijjah gefeiert. Muslime opfern ein Tier (Udhiyah) zum Gedenken an die Hingabe des Propheten Ibrahim (AS)."} },
-
-  { id:"fe17", category:"fiqh", difficulty:"easy",
-    question:{en:"What is the significance of Friday (Jumu'ah) in Islam?",ar:"ما أهمية يوم الجمعة في الإسلام؟",fr:"Quelle est l'importance du vendredi (Jumu'ah) en Islam?",de:"Was ist die Bedeutung des Freitags (Jumu'ah) im Islam?"},
-    options:{en:["It is a fasting day","It is a holy day with a special congregational prayer replacing Dhuhr for men","It is a day of complete rest with no work","It is the Islamic Sabbath similar to the Jewish Sabbath"],ar:["يوم صيام","يوم مقدس بصلاة جماعية خاصة تحل محل الظهر للرجال","يوم راحة تام لا عمل فيه","السبت الإسلامي مثل السبت اليهودي"],fr:["C'est un jour de jeûne","C'est un jour saint avec une prière de congrégation spéciale remplaçant Dhuhr pour les hommes","C'est un jour de repos complet sans travail","C'est le Sabbat islamique similaire au Sabbat juif"],de:["Es ist ein Fastentag","Es ist ein heiliger Tag mit einem besonderen Gemeinschaftsgebet das Dhuhr für Männer ersetzt","Es ist ein völliger Ruhetag ohne Arbeit","Es ist der islamische Sabbat ähnlich dem jüdischen Sabbat"]},
-    answer:1,
-    explanation:{en:"Friday (Jumu'ah) is the most blessed day of the week in Islam. Adult Muslim men are obligated to attend the Friday prayer (Salat al-Jumu'ah), which replaces Dhuhr. The Prophet ﷺ said it is the best day of the week.",ar:"الجمعة أفضل أيام الأسبوع في الإسلام. يجب على المسلمين البالغين حضور صلاة الجمعة التي تحل محل الظهر.",fr:"Le vendredi (Jumu'ah) est le jour le plus béni de la semaine en Islam. Les hommes musulmans adultes sont obligés d'assister à la prière du vendredi.",de:"Freitag (Jumu'ah) ist der gesegnetste Tag der Woche im Islam. Erwachsene muslimische Männer sind verpflichtet, das Freitagsgebet zu besuchen."} },
-
-  { id:"fe18", category:"fiqh", difficulty:"easy",
-    question:{en:"What is 'Halal'?",ar:"ما معنى 'الحلال'؟",fr:"Qu'est-ce que le 'Halal'?",de:"Was bedeutet 'Halal'?"},
-    options:{en:["Forbidden in Islam","Discouraged but not forbidden","Permitted and lawful according to Islamic law","Obligatory"],ar:["محرم في الإسلام","مكروه لكن ليس محرماً","مسموح ومباح وفق الشريعة الإسلامية","واجب"],fr:["Interdit en Islam","Déconseillé mais pas interdit","Autorisé et licite selon la loi islamique","Obligatoire"],de:["Im Islam verboten","Abgeraten aber nicht verboten","Erlaubt und gesetzmäßig gemäß islamischem Recht","Obligatorisch"]},
-    answer:2,
-    explanation:{en:"'Halal' means 'permitted' or 'lawful' according to Islamic law (Sharia). It is used for food, actions, and all aspects of life. Its opposite is 'Haram' (forbidden).",ar:"'الحلال' يعني 'مسموح' أو 'مباح' وفق الشريعة الإسلامية. يُستخدم للطعام والأفعال وجميع جوانب الحياة. ضده 'الحرام'.",fr:"'Halal' signifie 'autorisé' ou 'licite' selon la loi islamique (Charia). Il est utilisé pour la nourriture, les actions et tous les aspects de la vie.",de:"'Halal' bedeutet 'erlaubt' oder 'gesetzmäßig' gemäß islamischem Recht (Scharia). Es wird für Lebensmittel, Handlungen und alle Lebensbereiche verwendet."} },
-
-  { id:"fe19", category:"fiqh", difficulty:"easy",
-    question:{en:"What is the intention (niyyah) in Islamic acts of worship?",ar:"ما هي النية في العبادات الإسلامية؟",fr:"Qu'est-ce que l'intention (niyyah) dans les actes d'adoration islamiques?",de:"Was ist die Absicht (Niyyah) in islamischen Gottesdiensthandlungen?"},
-    options:{en:["Saying a specific Arabic phrase loudly before each prayer","The sincere internal intention of the heart to perform an act for Allah's sake","Wearing clean clothes for prayer","Standing in a specific direction"],ar:["قول عبارة عربية محددة بصوت عالٍ قبل كل صلاة","النية الصادقة في القلب لأداء العمل لوجه الله","ارتداء ملابس نظيفة للصلاة","الوقوف في اتجاه معين"],fr:["Dire une phrase arabe spécifique à voix haute avant chaque prière","L'intention sincère du cœur d'accomplir un acte pour l'amour d'Allah","Porter des vêtements propres pour la prière","Se tenir dans une direction spécifique"],de:["Das laute Aussprechen einer bestimmten arabischen Phrase vor jedem Gebet","Die aufrichtige innere Absicht des Herzens eine Handlung für Allahs Willen zu vollbringen","Saubere Kleidung für das Gebet tragen","In einer bestimmten Richtung stehen"]},
-    answer:1,
-    explanation:{en:"The Prophet ﷺ said: 'Actions are judged by intentions.' (Bukhari, Muslim) — meaning all acts of worship must be performed with the sincere intention of pleasing Allah, not for show or worldly gain.",ar:"قال النبي ﷺ: 'إنما الأعمال بالنيات' (البخاري ومسلم) — أي كل عبادة يجب أن تُؤدَّى بنية صادقة لإرضاء الله.",fr:"Le Prophète ﷺ dit: 'Les actions sont jugées par les intentions.' (Bukhari, Muslim) — tous les actes d'adoration doivent être accomplis avec l'intention sincère de plaire à Allah.",de:"Der Prophet ﷺ sagte: 'Taten werden nach Absichten beurteilt.' (Bukhari, Muslim) — alle Gottesdiensthandlungen müssen mit der aufrichtigen Absicht vollzogen werden, Allah zu gefallen."} },
-
-  { id:"fe20", category:"fiqh", difficulty:"easy",
-    question:{en:"What is the prayer performed for a deceased Muslim called?",ar:"ما اسم الصلاة التي تُؤدَّى على المسلم المتوفى؟",fr:"Comment s'appelle la prière effectuée pour un musulman décédé?",de:"Wie heißt das Gebet für einen verstorbenen Muslim?"},
-    options:{en:["Salat al-Jumu'ah","Salat al-Janazah","Salat al-Witr","Salat al-Istisqa"],ar:["صلاة الجمعة","صلاة الجنازة","صلاة الوتر","صلاة الاستسقاء"],fr:["Salat al-Jumu'ah","Salat al-Janazah","Salat al-Witr","Salat al-Istisqa"],de:["Salat al-Jumu'ah","Salat al-Janazah","Salat al-Witr","Salat al-Istisqa"]},
-    answer:1,
-    explanation:{en:"Salat al-Janazah (the funeral prayer) is performed for deceased Muslims. It is a collective obligation (fard kifayah) — if some Muslims perform it, the obligation is fulfilled for all.",ar:"صلاة الجنازة تُؤدَّى على المسلم المتوفى. وهي فرض كفاية — إذا أداها بعض المسلمين سقط الفرض عن الباقين.",fr:"La Salat al-Janazah (la prière funèbre) est effectuée pour les musulmans décédés. C'est une obligation collective — si certains l'accomplissent, l'obligation est levée pour tous.",de:"Salat al-Janazah (das Totengebet) wird für verstorbene Muslime verrichtet. Es ist eine kollektive Pflicht — wenn einige Muslime es verrichten, ist die Pflicht für alle erfüllt."} },
-
-  // ═══════════════════════════════════════════════════════════════
-  // EASY — PROPHETS (pe1–pe20)
-  // ═══════════════════════════════════════════════════════════════
-  { id:"pe1", category:"prophets", difficulty:"easy",
-    question:{en:"Who was the first Prophet created by Allah?",ar:"من كان أول نبي خلقه الله؟",fr:"Qui fut le premier Prophète créé par Allah?",de:"Wer war der erste von Allah erschaffene Prophet?"},
-    options:{en:["Ibrahim","Nuh","Adam","Idris"],ar:["إبراهيم","نوح","آدم","إدريس"],fr:["Ibrahim","Nuh","Adam","Idris"],de:["Ibrahim","Nuh","Adam","Idris"]},
-    answer:2,
-    explanation:{en:"Adam (AS) was the first human and the first Prophet. Allah created him from clay and breathed His spirit into him. He was placed in Paradise before descending to Earth.",ar:"آدم عليه السلام كان أول إنسان وأول نبي. خلقه الله من طين ونفخ فيه من روحه. أُسكن الجنة قبل أن ينزل إلى الأرض.",fr:"Adam (AS) fut le premier être humain et le premier Prophète. Allah le créa de l'argile et insuffla en lui Son esprit.",de:"Adam (AS) war der erste Mensch und der erste Prophet. Allah erschuf ihn aus Lehm und hauchte Seinen Geist in ihn."} },
-
-  { id:"pe2", category:"prophets", difficulty:"easy",
-    question:{en:"Which Prophet is known as 'Khalilullah' (Friend of Allah)?",ar:"أي نبي يُعرف بـ'خليل الله' (صديق الله)؟",fr:"Quel Prophète est connu comme 'Khalilullah' (Ami d'Allah)?",de:"Welcher Prophet ist als 'Khalilullah' (Freund Allahs) bekannt?"},
-    options:{en:["Musa (Moses)","Isa (Jesus)","Ibrahim (Abraham)","Muhammad ﷺ"],ar:["موسى","عيسى","إبراهيم","محمد ﷺ"],fr:["Moussa (Moïse)","Isa (Jésus)","Ibrahim (Abraham)","Muhammad ﷺ"],de:["Musa (Moses)","Isa (Jesus)","Ibrahim (Abraham)","Muhammad ﷺ"]},
-    answer:2,
-    explanation:{en:"Ibrahim (Abraham, AS) is called 'Khalilullah' — the Friend (or Intimate) of Allah. Allah says in the Quran: 'And Allah took Ibrahim as a Khalil (intimate friend).' (4:125)",ar:"إبراهيم عليه السلام يُعرف بـ'خليل الله'. قال الله تعالى: {وَاتَّخَذَ اللَّهُ إِبْرَاهِيمَ خَلِيلًا} (4:125).",fr:"Ibrahim (Abraham, AS) est appelé 'Khalilullah' — l'Ami intime d'Allah. Allah dit dans le Coran: 'Et Allah prit Ibrahim comme Khalil.' (4:125)",de:"Ibrahim (Abraham, AS) wird 'Khalilullah' — der Freund (oder Vertraute) Allahs — genannt. Allah sagt im Quran: 'Und Allah nahm Ibrahim als Khalil.' (4:125)"} },
-
-  { id:"pe3", category:"prophets", difficulty:"easy",
-    question:{en:"Which Prophet is known as 'Kalimullah' (one who spoke directly to Allah)?",ar:"أي نبي يُعرف بـ'كليم الله' (من كلّمه الله مباشرة)؟",fr:"Quel Prophète est connu comme 'Kalimullah' (celui qui parla directement à Allah)?",de:"Welcher Prophet ist als 'Kalimullah' (derjenige der direkt mit Allah sprach) bekannt?"},
-    options:{en:["Ibrahim","Isa","Nuh","Musa"],ar:["إبراهيم","عيسى","نوح","موسى"],fr:["Ibrahim","Isa","Nuh","Moussa"],de:["Ibrahim","Isa","Nuh","Musa"]},
-    answer:3,
-    explanation:{en:"Musa (Moses, AS) is called 'Kalimullah' — the one to whom Allah spoke directly, without an intermediary. Allah spoke to him from the burning bush and on Mount Sinai.",ar:"موسى عليه السلام يُعرف بـ'كليم الله' — من كلّمه الله مباشرة دون واسطة، من الشجرة المحترقة وعلى جبل سيناء.",fr:"Moussa (Moïse, AS) est appelé 'Kalimullah' — celui à qui Allah parla directement, sans intermédiaire. Allah lui parla du buisson ardent et du mont Sinaï.",de:"Musa (Moses, AS) wird 'Kalimullah' genannt — derjenige, zu dem Allah direkt sprach, ohne Vermittler. Allah sprach zu ihm aus dem brennenden Dornbusch und auf dem Berg Sinai."} },
-
-  { id:"pe4", category:"prophets", difficulty:"easy",
-    question:{en:"Which Prophet built the Kaaba with his son?",ar:"أي نبي بنى الكعبة مع ابنه؟",fr:"Quel Prophète construisit la Kaaba avec son fils?",de:"Welcher Prophet baute die Kaaba mit seinem Sohn?"},
-    options:{en:["Nuh and Hud","Ibrahim and Ismail","Yusuf and Yaqub","Musa and Harun"],ar:["نوح وهود","إبراهيم وإسماعيل","يوسف ويعقوب","موسى وهارون"],fr:["Nuh et Hud","Ibrahim et Ismail","Yusuf et Yaqub","Moussa et Harun"],de:["Nuh und Hud","Ibrahim und Ismail","Yusuf und Yaqub","Musa und Harun"]},
-    answer:1,
-    explanation:{en:"Prophet Ibrahim (AS) and his son Ismail (AS) rebuilt the Kaaba together in Mecca. Allah says: 'And when Ibrahim raised the foundations of the House with Ismail...' (2:127)",ar:"بنى النبي إبراهيم وابنه إسماعيل عليهما السلام الكعبة في مكة. قال الله: {وَإِذْ يَرْفَعُ إِبْرَاهِيمُ الْقَوَاعِدَ مِنَ الْبَيْتِ وَإِسْمَاعِيلُ} (2:127).",fr:"Le Prophète Ibrahim (AS) et son fils Ismail (AS) reconstruisirent la Kaaba ensemble à La Mecque. Allah dit: 'Et quand Ibrahim élevait les fondements de la Maison avec Ismail...' (2:127)",de:"Prophet Ibrahim (AS) und sein Sohn Ismail (AS) bauten die Kaaba gemeinsam in Mekka. Allah sagt: 'Und als Ibrahim die Grundlagen des Hauses mit Ismail errichtete...' (2:127)"} },
-
-  { id:"pe5", category:"prophets", difficulty:"easy",
-    question:{en:"Which Prophet built an ark to survive a great flood?",ar:"أي نبي بنى فُلكاً للنجاة من الطوفان العظيم؟",fr:"Quel Prophète construisit une arche pour survivre à un grand déluge?",de:"Welcher Prophet baute eine Arche, um eine große Flut zu überleben?"},
-    options:{en:["Ibrahim","Salih","Nuh","Lut"],ar:["إبراهيم","صالح","نوح","لوط"],fr:["Ibrahim","Salih","Nuh","Lut"],de:["Ibrahim","Salih","Nuh","Lut"]},
-    answer:2,
-    explanation:{en:"Prophet Nuh (Noah, AS) built an ark by Allah's command to carry pairs of all animals and the believers, to survive the great flood that destroyed the disbelievers.",ar:"بنى النبي نوح عليه السلام فُلكاً بأمر الله ليحمل أزواجاً من كل الحيوانات والمؤمنين للنجاة من الطوفان.",fr:"Le Prophète Nuh (Noé, AS) construisit une arche sur ordre d'Allah pour transporter des paires de tous les animaux et les croyants.",de:"Prophet Nuh (Noah, AS) baute auf Allahs Befehl eine Arche, um Paare aller Tiere und die Gläubigen zu tragen, um die große Flut zu überleben."} },
-
-  { id:"pe6", category:"prophets", difficulty:"easy",
-    question:{en:"Which Prophet was swallowed by a whale?",ar:"أي نبي ابتلعه حوت؟",fr:"Quel Prophète fut avalé par une baleine?",de:"Welcher Prophet wurde von einem Wal verschluckt?"},
-    options:{en:["Idris","Yunus (Jonah)","Shu'ayb","Zakariyya"],ar:["إدريس","يونس","شعيب","زكريا"],fr:["Idris","Yunus (Jonas)","Shu'ayb","Zakariyya"],de:["Idris","Yunus (Jona)","Shu'ayb","Zakariyya"]},
-    answer:1,
-    explanation:{en:"Prophet Yunus (Jonah, AS) was swallowed by a whale after leaving his people without Allah's permission. He called out: 'There is no god but You, Glory be to You, indeed I was among the wrongdoers.' (21:87)",ar:"ابتلع الحوت النبي يونس عليه السلام بعد أن ترك قومه دون إذن الله. نادى: {لَّا إِلَٰهَ إِلَّا أَنتَ سُبْحَانَكَ إِنِّي كُنتُ مِنَ الظَّالِمِينَ} (21:87).",fr:"Le Prophète Yunus (Jonas, AS) fut avalé par une baleine après avoir quitté son peuple sans la permission d'Allah. Il cria: 'Il n'y a de dieu que Toi, Gloire à Toi, j'étais parmi les injustes.' (21:87)",de:"Prophet Yunus (Jona, AS) wurde von einem Wal verschluckt, nachdem er sein Volk ohne Allahs Erlaubnis verlassen hatte. Er rief: 'Es gibt keinen Gott außer Dir, Ehre sei Dir, ich war ein Frevler.' (21:87)"} },
-
-  { id:"pe7", category:"prophets", difficulty:"easy",
-    question:{en:"Which Prophet is known as 'Ruhullah' (Spirit of Allah) and was born of a virgin?",ar:"أي نبي يُعرف بـ'روح الله' وُلد من عذراء؟",fr:"Quel Prophète est connu comme 'Ruhullah' (Esprit d'Allah) et est né d'une vierge?",de:"Welcher Prophet ist als 'Ruhullah' (Geist Allahs) bekannt und wurde von einer Jungfrau geboren?"},
-    options:{en:["Musa","Idris","Isa (Jesus)","Yahya"],ar:["موسى","إدريس","عيسى","يحيى"],fr:["Moussa","Idris","Isa (Jésus)","Yahya"],de:["Musa","Idris","Isa (Jesus)","Yahya"]},
-    answer:2,
-    explanation:{en:"Prophet Isa (Jesus, AS) is called 'Ruhullah' (a Spirit from Allah) in the Quran (4:171). He was born miraculously of the virgin Maryam (Mary) without a father.",ar:"يُعرف النبي عيسى بـ'روح الله' في القرآن (4:171). وُلد معجزةً من العذراء مريم دون أب.",fr:"Le Prophète Isa (Jésus, AS) est appelé 'Ruhullah' (un Esprit d'Allah) dans le Coran (4:171). Il naquit miraculeusement de la vierge Maryam sans père.",de:"Prophet Isa (Jesus, AS) wird im Quran 'Ruhullah' (ein Geist von Allah) genannt (4:171). Er wurde wundersam von der Jungfrau Maryam ohne Vater geboren."} },
-
-  { id:"pe8", category:"prophets", difficulty:"easy",
-    question:{en:"How many prophets are mentioned by name in the Quran?",ar:"كم نبياً ذُكر اسمه في القرآن الكريم؟",fr:"Combien de prophètes sont mentionnés par leur nom dans le Coran?",de:"Wie viele Propheten werden im Quran namentlich erwähnt?"},
-    options:{en:["15","20","25","30"],ar:["15","20","25","30"],fr:["15","20","25","30"],de:["15","20","25","30"]},
-    answer:2,
-    explanation:{en:"25 prophets are mentioned by name in the Quran, from Adam (AS) to Muhammad ﷺ. These include Ibrahim, Musa, Isa, Nuh, Yusuf, and others.",ar:"25 نبياً ذُكر اسمه في القرآن، من آدم إلى محمد ﷺ.",fr:"25 prophètes sont mentionnés par leur nom dans le Coran, d'Adam (AS) à Muhammad ﷺ.",de:"25 Propheten werden im Quran namentlich erwähnt, von Adam (AS) bis Muhammad ﷺ."} },
-
-  { id:"pe9", category:"prophets", difficulty:"easy",
-    question:{en:"Which Prophet received the Torah (Tawrat)?",ar:"أي نبي أُنزلت عليه التوراة؟",fr:"Quel Prophète reçut la Torah (Tawrat)?",de:"Welcher Prophet empfing die Tora (Tawrat)?"},
-    options:{en:["Ibrahim","Dawud","Musa","Isa"],ar:["إبراهيم","داوود","موسى","عيسى"],fr:["Ibrahim","Dawud","Moussa","Isa"],de:["Ibrahim","Dawud","Musa","Isa"]},
-    answer:2,
-    explanation:{en:"Allah revealed the Torah (Tawrat) to Prophet Musa (Moses, AS). The Quran says: 'Indeed, We sent down the Torah, in which was guidance and light.' (5:44)",ar:"أنزل الله التوراة على النبي موسى عليه السلام. قال القرآن: {إِنَّا أَنزَلْنَا التَّوْرَاةَ فِيهَا هُدًى وَنُورٌ} (5:44).",fr:"Allah révéla la Torah (Tawrat) au Prophète Moussa (Moïse, AS). Le Coran dit: 'Certes, Nous avons fait descendre la Torah, qui contient une directive et une lumière.' (5:44)",de:"Allah offenbarte die Tora (Tawrat) dem Propheten Musa (Moses, AS). Der Quran sagt: 'Wahrlich, Wir sandten die Tora herab, in der Führung und Licht war.' (5:44)"} },
-
-  { id:"pe10", category:"prophets", difficulty:"easy",
-    question:{en:"Which Prophet received the Psalms (Zabur)?",ar:"أي نبي أُنزلت عليه الزبور؟",fr:"Quel Prophète reçut les Psaumes (Zabur)?",de:"Welcher Prophet empfing die Psalmen (Zabur)?"},
-    options:{en:["Nuh","Ibrahim","Dawud (David)","Sulayman"],ar:["نوح","إبراهيم","داوود","سليمان"],fr:["Nuh","Ibrahim","Dawud (David)","Sulayman"],de:["Nuh","Ibrahim","Dawud (David)","Sulayman"]},
-    answer:2,
-    explanation:{en:"Allah revealed the Psalms (Zabur) to Prophet Dawud (David, AS). The Quran says: 'And to Dawud We gave the Zabur.' (4:163, 17:55)",ar:"أنزل الله الزبور على النبي داوود عليه السلام. قال القرآن: {وَآتَيْنَا دَاوُودَ زَبُورًا} (4:163).",fr:"Allah révéla les Psaumes (Zabur) au Prophète Dawud (David, AS). Le Coran dit: 'Et à Dawud Nous avons donné les Zabur.' (4:163)",de:"Allah offenbarte die Psalmen (Zabur) dem Propheten Dawud (David, AS). Der Quran sagt: 'Und dem Dawud gaben Wir die Zabur.' (4:163)"} },
-
-  { id:"pe11", category:"prophets", difficulty:"easy",
-    question:{en:"Which Prophet received the Gospel (Injeel)?",ar:"أي نبي أُنزل عليه الإنجيل؟",fr:"Quel Prophète reçut l'Évangile (Injeel)?",de:"Welcher Prophet empfing das Evangelium (Injeel)?"},
-    options:{en:["Ibrahim","Musa","Yahya","Isa (Jesus)"],ar:["إبراهيم","موسى","يحيى","عيسى"],fr:["Ibrahim","Moussa","Yahya","Isa (Jésus)"],de:["Ibrahim","Musa","Yahya","Isa (Jesus)"]},
-    answer:3,
-    explanation:{en:"Allah revealed the Gospel (Injeel) to Prophet Isa (Jesus, AS). The Quran says: 'And We gave him the Gospel, in which was guidance and light.' (5:46)",ar:"أنزل الله الإنجيل على النبي عيسى عليه السلام. قال القرآن: {وَآتَيْنَاهُ الْإِنجِيلَ فِيهِ هُدًى وَنُورٌ} (5:46).",fr:"Allah révéla l'Évangile (Injeel) au Prophète Isa (Jésus, AS). Le Coran dit: 'Et Nous lui avons donné l'Évangile, qui contenait direction et lumière.' (5:46)",de:"Allah offenbarte das Evangelium (Injeel) dem Propheten Isa (Jesus, AS). Der Quran sagt: 'Und Wir gaben ihm das Evangelium, in dem Führung und Licht war.' (5:46)"} },
-
-  { id:"pe12", category:"prophets", difficulty:"easy",
-    question:{en:"Prophet Nuh (Noah) preached to his people for how long?",ar:"كم سنة دعا النبي نوح قومه؟",fr:"Pendant combien de temps le Prophète Nuh (Noé) a-t-il prêché à son peuple?",de:"Wie lange predigte Prophet Nuh (Noah) seinem Volk?"},
-    options:{en:["100 years","200 years","950 years","600 years"],ar:["100 سنة","200 سنة","950 سنة","600 سنة"],fr:["100 ans","200 ans","950 ans","600 ans"],de:["100 Jahre","200 Jahre","950 Jahre","600 Jahre"]},
-    answer:2,
-    explanation:{en:"The Quran says: 'And We sent Nuh to his people, and he remained among them a thousand years, less fifty.' (29:14) — 950 years of calling his people to Islam.",ar:"قال القرآن: {وَلَقَدْ أَرْسَلْنَا نُوحًا إِلَىٰ قَوْمِهِ فَلَبِثَ فِيهِمْ أَلْفَ سَنَةٍ إِلَّا خَمْسِينَ عَامًا} (29:14) — 950 سنة يدعو قومه.",fr:"Le Coran dit: 'Et Nous avons envoyé Nuh à son peuple, et il demeura parmi eux mille ans, moins cinquante.' (29:14) — 950 ans d'appel à l'Islam.",de:"Der Quran sagt: 'Und Wir sandten Nuh zu seinem Volk, und er blieb unter ihnen tausend Jahre, weniger fünfzig.' (29:14) — 950 Jahre seines Volkes."} },
-
-  { id:"pe13", category:"prophets", difficulty:"easy",
-    question:{en:"Which Prophet is the father of the three major Abrahamic religions?",ar:"أي نبي هو أبو الأديان الإبراهيمية الثلاثة الكبرى؟",fr:"Quel Prophète est le père des trois grandes religions abrahamiques?",de:"Welcher Prophet ist der Vater der drei großen abrahamitischen Religionen?"},
-    options:{en:["Adam","Nuh","Ibrahim","Ismail"],ar:["آدم","نوح","إبراهيم","إسماعيل"],fr:["Adam","Nuh","Ibrahim","Ismail"],de:["Adam","Nuh","Ibrahim","Ismail"]},
-    answer:2,
-    explanation:{en:"Prophet Ibrahim (Abraham, AS) is considered the spiritual father of Islam, Christianity, and Judaism — often called the 'father of the prophets.' Both Prophet Muhammad ﷺ (through Ismail) and Prophet Isa (through Ishaq) descend from him.",ar:"يُعدّ النبي إبراهيم الأبَ الروحي للإسلام والمسيحية واليهودية. كلٌّ من النبي محمد ﷺ (عبر إسماعيل) والنبي عيسى (عبر إسحاق) من ذريته.",fr:"Le Prophète Ibrahim (Abraham, AS) est considéré comme le père spirituel de l'Islam, du Christianisme et du Judaïsme.",de:"Prophet Ibrahim (Abraham, AS) gilt als der spirituelle Vater des Islams, des Christentums und des Judentums."} },
-
-  { id:"pe14", category:"prophets", difficulty:"easy",
-    question:{en:"Which Prophet had the ability to speak to animals and was given control over the wind?",ar:"أي نبي كان يتكلم مع الحيوانات وأُعطي تسخير الريح؟",fr:"Quel Prophète pouvait parler aux animaux et avait le contrôle sur le vent?",de:"Welcher Prophet konnte mit Tieren sprechen und hatte Kontrolle über den Wind?"},
-    options:{en:["Dawud","Ibrahim","Sulayman (Solomon)","Musa"],ar:["داوود","إبراهيم","سليمان","موسى"],fr:["Dawud","Ibrahim","Sulayman (Salomon)","Moussa"],de:["Dawud","Ibrahim","Sulayman (Salomo)","Musa"]},
-    answer:2,
-    explanation:{en:"Prophet Sulayman (Solomon, AS) was given the miraculous ability to understand the language of birds and animals, command the wind, and rule over jinn. Allah says: 'And We subjected the wind for Sulayman.' (21:81)",ar:"أُعطي النبي سليمان القدرة المعجزة على فهم لغة الطير والحيوانات وتسخير الريح وحكم الجن. قال الله: {وَلِسُلَيْمَانَ الرِّيحَ} (21:81).",fr:"Le Prophète Sulayman (Salomon, AS) reçut la capacité miraculeuse de comprendre le langage des oiseaux et des animaux, de commander le vent et de régner sur les djinns.",de:"Prophet Sulayman (Salomo, AS) erhielt die wundersame Fähigkeit, die Sprache von Vögeln und Tieren zu verstehen, den Wind zu befehlen und über Dschinn zu herrschen."} },
-
-  { id:"pe15", category:"prophets", difficulty:"easy",
-    question:{en:"Which Prophet is mentioned most frequently in the Quran?",ar:"أي نبي ذُكر أكثر في القرآن الكريم؟",fr:"Quel Prophète est mentionné le plus souvent dans le Coran?",de:"Welcher Prophet wird am häufigsten im Quran erwähnt?"},
-    options:{en:["Ibrahim","Muhammad ﷺ","Musa","Isa"],ar:["إبراهيم","محمد ﷺ","موسى","عيسى"],fr:["Ibrahim","Muhammad ﷺ","Moussa","Isa"],de:["Ibrahim","Muhammad ﷺ","Musa","Isa"]},
-    answer:2,
-    explanation:{en:"Prophet Musa (Moses, AS) is mentioned more times in the Quran than any other prophet — approximately 136 times. His story spans multiple surahs including Al-Baqarah, Al-A'raf, Taha, Al-Qasas, and others.",ar:"ذُكر النبي موسى عليه السلام في القرآن أكثر من أي نبي آخر — نحو 136 مرة.",fr:"Le Prophète Moussa (Moïse, AS) est mentionné plus souvent que tout autre prophète dans le Coran — environ 136 fois.",de:"Prophet Musa (Moses, AS) wird öfter im Quran erwähnt als jeder andere Prophet — etwa 136 Mal."} },
-
-  { id:"pe16", category:"prophets", difficulty:"easy",
-    question:{en:"Which Prophet was thrown into fire and came out unharmed?",ar:"أي نبي أُلقي في النار فخرج سالماً؟",fr:"Quel Prophète fut jeté dans le feu et en sortit indemne?",de:"Welcher Prophet wurde ins Feuer geworfen und kam unversehrt heraus?"},
-    options:{en:["Musa","Yunus","Isa","Ibrahim"],ar:["موسى","يونس","عيسى","إبراهيم"],fr:["Moussa","Yunus","Isa","Ibrahim"],de:["Musa","Yunus","Isa","Ibrahim"]},
-    answer:3,
-    explanation:{en:"Prophet Ibrahim (AS) was thrown into a great fire by Nimrod and his people for destroying their idols. Allah commanded: 'O fire, be cool and safe for Ibrahim!' (21:69) and he emerged unharmed.",ar:"أُلقي النبي إبراهيم عليه السلام في النار من قِبَل نمرود وقومه لتحطيمه الأصنام. قال الله: {يَا نَارُ كُونِي بَرْدًا وَسَلَامًا عَلَىٰ إِبْرَاهِيمَ} (21:69).",fr:"Le Prophète Ibrahim (AS) fut jeté dans un grand feu par Nemrod pour avoir brisé les idoles. Allah ordonna: 'O feu, sois fraîcheur et paix pour Ibrahim!' (21:69)",de:"Prophet Ibrahim (AS) wurde von Nimrod in ein großes Feuer geworfen, weil er ihre Götzen zerstört hatte. Allah befahl: 'O Feuer, sei kühl und sicher für Ibrahim!' (21:69)"} },
-
-  { id:"pe17", category:"prophets", difficulty:"easy",
-    question:{en:"Which Prophet is the last prophet in Islam?",ar:"من هو خاتم الأنبياء في الإسلام؟",fr:"Quel est le dernier prophète en Islam?",de:"Wer ist der letzte Prophet im Islam?"},
-    options:{en:["Isa (Jesus)","Idris","Khidr","Muhammad ﷺ"],ar:["عيسى","إدريس","الخضر","محمد ﷺ"],fr:["Isa (Jésus)","Idris","Khidr","Muhammad ﷺ"],de:["Isa (Jesus)","Idris","Khidr","Muhammad ﷺ"]},
-    answer:3,
-    explanation:{en:"Prophet Muhammad ﷺ is the last and final prophet in Islam. Allah says: 'Muhammad is not the father of any man among you, but he is the Messenger of Allah and the Seal of the Prophets.' (33:40)",ar:"النبي محمد ﷺ هو خاتم الأنبياء. قال الله: {وَلَٰكِن رَّسُولَ اللَّهِ وَخَاتَمَ النَّبِيِّينَ} (33:40).",fr:"Le Prophète Muhammad ﷺ est le dernier et ultime prophète en Islam. Allah dit: 'Muhammad n'est pas le père d'aucun homme parmi vous, mais il est le Messager d'Allah et le Sceau des Prophètes.' (33:40)",de:"Prophet Muhammad ﷺ ist der letzte und endgültige Prophet im Islam. Allah sagt: 'Muhammad ist nicht der Vater eines Mannes unter euch, aber er ist der Gesandte Allahs und das Siegel der Propheten.' (33:40)"} },
-
-  { id:"pe18", category:"prophets", difficulty:"easy",
-    question:{en:"Which Prophet is considered the father of the Arab and Hebrew nations?",ar:"أي نبي يُعتبر أبا الأمتين العربية والعبرية؟",fr:"Quel Prophète est considéré comme le père des nations arabe et hébraïque?",de:"Welcher Prophet gilt als Vater der arabischen und hebräischen Nationen?"},
-    options:{en:["Nuh","Ibrahim","Yaqub","Ismail"],ar:["نوح","إبراهيم","يعقوب","إسماعيل"],fr:["Nuh","Ibrahim","Yaqub","Ismail"],de:["Nuh","Ibrahim","Yaqub","Ismail"]},
-    answer:1,
-    explanation:{en:"Prophet Ibrahim (AS) is the father of both nations: through Ismail (AS), ancestor of the Arabs (and the Prophet Muhammad ﷺ); and through Ishaq (AS), ancestor of the Hebrews (and the Israelite prophets).",ar:"النبي إبراهيم هو أب كلا الأمتين: عبر إسماعيل (جد العرب والنبي محمد ﷺ) وعبر إسحاق (جد العبرانيين).",fr:"Le Prophète Ibrahim (AS) est le père des deux nations: à travers Ismail (AS), ancêtre des Arabes; et à travers Ishaq (AS), ancêtre des Hébreux.",de:"Prophet Ibrahim (AS) ist der Vater beider Nationen: durch Ismail (AS), Vorfahre der Araber; und durch Ishaq (AS), Vorfahre der Hebräer."} },
-
-  { id:"pe19", category:"prophets", difficulty:"easy",
-    question:{en:"Which Prophet was known for his beautiful voice when reciting the Zabur (Psalms)?",ar:"أي نبي كان مشهوراً بصوته الجميل عند تلاوة الزبور؟",fr:"Quel Prophète était connu pour sa belle voix lors de la récitation du Zabur (Psaumes)?",de:"Welcher Prophet war für seine schöne Stimme beim Rezitieren der Zabur (Psalmen) bekannt?"},
-    options:{en:["Sulayman","Yusuf","Dawud (David)","Ibrahim"],ar:["سليمان","يوسف","داوود","إبراهيم"],fr:["Sulayman","Yusuf","Dawud (David)","Ibrahim"],de:["Sulayman","Yusuf","Dawud (David)","Ibrahim"]},
-    answer:2,
-    explanation:{en:"Prophet Dawud (David, AS) was given an extraordinarily beautiful voice by Allah. The Prophet ﷺ said: 'Dawud was given a beautiful voice like no other.' When he recited, birds and mountains glorified Allah with him.",ar:"أُعطي النبي داوود صوتاً بديعاً لا مثيل له. كانت الطيور والجبال تسبّح معه.",fr:"Le Prophète Dawud (David, AS) reçut d'Allah une voix extraordinairement belle. Quand il récitait, les oiseaux et les montagnes glorifiaient Allah avec lui.",de:"Prophet Dawud (David, AS) wurde von Allah eine außerordentlich schöne Stimme gegeben. Wenn er rezitierte, priesen Vögel und Berge Allah mit ihm."} },
-
-  { id:"pe20", category:"prophets", difficulty:"easy",
-    question:{en:"Which Prophet was sold into slavery by his brothers?",ar:"أي نبي باعه إخوته عبداً؟",fr:"Quel Prophète fut vendu comme esclave par ses frères?",de:"Welcher Prophet wurde von seinen Brüdern als Sklave verkauft?"},
-    options:{en:["Musa","Ibrahim","Yusuf (Joseph)","Ayyub"],ar:["موسى","إبراهيم","يوسف","أيوب"],fr:["Moussa","Ibrahim","Yusuf (Joseph)","Ayyub"],de:["Musa","Ibrahim","Yusuf (Josef)","Ayyub"]},
-    answer:2,
-    explanation:{en:"Prophet Yusuf (Joseph, AS) was thrown into a well and then sold into slavery by his jealous brothers. He was taken to Egypt where he eventually became a minister. This story is told in Surah Yusuf (Chapter 12).",ar:"أُلقي النبي يوسف في بئر ثم بيع عبداً على يد إخوته. نُقل إلى مصر حيث أصبح وزيراً. تُروى قصته في سورة يوسف.",fr:"Le Prophète Yusuf (Joseph, AS) fut jeté dans un puits puis vendu comme esclave par ses frères. Il fut emmené en Égypte où il devint ministre.",de:"Prophet Yusuf (Josef, AS) wurde von seinen eifersüchtigen Brüdern in einen Brunnen geworfen und als Sklave verkauft. Er wurde nach Ägypten gebracht, wo er Minister wurde."} },
-
-  // ═══════════════════════════════════════════════════════════════
-  // EASY — COMPANIONS (ce1–ce20)
-  // ═══════════════════════════════════════════════════════════════
-  { id:"ce1", category:"companions", difficulty:"easy",
-    question:{en:"Who was the first man to accept Islam?",ar:"من كان أول رجل يقبل الإسلام؟",fr:"Qui fut le premier homme à accepter l'Islam?",de:"Wer war der erste Mann, der den Islam annahm?"},
-    options:{en:["Umar ibn al-Khattab","Uthman ibn Affan","Abu Bakr al-Siddiq","Ali ibn Abi Talib"],ar:["عمر بن الخطاب","عثمان بن عفان","أبو بكر الصديق","علي بن أبي طالب"],fr:["Umar ibn al-Khattab","Uthman ibn Affan","Abu Bakr al-Siddiq","Ali ibn Abi Talib"],de:["Umar ibn al-Khattab","Uthman ibn Affan","Abu Bakr al-Siddiq","Ali ibn Abi Talib"]},
-    answer:2,
-    explanation:{en:"Abu Bakr al-Siddiq (RA) was the first adult free man to accept Islam. He immediately believed the Prophet ﷺ without hesitation, earning him the title 'al-Siddiq' (the truthful one).",ar:"أبو بكر الصديق رضي الله عنه كان أول رجل حر بالغ يسلم. صدَّق النبي ﷺ فوراً دون تردد، فلُقِّب بـ'الصديق'.",fr:"Abu Bakr al-Siddiq (RA) fut le premier homme adulte libre à accepter l'Islam. Il crut immédiatement le Prophète ﷺ sans hésitation, gagnant le titre de 'al-Siddiq'.",de:"Abu Bakr al-Siddiq (ra) war der erste erwachsene freie Mann, der den Islam annahm. Er glaubte dem Propheten ﷺ sofort ohne zu zögern und verdiente den Titel 'al-Siddiq'."} },
-
-  { id:"ce2", category:"companions", difficulty:"easy",
-    question:{en:"Who was the first woman to accept Islam?",ar:"من كانت أول امرأة تقبل الإسلام؟",fr:"Qui fut la première femme à accepter l'Islam?",de:"Wer war die erste Frau, die den Islam annahm?"},
-    options:{en:["Aisha bint Abi Bakr","Fatimah al-Zahra","Khadijah bint Khuwaylid","Hafsa bint Umar"],ar:["عائشة بنت أبي بكر","فاطمة الزهراء","خديجة بنت خويلد","حفصة بنت عمر"],fr:["Aïcha bint Abi Bakr","Fatima al-Zahra","Khadija bint Khuwaylid","Hafsa bint Umar"],de:["Aisha bint Abi Bakr","Fatima al-Zahra","Khadija bint Khuwailid","Hafsa bint Umar"]},
-    answer:2,
-    explanation:{en:"Khadijah bint Khuwaylid (RA) — the Prophet's first wife — was the first person overall (male or female) to embrace Islam. She supported and comforted the Prophet ﷺ after his first revelation.",ar:"خديجة بنت خويلد رضي الله عنها — زوجة النبي الأولى — كانت أول من أسلم مطلقاً (رجلاً أو امرأة). دعمت النبي ﷺ وعزَّته بعد نزول الوحي.",fr:"Khadija bint Khuwaylid (RA) — la première épouse du Prophète — fut la première personne de tous (homme ou femme) à embrasser l'Islam.",de:"Khadija bint Khuwailid (ra) — die erste Frau des Propheten — war die allererste Person (Mann oder Frau), die den Islam annahm."} },
-
-  { id:"ce3", category:"companions", difficulty:"easy",
-    question:{en:"Which companion was known as 'the Lion of Allah' for his bravery?",ar:"أي صحابي اشتُهر بـ'أسد الله' لشجاعته؟",fr:"Quel compagnon était connu comme 'le Lion d'Allah' pour sa bravoure?",de:"Welcher Gefährte war als 'Löwe Allahs' für seine Tapferkeit bekannt?"},
-    options:{en:["Umar ibn al-Khattab","Khalid ibn al-Walid","Hamzah ibn Abdul-Muttalib","Ali ibn Abi Talib"],ar:["عمر بن الخطاب","خالد بن الوليد","حمزة بن عبد المطلب","علي بن أبي طالب"],fr:["Umar ibn al-Khattab","Khalid ibn al-Walid","Hamzah ibn Abd al-Muttalib","Ali ibn Abi Talib"],de:["Umar ibn al-Khattab","Khalid ibn al-Walid","Hamza ibn Abd al-Muttalib","Ali ibn Abi Talib"]},
-    answer:2,
-    explanation:{en:"Hamzah ibn Abdul-Muttalib (RA) — the Prophet's uncle — was known as 'Asadullah' (Lion of Allah) and 'Sayyid al-Shuhada' (Master of the Martyrs). He was martyred at the Battle of Uhud.",ar:"حمزة بن عبد المطلب رضي الله عنه — عم النبي ﷺ — اشتُهر بـ'أسد الله' و'سيد الشهداء'. استشهد في غزوة أحد.",fr:"Hamzah ibn Abd al-Muttalib (RA) — l'oncle du Prophète — était connu comme 'Asadullah' (Lion d'Allah) et 'Sayyid al-Shuhada' (Maître des Martyrs).",de:"Hamza ibn Abd al-Muttalib (ra) — der Onkel des Propheten — war als 'Asadullah' (Löwe Allahs) und 'Sayyid al-Shuhada' (Meister der Märtyrer) bekannt."} },
-
-  { id:"ce4", category:"companions", difficulty:"easy",
-    question:{en:"Which companion was the Prophet's ﷺ closest friend and companion during the Hijra?",ar:"أي صحابي كان أقرب أصدقاء النبي ﷺ ورفيقه في الهجرة؟",fr:"Quel compagnon était le plus proche ami du Prophète ﷺ et son compagnon durant l'Hégire?",de:"Welcher Gefährte war der engste Freund des Propheten ﷺ und sein Begleiter während der Hidschra?"},
-    options:{en:["Umar ibn al-Khattab","Ali ibn Abi Talib","Abu Bakr al-Siddiq","Uthman ibn Affan"],ar:["عمر بن الخطاب","علي بن أبي طالب","أبو بكر الصديق","عثمان بن عفان"],fr:["Umar ibn al-Khattab","Ali ibn Abi Talib","Abu Bakr al-Siddiq","Uthman ibn Affan"],de:["Umar ibn al-Khattab","Ali ibn Abi Talib","Abu Bakr al-Siddiq","Uthman ibn Affan"]},
-    answer:2,
-    explanation:{en:"Abu Bakr al-Siddiq (RA) accompanied the Prophet ﷺ during the Hijra, hiding with him in the Cave of Thawr. Allah mentions this in the Quran: 'When the two were in the cave, he said to his companion: Do not grieve; indeed Allah is with us.' (9:40)",ar:"أبو بكر الصديق رضي الله عنه رافق النبي ﷺ في الهجرة، واختبأا معاً في غار ثور. ذكر الله ذلك في القرآن: {إِذْ هُمَا فِي الْغَارِ إِذْ يَقُولُ لِصَاحِبِهِ لَا تَحْزَنْ إِنَّ اللَّهَ مَعَنَا} (9:40).",fr:"Abu Bakr al-Siddiq (RA) accompagna le Prophète ﷺ lors de l'Hégire, se cachant avec lui dans la Grotte de Thawr. Allah mentionne cela dans le Coran (9:40).",de:"Abu Bakr al-Siddiq (ra) begleitete den Propheten ﷺ während der Hidschra und versteckte sich mit ihm in der Höhle Thawr. Allah erwähnt dies im Quran (9:40)."} },
-
-  { id:"ce5", category:"companions", difficulty:"easy",
-    question:{en:"Which companion was known as 'Farouq' (one who distinguishes right from wrong)?",ar:"أي صحابي اشتُهر بلقب 'الفاروق' (الذي يفرق بين الحق والباطل)؟",fr:"Quel compagnon était connu sous le nom de 'Farouq' (celui qui distingue le juste du faux)?",de:"Welcher Gefährte war als 'Farouq' (derjenige der Recht von Unrecht unterscheidet) bekannt?"},
-    options:{en:["Abu Bakr al-Siddiq","Uthman ibn Affan","Ali ibn Abi Talib","Umar ibn al-Khattab"],ar:["أبو بكر الصديق","عثمان بن عفان","علي بن أبي طالب","عمر بن الخطاب"],fr:["Abu Bakr al-Siddiq","Uthman ibn Affan","Ali ibn Abi Talib","Umar ibn al-Khattab"],de:["Abu Bakr al-Siddiq","Uthman ibn Affan","Ali ibn Abi Talib","Umar ibn al-Khattab"]},
-    answer:3,
-    explanation:{en:"Umar ibn al-Khattab (RA) was given the title 'Al-Farouq' by the Prophet ﷺ, meaning 'the one who distinguishes between truth and falsehood.' He was the second Caliph and one of the most just rulers in history.",ar:"لقَّب النبي ﷺ عمر بن الخطاب رضي الله عنه بـ'الفاروق'، أي 'الذي يفرق بين الحق والباطل'. كان الخليفة الثاني.",fr:"Umar ibn al-Khattab (RA) reçut le titre d'Al-Farouq du Prophète ﷺ, signifiant 'celui qui distingue la vérité du faux.'",de:"Umar ibn al-Khattab (ra) erhielt vom Propheten ﷺ den Titel 'Al-Farouq', was 'derjenige der Wahrheit von Falschheit unterscheidet' bedeutet."} },
-
-  { id:"ce6", category:"companions", difficulty:"easy",
-    question:{en:"Which companion was known as 'Dhul-Nurayn' (Possessor of Two Lights) because he married two daughters of the Prophet ﷺ?",ar:"أي صحابي عُرف بـ'ذو النورين' لزواجه من بنتَي النبي ﷺ؟",fr:"Quel compagnon était connu sous le nom de 'Dhul-Nurayn' car il épousa deux filles du Prophète ﷺ?",de:"Welcher Gefährte war als 'Dhul-Nurayn' bekannt weil er zwei Töchter des Propheten ﷺ heiratete?"},
-    options:{en:["Ali ibn Abi Talib","Abu Bakr al-Siddiq","Umar ibn al-Khattab","Uthman ibn Affan"],ar:["علي بن أبي طالب","أبو بكر الصديق","عمر بن الخطاب","عثمان بن عفان"],fr:["Ali ibn Abi Talib","Abu Bakr al-Siddiq","Umar ibn al-Khattab","Uthman ibn Affan"],de:["Ali ibn Abi Talib","Abu Bakr al-Siddiq","Umar ibn al-Khattab","Uthman ibn Affan"]},
-    answer:3,
-    explanation:{en:"Uthman ibn Affan (RA) married Ruqayyah (RA) and after her death, married Umm Kulthum (RA) — both daughters of the Prophet ﷺ — earning him the title 'Dhul-Nurayn' (Possessor of Two Lights).",ar:"تزوَّج عثمان بن عفان رضي الله عنه من رقية، وبعد وفاتها تزوَّج من أم كلثوم — وكلتاهما بنتا النبي ﷺ — فلُقِّب بـ'ذي النورين'.",fr:"Uthman ibn Affan (RA) épousa Ruqayyah, puis après sa mort, Umm Kulthum — toutes deux filles du Prophète ﷺ — lui valant le titre 'Dhul-Nurayn'.",de:"Uthman ibn Affan (ra) heiratete Ruqayyah und nach ihrem Tod Umm Kulthum — beide Töchter des Propheten ﷺ — und verdiente den Titel 'Dhul-Nurayn'."} },
-
-  { id:"ce7", category:"companions", difficulty:"easy",
-    question:{en:"Which companion was known as the 'Father of the Poor' for his generosity?",ar:"أي صحابي اشتُهر بـ'أبو المساكين' لكرمه؟",fr:"Quel compagnon était connu comme le 'Père des Pauvres' pour sa générosité?",de:"Welcher Gefährte war als 'Vater der Armen' für seine Großzügigkeit bekannt?"},
-    options:{en:["Abdullah ibn Masud","Bilal ibn Rabah","Abu Hurairah","Uthman ibn Affan"],ar:["عبد الله بن مسعود","بلال بن رباح","أبو هريرة","عثمان بن عفان"],fr:["Abdullah ibn Masud","Bilal ibn Rabah","Abu Hurairah","Uthman ibn Affan"],de:["Abdullah ibn Masud","Bilal ibn Rabah","Abu Hurairah","Uthman ibn Affan"]},
-    answer:2,
-    explanation:{en:"Abu Hurairah (RA) earned the nickname 'Abu Hurairah' (Father of Kittens) for his love of cats, and was known for his closeness to the poor. He is the most prolific narrator of hadith in Islamic history, narrating over 5,000 hadiths.",ar:"أبو هريرة رضي الله عنه اشتُهر بحبه للقطط، وكان من أكثر الصحابة تحديثاً بالحديث، فقد روى أكثر من 5000 حديث.",fr:"Abu Hurairah (RA) gagna le surnom 'Père des Chatons' pour son amour des chats. Il est le narrateur de hadith le plus prolifique, narrant plus de 5000 hadiths.",de:"Abu Hurairah (ra) verdiente den Spitznamen 'Vater der Kätzchen' für seine Liebe zu Katzen und ist der produktivste Hadith-Erzähler der islamischen Geschichte mit über 5000 Hadiths."} },
-
-  { id:"ce8", category:"companions", difficulty:"easy",
-    question:{en:"Which companion was the Prophet's ﷺ cousin and son-in-law?",ar:"أي صحابي كان ابن عم النبي ﷺ وصهره؟",fr:"Quel compagnon était à la fois le cousin et le gendre du Prophète ﷺ?",de:"Welcher Gefährte war der Cousin und Schwiegersohn des Propheten ﷺ?"},
-    options:{en:["Umar ibn al-Khattab","Abu Bakr al-Siddiq","Uthman ibn Affan","Ali ibn Abi Talib"],ar:["عمر بن الخطاب","أبو بكر الصديق","عثمان بن عفان","علي بن أبي طالب"],fr:["Umar ibn al-Khattab","Abu Bakr al-Siddiq","Uthman ibn Affan","Ali ibn Abi Talib"],de:["Umar ibn al-Khattab","Abu Bakr al-Siddiq","Uthman ibn Affan","Ali ibn Abi Talib"]},
-    answer:3,
-    explanation:{en:"Ali ibn Abi Talib (RA) was the Prophet's ﷺ cousin (son of his uncle Abu Talib) and married the Prophet's daughter Fatimah al-Zahra (RA). He became the 4th Caliph.",ar:"علي بن أبي طالب رضي الله عنه كان ابن عم النبي ﷺ وتزوَّج ابنته فاطمة الزهراء. وأصبح الخليفة الرابع.",fr:"Ali ibn Abi Talib (RA) était le cousin du Prophète ﷺ et épousa sa fille Fatima al-Zahra (RA). Il devint le 4e Calife.",de:"Ali ibn Abi Talib (ra) war der Cousin des Propheten ﷺ und heiratete seine Tochter Fatima al-Zahra (ra). Er wurde der 4. Kalif."} },
-
-  { id:"ce9", category:"companions", difficulty:"easy",
-    question:{en:"Which companion was known as 'Sword of Allah' (Saifullah) for his military genius?",ar:"أي صحابي اشتُهر بـ'سيف الله المسلول' لعبقريته العسكرية؟",fr:"Quel compagnon était connu comme 'l'Épée d'Allah' (Saifullah) pour son génie militaire?",de:"Welcher Gefährte war als 'Schwert Allahs' (Saifullah) für sein militärisches Genie bekannt?"},
-    options:{en:["Amr ibn al-As","Sa'd ibn Abi Waqqas","Khalid ibn al-Walid","Abu Ubayda ibn al-Jarrah"],ar:["عمرو بن العاص","سعد بن أبي وقاص","خالد بن الوليد","أبو عبيدة بن الجراح"],fr:["Amr ibn al-As","Sa'd ibn Abi Waqqas","Khalid ibn al-Walid","Abu Ubayda ibn al-Jarrah"],de:["Amr ibn al-As","Sa'd ibn Abi Waqqas","Khalid ibn al-Walid","Abu Ubaidah ibn al-Dscherrah"]},
-    answer:2,
-    explanation:{en:"Khalid ibn al-Walid (RA) was given the title 'Saifullah' (Sword of Allah) by the Prophet ﷺ. He never lost a battle in his military career and was considered one of the greatest military commanders in history.",ar:"خالد بن الوليد رضي الله عنه لُقِّب بـ'سيف الله المسلول' من قِبَل النبي ﷺ. لم يُهزَم في أي معركة طوال مسيرته العسكرية.",fr:"Khalid ibn al-Walid (RA) reçut le titre de 'Saifullah' (Épée d'Allah) du Prophète ﷺ. Il ne perdit jamais une bataille.",de:"Khalid ibn al-Walid (ra) erhielt vom Propheten ﷺ den Titel 'Saifullah' (Schwert Allahs). Er verlor nie eine Schlacht."} },
-
-  { id:"ce10", category:"companions", difficulty:"easy",
-    question:{en:"Which companion was the Prophet's muezzin (caller to prayer)?",ar:"من كان مؤذن النبي ﷺ؟",fr:"Quel compagnon était le muezzin (appelant à la prière) du Prophète ﷺ?",de:"Welcher Gefährte war der Muezzin (Gebetsrufer) des Propheten ﷺ?"},
-    options:{en:["Abu Bakr","Umar ibn al-Khattab","Bilal ibn Rabah","Abdullah ibn Masud"],ar:["أبو بكر","عمر بن الخطاب","بلال بن رباح","عبد الله بن مسعود"],fr:["Abu Bakr","Umar ibn al-Khattab","Bilal ibn Rabah","Abdullah ibn Masud"],de:["Abu Bakr","Umar ibn al-Khattab","Bilal ibn Rabah","Abdullah ibn Masud"]},
-    answer:2,
-    explanation:{en:"Bilal ibn Rabah (RA) was appointed as the Prophet's ﷺ personal muezzin — the first person to call the Adhan in Islam. He was an Abyssinian slave who was freed by Abu Bakr (RA).",ar:"بلال بن رباح رضي الله عنه عُيِّن مؤذناً للنبي ﷺ — أول من أذَّن في الإسلام. كان عبداً حبشياً أعتقه أبو بكر الصديق.",fr:"Bilal ibn Rabah (RA) fut désigné comme muezzin personnel du Prophète ﷺ — la première personne à appeler l'Adhan en Islam.",de:"Bilal ibn Rabah (ra) wurde zum persönlichen Muezzin des Propheten ﷺ ernannt — die erste Person, die den Adhan im Islam rief."} },
-
-  { id:"ce11", category:"companions", difficulty:"easy",
-    question:{en:"Who was the first martyr (shahid) in Islam?",ar:"من كان أول شهيد في الإسلام؟",fr:"Qui fut le premier martyr (shahid) de l'Islam?",de:"Wer war der erste Märtyrer (Shahid) im Islam?"},
-    options:{en:["Hamzah ibn Abdul-Muttalib","Yasir ibn Amir","Sumayyah bint Khayyat","Bilal ibn Rabah"],ar:["حمزة بن عبد المطلب","ياسر بن عامر","سمية بنت خياط","بلال بن رباح"],fr:["Hamzah ibn Abd al-Muttalib","Yasir ibn Amir","Sumayyah bint Khayyat","Bilal ibn Rabah"],de:["Hamza ibn Abd al-Muttalib","Yasir ibn Amir","Sumayyah bint Khayyat","Bilal ibn Rabah"]},
-    answer:2,
-    explanation:{en:"Sumayyah bint Khayyat (RA) — mother of Ammar ibn Yasir — is considered the first martyr in Islam. She was tortured by Abu Jahl for her faith and refused to renounce Islam.",ar:"سمية بنت خياط رضي الله عنها — أم عمار بن ياسر — تُعدّ أول شهيدة في الإسلام. عذَّبها أبو جهل على إيمانها ورفضت التخلي عنه.",fr:"Sumayyah bint Khayyat (RA) — mère d'Ammar ibn Yasir — est considérée comme la première martyre de l'Islam. Elle fut torturée par Abu Jahl pour sa foi.",de:"Sumayyah bint Khayyat (ra) — Mutter von Ammar ibn Yasir — gilt als erste Märtyrerin des Islams. Sie wurde von Abu Dschahal für ihren Glauben gefoltert."} },
-
-  { id:"ce12", category:"companions", difficulty:"easy",
-    question:{en:"Which companion wrote down the Quran on behalf of the Prophet ﷺ?",ar:"أي صحابي كان يكتب الوحي للنبي ﷺ؟",fr:"Quel compagnon écrivit le Coran au nom du Prophète ﷺ?",de:"Welcher Gefährte schrieb den Quran im Namen des Propheten ﷺ auf?"},
-    options:{en:["Abu Bakr","Umar","Zayd ibn Thabit","Ali ibn Abi Talib"],ar:["أبو بكر","عمر","زيد بن ثابت","علي بن أبي طالب"],fr:["Abu Bakr","Umar","Zayd ibn Thabit","Ali ibn Abi Talib"],de:["Abu Bakr","Umar","Zayd ibn Thabit","Ali ibn Abi Talib"]},
-    answer:2,
-    explanation:{en:"Zayd ibn Thabit (RA) was the Prophet's ﷺ chief scribe of revelation. He later compiled the Quran into a single manuscript under Abu Bakr (RA) and then standardized copies under Uthman (RA).",ar:"زيد بن ثابت رضي الله عنه كان كاتب الوحي الرئيسي للنبي ﷺ. جمع القرآن لاحقاً في مصحف واحد في عهد أبي بكر ثم نسَّخه في عهد عثمان.",fr:"Zayd ibn Thabit (RA) était le scribe en chef de la révélation du Prophète ﷺ. Il compila plus tard le Coran en un seul manuscrit sous Abu Bakr.",de:"Zayd ibn Thabit (ra) war der Hauptschreiber der Offenbarung des Propheten ﷺ. Er kompilierte später den Quran unter Abu Bakr zu einem einzigen Manuskript."} },
-
-  { id:"ce13", category:"companions", difficulty:"easy",
-    question:{en:"Which companion narrated the most hadiths in Islamic history?",ar:"أي صحابي روى أكثر الأحاديث في تاريخ الإسلام؟",fr:"Quel compagnon rapporta le plus de hadiths dans l'histoire islamique?",de:"Welcher Gefährte überlieferte die meisten Hadiths in der islamischen Geschichte?"},
-    options:{en:["Umar ibn al-Khattab","Aisha bint Abi Bakr","Abu Hurairah","Abdullah ibn Abbas"],ar:["عمر بن الخطاب","عائشة بنت أبي بكر","أبو هريرة","عبد الله بن عباس"],fr:["Umar ibn al-Khattab","Aïcha bint Abi Bakr","Abu Hurairah","Abdullah ibn Abbas"],de:["Umar ibn al-Khattab","Aisha bint Abi Bakr","Abu Hurairah","Abdullah ibn Abbas"]},
-    answer:2,
-    explanation:{en:"Abu Hurairah (RA) narrated over 5,000 hadiths — more than any other companion. He dedicated his life to being close to the Prophet ﷺ to memorize his sayings and actions.",ar:"أبو هريرة رضي الله عنه روى أكثر من 5000 حديث — أكثر من أي صحابي آخر. خصَّص حياته لملازمة النبي ﷺ لحفظ أقواله وأفعاله.",fr:"Abu Hurairah (RA) rapporta plus de 5000 hadiths — plus qu'aucun autre compagnon. Il dédia sa vie à rester proche du Prophète ﷺ.",de:"Abu Hurairah (ra) überlieferte mehr als 5000 Hadiths — mehr als jeder andere Gefährte. Er widmete sein Leben der Nähe zum Propheten ﷺ."} },
-
-  { id:"ce14", category:"companions", difficulty:"easy",
-    question:{en:"Which companion was the Prophet's ﷺ beloved wife and daughter of Abu Bakr?",ar:"أي زوجة للنبي ﷺ كانت ابنة أبي بكر الصديق؟",fr:"Quelle épouse du Prophète ﷺ était la fille d'Abu Bakr?",de:"Welche Frau des Propheten ﷺ war die Tochter von Abu Bakr?"},
-    options:{en:["Hafsa","Zaynab","Umm Salama","Aisha"],ar:["حفصة","زينب","أم سلمة","عائشة"],fr:["Hafsa","Zaynab","Umm Salama","Aïcha"],de:["Hafsa","Zaynab","Umm Salama","Aisha"]},
-    answer:3,
-    explanation:{en:"Aisha bint Abi Bakr (RA) was the daughter of Abu Bakr al-Siddiq (RA) and a beloved wife of the Prophet ﷺ. She was a great scholar who narrated thousands of hadiths and taught Islamic law.",ar:"عائشة بنت أبي بكر رضي الله عنها هي ابنة أبي بكر الصديق وزوجة النبي ﷺ المحبوبة. كانت عالمة جليلة روت آلاف الأحاديث.",fr:"Aïcha bint Abi Bakr (RA) était la fille d'Abu Bakr al-Siddiq et une épouse bien-aimée du Prophète ﷺ. Grande savante, elle rapporta des milliers de hadiths.",de:"Aisha bint Abi Bakr (ra) war die Tochter von Abu Bakr al-Siddiq und eine geliebte Frau des Propheten ﷺ. Sie war eine große Gelehrte, die Tausende von Hadiths überlieferte."} },
-
-  { id:"ce15", category:"companions", difficulty:"easy",
-    question:{en:"Which companion was freed from slavery by Abu Bakr because of his faith?",ar:"أي صحابي أعتقه أبو بكر من العبودية بسبب إيمانه؟",fr:"Quel compagnon fut affranchi de l'esclavage par Abu Bakr à cause de sa foi?",de:"Welcher Gefährte wurde von Abu Bakr aus der Sklaverei befreit wegen seines Glaubens?"},
-    options:{en:["Ammar ibn Yasir","Zayd ibn Harithah","Bilal ibn Rabah","Salman al-Farisi"],ar:["عمار بن ياسر","زيد بن حارثة","بلال بن رباح","سلمان الفارسي"],fr:["Ammar ibn Yasir","Zayd ibn Harithah","Bilal ibn Rabah","Salman al-Farisi"],de:["Ammar ibn Yasir","Zayd ibn Haritha","Bilal ibn Rabah","Salman al-Farisi"]},
-    answer:2,
-    explanation:{en:"Bilal ibn Rabah (RA) was an Abyssinian slave who converted to Islam. His master Umayyah ibn Khalaf tortured him. Abu Bakr al-Siddiq (RA) purchased and freed him, allowing him to worship Allah freely.",ar:"بلال بن رباح رضي الله عنه كان عبداً حبشياً أسلم، فعذَّبه سيده أمية بن خلف. ابتاعه أبو بكر الصديق وأعتقه.",fr:"Bilal ibn Rabah (RA) était un esclave abyssinien converti à l'Islam. Son maître Umayya ibn Khalaf le tortura. Abu Bakr al-Siddiq (RA) l'acheta et l'affranchit.",de:"Bilal ibn Rabah (ra) war ein abessinischer Sklave, der zum Islam konvertierte. Sein Herr Umayya ibn Khalaf folterte ihn. Abu Bakr al-Siddiq (ra) kaufte und befreite ihn."} },
-
-  { id:"ce16", category:"companions", difficulty:"easy",
-    question:{en:"Which companion was known as 'the Trustee of this Ummah'?",ar:"أي صحابي عُرف بـ'أمين هذه الأمة'؟",fr:"Quel compagnon était connu comme 'le Gardien de cette Oummah'?",de:"Welcher Gefährte war als 'der Treuhänder dieser Gemeinschaft' bekannt?"},
-    options:{en:["Abu Bakr","Umar","Abu Ubayda ibn al-Jarrah","Ali"],ar:["أبو بكر","عمر","أبو عبيدة بن الجراح","علي"],fr:["Abu Bakr","Umar","Abu Ubayda ibn al-Jarrah","Ali"],de:["Abu Bakr","Umar","Abu Ubaidah ibn al-Dscherrah","Ali"]},
-    answer:2,
-    explanation:{en:"Abu Ubayda ibn al-Jarrah (RA) was given the title 'Amin al-Ummah' (Trustee of the Ummah) by the Prophet ﷺ. He was one of the Ten Promised Paradise and commanded the Muslim forces in the conquest of the Levant (Syria/Palestine).",ar:"لقَّب النبي ﷺ أبا عبيدة بن الجراح رضي الله عنه بـ'أمين هذه الأمة'. كان من العشرة المبشَّرين بالجنة.",fr:"Abu Ubayda ibn al-Jarrah (RA) reçut le titre d'Amin al-Ummah du Prophète ﷺ. Il était l'un des Dix à qui le Paradis est promis.",de:"Abu Ubaidah ibn al-Dscherrah (ra) erhielt vom Propheten ﷺ den Titel 'Amin al-Umma'. Er war einer der Zehn, denen das Paradies verheißen wurde."} },
-
-  { id:"ce17", category:"companions", difficulty:"easy",
-    question:{en:"Which companion was the Prophet's adopted son and the only companion mentioned by name in the Quran?",ar:"أي صحابي كان ابن النبي ﷺ بالتبني والصحابي الوحيد الذي ذُكر اسمه في القرآن؟",fr:"Quel compagnon était le fils adoptif du Prophète ﷺ et le seul compagnon mentionné par son nom dans le Coran?",de:"Welcher Gefährte war der Adoptivsohn des Propheten ﷺ und der einzige Gefährte der im Quran namentlich erwähnt wird?"},
-    options:{en:["Abdullah ibn Masud","Zayd ibn Harithah","Ammar ibn Yasir","Hudhayfah"],ar:["عبد الله بن مسعود","زيد بن حارثة","عمار بن ياسر","حذيفة"],fr:["Abdullah ibn Masud","Zayd ibn Harithah","Ammar ibn Yasir","Hudhayfah"],de:["Abdullah ibn Masud","Zayd ibn Haritha","Ammar ibn Yasir","Hudhaifa"]},
-    answer:1,
-    explanation:{en:"Zayd ibn Harithah (RA) was the Prophet's ﷺ freed slave and adopted son. He is the only companion mentioned by name in the Quran — in Surah Al-Ahzab (33:37).",ar:"زيد بن حارثة رضي الله عنه كان عبد النبي ﷺ المُعتَق وابنه بالتبني. هو الصحابي الوحيد المذكور باسمه في القرآن (الأحزاب:37).",fr:"Zayd ibn Harithah (RA) était l'esclave affranchi et le fils adoptif du Prophète ﷺ. Il est le seul compagnon mentionné par son nom dans le Coran (33:37).",de:"Zayd ibn Haritha (ra) war der befreite Sklave und Adoptivsohn des Propheten ﷺ. Er ist der einzige Gefährte, der im Quran namentlich erwähnt wird (33:37)."} },
-
-  { id:"ce18", category:"companions", difficulty:"easy",
-    question:{en:"Which companion was a Persian who helped plan the trench in the Battle of Khandaq?",ar:"أي صحابي كان فارسياً واقترح حفر الخندق في غزوة الخندق؟",fr:"Quel compagnon était persan et aida à planifier le fossé lors de la Bataille de Khandaq?",de:"Welcher Gefährte war Perser und half bei der Planung des Grabens in der Grabenschlacht?"},
-    options:{en:["Bilal ibn Rabah","Suhayb al-Rumi","Salman al-Farisi","Khabbab ibn al-Aratt"],ar:["بلال بن رباح","صهيب الرومي","سلمان الفارسي","خباب بن الأرت"],fr:["Bilal ibn Rabah","Suhayb al-Rumi","Salman al-Farisi","Khabbab ibn al-Aratt"],de:["Bilal ibn Rabah","Suhayb al-Rumi","Salman al-Farisi","Khabbab ibn al-Aratt"]},
-    answer:2,
-    explanation:{en:"Salman al-Farisi (RA) — a Persian companion — suggested digging a trench (khandaq) around Medina for defense, a strategy used in Persian warfare. The Prophet ﷺ said: 'Salman is from us, the Ahl al-Bayt.'",ar:"سلمان الفارسي رضي الله عنه — صحابي فارسي — اقترح حفر خندق حول المدينة دفاعاً، وهي استراتيجية من الحروب الفارسية. قال النبي ﷺ: 'سلمان منّا آل البيت'.",fr:"Salman al-Farisi (RA) — un compagnon persan — suggéra de creuser un fossé (khandaq) autour de Médine, une stratégie persane. Le Prophète ﷺ dit: 'Salman est des nôtres, les Ahl al-Bayt.'",de:"Salman al-Farisi (ra) — ein persischer Gefährte — schlug vor, einen Graben (Khandaq) um Medina zu graben, eine persische Kriegsstrategie. Der Prophet ﷺ sagte: 'Salman ist von uns, den Ahl al-Bayt.'"} },
-
-  { id:"ce19", category:"companions", difficulty:"easy",
-    question:{en:"Which companion compiled (gathered) the Quran into one book after the Prophet ﷺ passed away?",ar:"أي خليفة جمع القرآن في مصحف واحد بعد وفاة النبي ﷺ؟",fr:"Quel calife rassembla le Coran en un seul livre après la mort du Prophète ﷺ?",de:"Welcher Kalif versammelte den Quran nach dem Tod des Propheten ﷺ in einem Buch?"},
-    options:{en:["Umar ibn al-Khattab","Abu Bakr al-Siddiq","Uthman ibn Affan","Ali ibn Abi Talib"],ar:["عمر بن الخطاب","أبو بكر الصديق","عثمان بن عفان","علي بن أبي طالب"],fr:["Umar ibn al-Khattab","Abu Bakr al-Siddiq","Uthman ibn Affan","Ali ibn Abi Talib"],de:["Umar ibn al-Khattab","Abu Bakr al-Siddiq","Uthman ibn Affan","Ali ibn Abi Talib"]},
-    answer:1,
-    explanation:{en:"Abu Bakr al-Siddiq (RA) initiated the compilation of the Quran into a single book (Mushaf) after the Battle of Yamamah (633 CE), where many Quran memorizers were martyred. The task was assigned to Zayd ibn Thabit (RA).",ar:"أبو بكر الصديق رضي الله عنه بدأ جمع القرآن في مصحف واحد بعد معركة اليمامة (633م)، حيث استُشهد كثير من حفَّاظ القرآن. أُسند العمل لزيد بن ثابت.",fr:"Abu Bakr al-Siddiq (RA) initia la compilation du Coran en un seul livre après la Bataille de Yamamah (633 EC). La tâche fut confiée à Zayd ibn Thabit.",de:"Abu Bakr al-Siddiq (ra) leitete die Kompilation des Qurans in einem einzigen Buch nach der Schlacht von Yamamah (633 n. Chr.) ein. Die Aufgabe wurde Zayd ibn Thabit übertragen."} },
-
-  { id:"ce20", category:"companions", difficulty:"easy",
-    question:{en:"Which companion was present at all of the major battles of early Islam and is considered one of the greatest military commanders?",ar:"أي صحابي حضر كل المعارك الكبرى لصدر الإسلام ويُعدّ أحد أعظم القادة العسكريين؟",fr:"Quel compagnon était présent à toutes les grandes batailles du début de l'Islam et est considéré comme l'un des plus grands commandants militaires?",de:"Welcher Gefährte war bei allen großen Schlachten des frühen Islams dabei und gilt als einer der größten Militärkommandanten?"},
-    options:{en:["Sa'd ibn Abi Waqqas","Khalid ibn al-Walid","Amr ibn al-As","Zubayr ibn al-Awwam"],ar:["سعد بن أبي وقاص","خالد بن الوليد","عمرو بن العاص","الزبير بن العوام"],fr:["Sa'd ibn Abi Waqqas","Khalid ibn al-Walid","Amr ibn al-As","Zubayr ibn al-Awwam"],de:["Sa'd ibn Abi Waqqas","Khalid ibn al-Walid","Amr ibn al-As","Zubayr ibn al-Awwam"]},
-    answer:1,
-    explanation:{en:"Khalid ibn al-Walid (RA) was undefeated in over 100 battles. He commanded Muslim forces in battles against the Byzantine and Persian empires, and the Prophet ﷺ named him 'Sword of Allah.'",ar:"خالد بن الوليد رضي الله عنه لم يُهزَم في أكثر من 100 معركة. قاد القوات الإسلامية ضد الإمبراطوريتين البيزنطية والفارسية.",fr:"Khalid ibn al-Walid (RA) fut invaincu dans plus de 100 batailles. Il commanda les forces musulmanes contre les empires byzantin et perse.",de:"Khalid ibn al-Walid (ra) war in über 100 Schlachten ungeschlagen. Er befehligte muslimische Truppen gegen die byzantinischen und persischen Reiche."} },
-
-  // ═══════════════════════════════════════════════════════════════
-  // MEDIUM — HISTORY (hm1–hm20)
-  // ═══════════════════════════════════════════════════════════════
-  { id:"hm1", category:"history", difficulty:"medium",
-    question:{en:"Which battle involved a trench dug around Medina for defense against a coalition army?",ar:"أي غزوة شهدت حفر خندق حول المدينة دفاعاً ضد جيش التحالف؟",fr:"Quelle bataille impliqua le creusement d'un fossé autour de Médine pour se défendre contre une armée de coalition?",de:"Welche Schlacht beinhaltete das Graben eines Grabens um Medina zur Verteidigung gegen eine Koalitionsarmee?"},
-    options:{en:["Battle of Badr","Battle of Uhud","Battle of Khandaq (Trench)","Battle of Khaybar"],ar:["غزوة بدر","غزوة أحد","غزوة الخندق","غزوة خيبر"],fr:["Bataille de Badr","Bataille d'Uhud","Bataille de Khandaq (Tranchée)","Bataille de Khaybar"],de:["Schlacht von Badr","Schlacht von Uhud","Grabenschlacht (Khandaq)","Schlacht von Khaybar"]},
-    answer:2,
-    explanation:{en:"The Battle of Khandaq (Trench) in 627 CE (5 AH) was fought when a coalition of Quraysh, Jews, and other tribes besieged Medina. Salman al-Farisi (RA) suggested digging a trench. The siege failed and the coalition retreated.",ar:"غزوة الخندق عام 627م (5هـ) شُنَّت حين حاصر تحالف من قريش واليهود وقبائل أخرى المدينة. اقترح سلمان الفارسي حفر الخندق. فشل الحصار.",fr:"La Bataille de Khandaq en 627 EC (5 H) fut menée quand une coalition de Quraysh, de Juifs et d'autres tribus assiégea Médine. Le fossé fut suggéré par Salman al-Farisi.",de:"Die Grabenschlacht 627 n. Chr. (5 n. H.) wurde gekämpft als eine Koalition aus Quraisch, Juden und anderen Stämmen Medina belagerte. Salman al-Farisi schlug den Graben vor."} },
-
-  { id:"hm2", category:"history", difficulty:"medium",
-    question:{en:"What was the outcome of the Battle of Uhud (625 CE)?",ar:"ما كانت نتيجة غزوة أحد عام 625م؟",fr:"Quel fut le résultat de la Bataille d'Uhud (625 EC)?",de:"Was war das Ergebnis der Schlacht von Uhud (625 n. Chr.)?"},
-    options:{en:["A decisive Muslim victory","A draw — both sides withdrew","A temporary Muslim setback with the Quraysh gaining the upper hand initially","A Quraysh surrender and mass conversion"],ar:["انتصار مسلم حاسم","تعادل — انسحب الطرفان","نكسة مؤقتة للمسلمين مع تغلب قريش مبدئياً","استسلام قريش وإسلام جماعي"],fr:["Une victoire musulmane décisive","Un match nul — les deux camps se retirèrent","Un revers temporaire musulman avec les Quraysh prenant l'avantage au début","Une reddition de Quraysh"],de:["Ein entscheidender muslimischer Sieg","Ein Unentschieden — beide Seiten zogen sich zurück","Ein vorübergehender muslimischer Rückschlag wobei die Quraisch zunächst die Oberhand gewannen","Eine Kapitulation der Quraisch"]},
-    answer:2,
-    explanation:{en:"At Uhud, the Muslims were initially winning but some archers left their positions against orders. The Quraysh cavalry attacked from behind, causing confusion. The Prophet ﷺ was injured and Hamzah (RA) was martyred. The Quraysh withdrew but didn't follow up their advantage.",ar:"في أحد كان المسلمون يتقدمون، لكن بعض الرماة تركوا مواقعهم خلافاً للأوامر. شنَّ فرسان قريش هجوماً من الخلف واستُشهد حمزة وجُرح النبي ﷺ. انسحبت قريش.",fr:"À Uhud, les musulmans avaient d'abord l'avantage mais des archers quittèrent leurs positions. La cavalerie qurayshite attaqua par derrière. Le Prophète ﷺ fut blessé et Hamzah martyrisé.",de:"Bei Uhud gewannen die Muslime zunächst, aber einige Bogenschützen verließen ihre Positionen entgegen Befehlen. Die Quraisch-Kavallerie griff von hinten an. Der Prophet ﷺ wurde verletzt und Hamza (ra) fiel."} },
-
-  { id:"hm3", category:"history", difficulty:"medium",
-    question:{en:"Which Caliph was known for his justice and established major administrative reforms — including the first police force and welfare state?",ar:"أي خليفة اشتُهر بعدله وأسَّس إصلاحات إدارية كبرى شملت أول شرطة ودولة رعاية؟",fr:"Quel Calife était connu pour sa justice et établit d'importantes réformes administratives — notamment la première police et l'État-providence?",de:"Welcher Kalif war für seine Gerechtigkeit bekannt und führte wichtige Verwaltungsreformen ein — einschließlich der ersten Polizei und des Wohlfahrtsstaates?"},
-    options:{en:["Abu Bakr al-Siddiq","Uthman ibn Affan","Ali ibn Abi Talib","Umar ibn al-Khattab"],ar:["أبو بكر الصديق","عثمان بن عفان","علي بن أبي طالب","عمر بن الخطاب"],fr:["Abu Bakr al-Siddiq","Uthman ibn Affan","Ali ibn Abi Talib","Umar ibn al-Khattab"],de:["Abu Bakr al-Siddiq","Uthman ibn Affan","Ali ibn Abi Talib","Umar ibn al-Khattab"]},
-    answer:3,
-    explanation:{en:"Umar ibn al-Khattab (RA) established groundbreaking institutions: a welfare system for the poor, a police force, provincial governors, a treasury (Bayt al-Mal), and the Islamic calendar. He governed for 10 years (634-644 CE).",ar:"أسَّس عمر بن الخطاب مؤسسات رائدة: نظام رعاية للفقراء وشرطة وولاة وبيت مال وتقويم هجري. حكم 10 سنوات (634-644م).",fr:"Umar ibn al-Khattab (RA) établit des institutions révolutionnaires: un système de protection sociale, une police, des gouverneurs provinciaux, un trésor et le calendrier islamique.",de:"Umar ibn al-Khattab (ra) gründete bahnbrechende Institutionen: ein Sozialsystem, eine Polizei, Provinzgouverneure, eine Staatskasse und den islamischen Kalender."} },
-
-  { id:"hm4", category:"history", difficulty:"medium",
-    question:{en:"The standard copies of the Quran were distributed during whose caliphate?",ar:"في عهد أي خليفة وُزِّعت النسخ الموحَّدة من القرآن الكريم؟",fr:"Sous le califat de qui les copies standard du Coran furent-elles distribuées?",de:"Während wessen Kalifat wurden die standardisierten Kopien des Qurans verteilt?"},
-    options:{en:["Abu Bakr","Umar ibn al-Khattab","Ali ibn Abi Talib","Uthman ibn Affan"],ar:["أبو بكر","عمر بن الخطاب","علي بن أبي طالب","عثمان بن عفان"],fr:["Abu Bakr","Umar ibn al-Khattab","Ali ibn Abi Talib","Uthman ibn Affan"],de:["Abu Bakr","Umar ibn al-Khattab","Ali ibn Abi Talib","Uthman ibn Affan"]},
-    answer:3,
-    explanation:{en:"During Uthman ibn Affan's caliphate (644-656 CE), a standardized Quranic manuscript (Mushaf Uthmani) was created and copies sent to major Islamic cities to prevent dialectal variations in recitation.",ar:"في عهد عثمان بن عفان (644-656م) أُعِدَّ مصحف موحَّد (المصحف العثماني) ووُزِّعت نسخ منه على المدن الإسلامية الكبرى.",fr:"Sous le califat d'Uthman ibn Affan (644-656 EC), un manuscrit coranique standardisé (Mushaf Uthmani) fut créé et des copies envoyées dans les grandes villes islamiques.",de:"Während Uthmans Kalifat (644-656 n. Chr.) wurde ein standardisiertes Koranmanuskript (Mushaf Uthmani) erstellt und Kopien in islamische Hauptstädte versandt."} },
-
-  { id:"hm5", category:"history", difficulty:"medium",
-    question:{en:"Which dynasty succeeded the Rightly Guided Caliphs and ruled from Damascus?",ar:"أي سلالة جاءت بعد الخلفاء الراشدين وحكمت من دمشق؟",fr:"Quelle dynastie succéda aux Califes Bien Guidés et gouverna depuis Damas?",de:"Welche Dynastie folgte den rechtgeleiteten Kalifen und regierte von Damaskus aus?"},
-    options:{en:["Abbasid Dynasty","Fatimid Dynasty","Umayyad Dynasty","Ottoman Dynasty"],ar:["الأسرة العباسية","الأسرة الفاطمية","الأسرة الأموية","الأسرة العثمانية"],fr:["Dynastie Abbasside","Dynastie Fatimide","Dynastie Omeyyade","Dynastie Ottomane"],de:["Abbasiden-Dynastie","Fatimiden-Dynastie","Umayyaden-Dynastie","Osmanische Dynastie"]},
-    answer:2,
-    explanation:{en:"The Umayyad Dynasty (661-750 CE) succeeded the Rightly Guided Caliphs, with Damascus as their capital. It was founded by Muawiyah ibn Abi Sufyan and expanded the Islamic empire from Spain to Central Asia.",ar:"الأسرة الأموية (661-750م) خلفت الخلفاء الراشدين واتخذت دمشق عاصمةً لها. أسَّسها معاوية بن أبي سفيان.",fr:"La Dynastie Omeyyade (661-750 EC) succéda aux Califes Bien Guidés, avec Damas comme capitale. Fondée par Muawiyah ibn Abi Sufyan.",de:"Die Umayyaden-Dynastie (661-750 n. Chr.) folgte den rechtgeleiteten Kalifen mit Damaskus als Hauptstadt. Sie wurde von Muawiyah ibn Abi Sufyan gegründet."} },
-
-  { id:"hm6", category:"history", difficulty:"medium",
-    question:{en:"Which Abbasid Caliph is known as 'Harun al-Rashid' and ruled during the 'Golden Age of Islam'?",ar:"أي خليفة عباسي يُعرف بـ'هارون الرشيد' وحكم في 'العصر الذهبي للإسلام'؟",fr:"Quel Calife Abbasside est connu sous le nom de 'Harun al-Rashid' et régna pendant l''Âge d'Or de l'Islam'?",de:"Welcher abbasidische Kalif ist als 'Harun al-Rashid' bekannt und regierte während des 'Goldenen Zeitalters des Islams'?"},
-    options:{en:["Al-Mansur","Al-Ma'mun","Harun al-Rashid","Al-Mutasim"],ar:["المنصور","المأمون","هارون الرشيد","المعتصم"],fr:["Al-Mansur","Al-Ma'mun","Harun al-Rashid","Al-Mutasim"],de:["Al-Mansur","Al-Ma'mun","Harun al-Rashid","Al-Mutasim"]},
-    answer:2,
-    explanation:{en:"Harun al-Rashid (763-809 CE) was the fifth Abbasid Caliph who presided over a period of great Islamic cultural, scientific, and economic prosperity — often called the 'Golden Age of Islam.'",ar:"هارون الرشيد (763-809م) كان الخليفة العباسي الخامس الذي أشرف على عصر ازدهار ثقافي وعلمي واقتصادي إسلامي كبير.",fr:"Harun al-Rashid (763-809 EC) était le cinquième Calife Abbasside qui présida une période de grande prospérité culturelle, scientifique et économique islamique.",de:"Harun al-Rashid (763-809 n. Chr.) war der fünfte abbasidische Kalif, der eine Zeit großer islamischer kultureller, wissenschaftlicher und wirtschaftlicher Prosperität präsidierte."} },
-
-  { id:"hm7", category:"history", difficulty:"medium",
-    question:{en:"The Battle of Yarmuk (636 CE) against the Byzantines was a decisive victory for whom?",ar:"معركة اليرموك (636م) ضد البيزنطيين كانت انتصاراً حاسماً لمن؟",fr:"La Bataille de Yarmouk (636 EC) contre les Byzantins fut une victoire décisive pour qui?",de:"Die Schlacht am Yarmouk (636 n. Chr.) gegen die Byzantiner war ein entscheidender Sieg für wen?"},
-    options:{en:["The Byzantine Empire","The Persian Empire","The Muslim armies under Khalid ibn al-Walid","The Roman legions"],ar:["الإمبراطورية البيزنطية","الإمبراطورية الفارسية","الجيوش الإسلامية بقيادة خالد بن الوليد","الفيالق الرومانية"],fr:["L'Empire byzantin","L'Empire perse","Les armées musulmanes sous Khalid ibn al-Walid","Les légions romaines"],de:["Das Byzantinische Reich","Das Persische Reich","Die muslimischen Armeen unter Khalid ibn al-Walid","Die römischen Legionen"]},
-    answer:2,
-    explanation:{en:"The Battle of Yarmuk (636 CE) was a decisive Muslim victory led by Khalid ibn al-Walid (RA) against the Byzantine Empire, opening the way for the Muslim conquest of the Levant (Syria and Palestine).",ar:"معركة اليرموك (636م) كانت انتصاراً مسلماً حاسماً بقيادة خالد بن الوليد رضي الله عنه ضد الإمبراطورية البيزنطية.",fr:"La Bataille de Yarmouk (636 EC) fut une victoire musulmane décisive menée par Khalid ibn al-Walid contre l'Empire byzantin.",de:"Die Schlacht am Yarmouk (636 n. Chr.) war ein entscheidender muslimischer Sieg unter Khalid ibn al-Walid gegen das Byzantinische Reich."} },
-
-  { id:"hm8", category:"history", difficulty:"medium",
-    question:{en:"Which Islamic scholar is known as the 'Imam of the Sunnah' and compiled the most authentic collection of hadiths?",ar:"أي عالم إسلامي يُعرف بـ'إمام السنة' وجمع أصح مجموعة أحاديث؟",fr:"Quel savant islamique est connu comme l''Imam de la Sunnah' et compila la collection de hadiths la plus authentique?",de:"Welcher islamische Gelehrte ist als 'Imam der Sunnah' bekannt und stellte die authentischste Hadith-Sammlung zusammen?"},
-    options:{en:["Imam Malik ibn Anas","Imam Ahmad ibn Hanbal","Imam Muhammad al-Bukhari","Imam al-Nawawi"],ar:["الإمام مالك بن أنس","الإمام أحمد بن حنبل","الإمام محمد البخاري","الإمام النووي"],fr:["Imam Malik ibn Anas","Imam Ahmad ibn Hanbal","Imam Muhammad al-Bukhari","Imam al-Nawawi"],de:["Imam Malik ibn Anas","Imam Ahmad ibn Hanbal","Imam Muhammad al-Bukhari","Imam al-Nawawi"]},
-    answer:2,
-    explanation:{en:"Imam Muhammad al-Bukhari (810-870 CE) compiled Sahih al-Bukhari, considered the most authentic book after the Quran. He traveled extensively, collecting 600,000 hadiths and selecting only 7,275 authentic ones.",ar:"الإمام محمد البخاري (810-870م) جمع صحيح البخاري، المعتبر أصح كتاب بعد القرآن. جمع 600,000 حديث واختار 7,275 منها.",fr:"L'Imam Muhammad al-Bukhari (810-870 EC) compila le Sahih al-Bukhari, considéré comme le livre le plus authentique après le Coran.",de:"Imam Muhammad al-Bukhari (810-870 n. Chr.) stellte Sahih al-Bukhari zusammen, das als authentischstes Buch nach dem Quran gilt."} },
-
-  { id:"hm9", category:"history", difficulty:"medium",
-    question:{en:"What event led to the split between Sunni and Shia Muslims?",ar:"أي حدث أدى إلى الانقسام بين المسلمين السنة والشيعة؟",fr:"Quel événement conduisit à la division entre les musulmans sunnites et chiites?",de:"Welches Ereignis führte zur Spaltung zwischen sunnitischen und schiitischen Muslimen?"},
-    options:{en:["The Battle of Badr","The Conquest of Mecca","The dispute over leadership after the Prophet's ﷺ death — whether it should be Abu Bakr or Ali","The Treaty of Hudaybiyyah"],ar:["غزوة بدر","فتح مكة","الخلاف على الخلافة بعد وفاة النبي ﷺ — أبو بكر أم علي؟","صلح الحديبية"],fr:["La bataille de Badr","La conquête de La Mecque","Le litige sur le leadership après la mort du Prophète ﷺ — Abu Bakr ou Ali?","Le traité de Hudaybiyyah"],de:["Die Schlacht von Badr","Die Eroberung Mekkas","Der Streit um die Führerschaft nach dem Tod des Propheten ﷺ — Abu Bakr oder Ali?","Der Vertrag von Hudaibiyya"]},
-    answer:2,
-    explanation:{en:"The Sunni-Shia split originates from the dispute over succession after the Prophet ﷺ. Sunnis accepted Abu Bakr (RA) as the first Caliph elected by consensus, while Shia believe Ali (RA) was the rightful successor as the Prophet's cousin and son-in-law.",ar:"الانقسام السني الشيعي نشأ من الخلاف على الخلافة بعد النبي ﷺ. السنة قبلوا أبا بكر خليفةً بالشورى، بينما يرى الشيعة أن علياً كان الخليفة الشرعي.",fr:"La division sunnite-chiite vient du litige sur la succession après le Prophète ﷺ. Les sunnites acceptèrent Abu Bakr élu par consensus, tandis que les chiites croient qu'Ali était le successeur légitime.",de:"Die sunnitisch-schiitische Spaltung entstand aus dem Streit um die Nachfolge nach dem Propheten ﷺ. Sunniten akzeptierten Abu Bakr als ersten gewählten Kalifen, während Schiiten glauben, Ali sei der rechtmäßige Nachfolger gewesen."} },
-
-  { id:"hm10", category:"history", difficulty:"medium",
-    question:{en:"The Battle of Qadisiyyah (636 CE) resulted in the Muslim conquest of which empire?",ar:"أسفرت معركة القادسية (636م) عن الفتح الإسلامي لأي إمبراطورية؟",fr:"La Bataille de Qadisiyyah (636 EC) entraîna la conquête islamique de quel empire?",de:"Die Schlacht von Qadisiyya (636 n. Chr.) führte zur muslimischen Eroberung welchen Reiches?"},
-    options:{en:["Byzantine Empire","Roman Empire","Sassanid Persian Empire","Ethiopian Empire"],ar:["الإمبراطورية البيزنطية","الإمبراطورية الرومانية","الإمبراطورية الفارسية الساسانية","الإمبراطورية الحبشية"],fr:["Empire byzantin","Empire romain","Empire perse sassanide","Empire éthiopien"],de:["Byzantinisches Reich","Römisches Reich","Sasanidisches Persisches Reich","Äthiopisches Reich"]},
-    answer:2,
-    explanation:{en:"Sa'd ibn Abi Waqqas (RA) led the Muslim armies to a decisive victory at Qadisiyyah against the Sassanid Persian Empire. This victory opened Persia to Islam and the Persian capital Ctesiphon (Al-Madain) was captured.",ar:"سعد بن أبي وقاص رضي الله عنه قاد الجيوش الإسلامية إلى نصر حاسم في القادسية ضد الإمبراطورية الفارسية الساسانية.",fr:"Sa'd ibn Abi Waqqas (RA) mena les armées musulmanes à une victoire décisive à Qadisiyyah contre l'Empire perse sassanide.",de:"Sa'd ibn Abi Waqqas (ra) führte die muslimischen Armeen zu einem entscheidenden Sieg bei Qadisiyya gegen das Sasanidische Persische Reich."} },
-
-  { id:"hm11", category:"history", difficulty:"medium",
-    question:{en:"Who was the first Muslim to call the Adhan on the roof of the Kaaba after the conquest of Mecca?",ar:"من كان أول مسلم يؤذن على سطح الكعبة بعد فتح مكة؟",fr:"Qui fut le premier musulman à appeler l'Adhan sur le toit de la Kaaba après la conquête de La Mecque?",de:"Wer war der erste Muslim, der den Adhan auf dem Dach der Kaaba nach der Eroberung Mekkas rief?"},
-    options:{en:["Abu Bakr","Umar ibn al-Khattab","Bilal ibn Rabah","Abdullah ibn Masud"],ar:["أبو بكر","عمر بن الخطاب","بلال بن رباح","عبد الله بن مسعود"],fr:["Abu Bakr","Umar ibn al-Khattab","Bilal ibn Rabah","Abdullah ibn Masud"],de:["Abu Bakr","Umar ibn al-Khattab","Bilal ibn Rabah","Abdullah ibn Masud"]},
-    answer:2,
-    explanation:{en:"After the conquest of Mecca in 630 CE, the Prophet ﷺ ordered Bilal ibn Rabah (RA) to climb on top of the Kaaba and call the Adhan — a powerful symbol of Islam's triumph.",ar:"بعد فتح مكة عام 630م أمر النبي ﷺ بلال بن رباح رضي الله عنه بالصعود على الكعبة للأذان — رمزاً قوياً لانتصار الإسلام.",fr:"Après la conquête de La Mecque en 630 EC, le Prophète ﷺ ordonna à Bilal ibn Rabah (RA) de monter sur la Kaaba pour appeler l'Adhan.",de:"Nach der Eroberung Mekkas 630 n. Chr. befahl der Prophet ﷺ Bilal ibn Rabah (ra), auf die Kaaba zu klettern und den Adhan zu rufen."} },
-
-  { id:"hm12", category:"history", difficulty:"medium",
-    question:{en:"Which scholar founded the Maliki school of Islamic law?",ar:"أي عالم أسَّس المذهب المالكي في الفقه الإسلامي؟",fr:"Quel savant fonda l'école Malikite de droit islamique?",de:"Welcher Gelehrte gründete die malikitische Schule des islamischen Rechts?"},
-    options:{en:["Imam al-Shafi'i","Imam Ahmad ibn Hanbal","Imam Malik ibn Anas","Imam Abu Hanifa"],ar:["الإمام الشافعي","الإمام أحمد بن حنبل","الإمام مالك بن أنس","الإمام أبو حنيفة"],fr:["Imam al-Shafi'i","Imam Ahmad ibn Hanbal","Imam Malik ibn Anas","Imam Abu Hanifa"],de:["Imam al-Schafi'i","Imam Ahmad ibn Hanbal","Imam Malik ibn Anas","Imam Abu Hanifa"]},
-    answer:2,
-    explanation:{en:"Imam Malik ibn Anas (711-795 CE) was the founder of the Maliki school (madhab) of Islamic jurisprudence. He authored 'Al-Muwatta' — the first comprehensive book of Islamic law.",ar:"الإمام مالك بن أنس (711-795م) هو مؤسس المذهب المالكي في الفقه الإسلامي، وصاحب كتاب الموطأ — أول كتاب شامل في الفقه الإسلامي.",fr:"L'Imam Malik ibn Anas (711-795 EC) fut le fondateur de l'école Malikite de jurisprudence islamique. Il écrivit Al-Muwatta.",de:"Imam Malik ibn Anas (711-795 n. Chr.) war der Gründer der malikitischen Schule der islamischen Rechtswissenschaft. Er verfasste Al-Muwatta."} },
-
-  { id:"hm13", category:"history", difficulty:"medium",
-    question:{en:"The Mongol invasion that sacked Baghdad (1258 CE) ended which Islamic dynasty?",ar:"الغزو المغولي الذي نهب بغداد (1258م) أنهى أي سلالة إسلامية؟",fr:"L'invasion mongole qui pilla Bagdad (1258 EC) mit fin à quelle dynastie islamique?",de:"Die Mongoleninvasion die Bagdad plünderte (1258 n. Chr.) beendete welche islamische Dynastie?"},
-    options:{en:["Umayyad Dynasty","Fatimid Dynasty","Abbasid Caliphate","Seljuk Empire"],ar:["الأسرة الأموية","الأسرة الفاطمية","الخلافة العباسية","الإمبراطورية السلجوقية"],fr:["Dynastie Omeyyade","Dynastie Fatimide","Califat Abbasside","Empire Seldjoukide"],de:["Umayyaden-Dynastie","Fatimiden-Dynastie","Abbasiden-Kalifat","Seldschuken-Reich"]},
-    answer:2,
-    explanation:{en:"The Mongol invasion under Hulagu Khan sacked Baghdad in 1258 CE, killing the last Abbasid Caliph Al-Musta'sim and ending the Abbasid Caliphate (750-1258 CE). This is considered one of the most devastating events in Islamic history.",ar:"الغزو المغولي بقيادة هولاكو خان نهب بغداد عام 1258م وقتل آخر خلفاء العباسيين المستعصم بالله، مُنهياً الخلافة العباسية.",fr:"L'invasion mongole sous Hulagu Khan pilla Bagdad en 1258 EC, tuant le dernier Calife Abbasside Al-Musta'sim.",de:"Die Mongoleninvasion unter Hulagu Khan plünderte Bagdad 1258 n. Chr., tötete den letzten abbasidischen Kalifen Al-Musta'sim und beendete das Abbasiden-Kalifat."} },
-
-  { id:"hm14", category:"history", difficulty:"medium",
-    question:{en:"Muslim armies reached Spain in 711 CE. Who was the commander of this conquest?",ar:"وصلت الجيوش الإسلامية إلى إسبانيا عام 711م. من كان قائد هذا الفتح؟",fr:"Les armées musulmanes atteignirent l'Espagne en 711 EC. Qui commandait cette conquête?",de:"Muslimische Armeen erreichten Spanien 711 n. Chr. Wer befehligte diese Eroberung?"},
-    options:{en:["Musa ibn Nusayr","Sa'd ibn Abi Waqqas","Amr ibn al-As","Tariq ibn Ziyad"],ar:["موسى بن نصير","سعد بن أبي وقاص","عمرو بن العاص","طارق بن زياد"],fr:["Musa ibn Nusayr","Sa'd ibn Abi Waqqas","Amr ibn al-As","Tariq ibn Ziyad"],de:["Musa ibn Nusair","Sa'd ibn Abi Waqqas","Amr ibn al-As","Tariq ibn Ziyad"]},
-    answer:3,
-    explanation:{en:"Tariq ibn Ziyad (673-720 CE) led the Muslim armies across the Strait of Gibraltar (named Jabal Tariq after him) into Spain (Al-Andalus) in 711 CE. He famously burned his ships to prevent retreat.",ar:"طارق بن زياد (673-720م) قاد الجيوش الإسلامية عبر مضيق جبل طارق (سُمِّي باسمه) إلى إسبانيا (الأندلس) عام 711م.",fr:"Tariq ibn Ziyad (673-720 EC) mena les armées musulmanes à travers le Détroit de Gibraltar (nommé Jabal Tariq d'après lui) en Espagne en 711 EC.",de:"Tariq ibn Ziyad (673-720 n. Chr.) führte die muslimischen Armeen durch die Straße von Gibraltar (nach ihm Jabal Tariq genannt) nach Spanien 711 n. Chr."} },
-
-  { id:"hm15", category:"history", difficulty:"medium",
-    question:{en:"Which Islamic city was known as 'The City of Knowledge' and the center of the Islamic Golden Age?",ar:"أي مدينة إسلامية اشتُهرت بـ'مدينة العلم' وكانت مركز العصر الذهبي الإسلامي؟",fr:"Quelle ville islamique était connue comme 'La Ville du Savoir' et le centre de l'Âge d'Or islamique?",de:"Welche islamische Stadt war als 'Stadt des Wissens' und Zentrum des Islamischen Goldenen Zeitalters bekannt?"},
-    options:{en:["Mecca","Medina","Baghdad","Cairo"],ar:["مكة المكرمة","المدينة المنورة","بغداد","القاهرة"],fr:["La Mecque","Médine","Bagdad","Le Caire"],de:["Mekka","Medina","Bagdad","Kairo"]},
-    answer:2,
-    explanation:{en:"Baghdad was the capital of the Abbasid Caliphate and home to the 'House of Wisdom' (Bayt al-Hikma), where scholars translated Greek, Persian, and Indian texts into Arabic, making groundbreaking advances in science, mathematics, and medicine.",ar:"بغداد كانت عاصمة الخلافة العباسية وموطن 'بيت الحكمة'، حيث ترجم العلماء النصوص اليونانية والفارسية والهندية إلى العربية.",fr:"Bagdad était la capitale du Califat Abbasside et abritait la 'Maison de la Sagesse' (Bayt al-Hikma), où des savants traduisirent des textes grecs, persans et indiens en arabe.",de:"Bagdad war die Hauptstadt des Abbasiden-Kalifats und beherbergte das 'Haus der Weisheit' (Bayt al-Hikma), wo Gelehrte griechische, persische und indische Texte ins Arabische übersetzten."} },
-
-  { id:"hm16", category:"history", difficulty:"medium",
-    question:{en:"What was 'Al-Andalus'?",ar:"ما هو 'الأندلس'؟",fr:"Qu'est-ce qu'Al-Andalus?",de:"Was war 'Al-Andalus'?"},
-    options:{en:["The Islamic name for Persia","The Muslim-ruled Iberian Peninsula (Spain and Portugal) from 711–1492 CE","The name for North Africa under Islamic rule","A region in Arabia during the Prophet's time"],ar:["الاسم الإسلامي لفارس","شبه الجزيرة الإيبيرية تحت الحكم الإسلامي (إسبانيا والبرتغال) من 711-1492م","اسم لشمال أفريقيا تحت الحكم الإسلامي","منطقة في الجزيرة العربية في زمن النبي"],fr:["Le nom islamique de la Perse","La péninsule ibérique sous domination musulmane (Espagne et Portugal) de 711 à 1492 EC","Le nom de l'Afrique du Nord sous domination islamique","Une région d'Arabie à l'époque du Prophète"],de:["Der islamische Name für Persien","Die muslimisch regierte Iberische Halbinsel (Spanien und Portugal) 711-1492 n. Chr.","Der Name für Nordafrika unter islamischer Herrschaft","Eine Region in Arabien zur Zeit des Propheten"]},
-    answer:1,
-    explanation:{en:"Al-Andalus was the Muslim-ruled Iberian Peninsula (modern Spain and Portugal), from 711 to 1492 CE. It was a center of learning, culture, and religious tolerance under Islamic governance.",ar:"الأندلس هي شبه الجزيرة الإيبيرية تحت الحكم الإسلامي (إسبانيا والبرتغال الحديثة)، من 711 إلى 1492م.",fr:"Al-Andalus était la péninsule ibérique sous domination musulmane (Espagne et Portugal modernes), de 711 à 1492 EC.",de:"Al-Andalus war die muslimisch regierte Iberische Halbinsel (modernes Spanien und Portugal), von 711 bis 1492 n. Chr."} },
-
-  { id:"hm17", category:"history", difficulty:"medium",
-    question:{en:"Which companion led the delegation (embassy) to Abyssinia (Ethiopia) to protect the first Muslim migrants?",ar:"أي صحابي قاد الوفد إلى الحبشة للدفاع عن المسلمين المهاجرين الأوائل؟",fr:"Quel compagnon dirigea la délégation (ambassade) en Abyssinie (Éthiopie) pour protéger les premiers immigrants musulmans?",de:"Welcher Gefährte führte die Delegation nach Abessinien (Äthiopien), um die ersten muslimischen Migranten zu schützen?"},
-    options:{en:["Abu Bakr","Ali ibn Abi Talib","Jafar ibn Abi Talib","Uthman ibn Affan"],ar:["أبو بكر","علي بن أبي طالب","جعفر بن أبي طالب","عثمان بن عفان"],fr:["Abu Bakr","Ali ibn Abi Talib","Jafar ibn Abi Talib","Uthman ibn Affan"],de:["Abu Bakr","Ali ibn Abi Talib","Dschafar ibn Abi Talib","Uthman ibn Affan"]},
-    answer:2,
-    explanation:{en:"Jafar ibn Abi Talib (RA) — the Prophet's cousin — was chosen to represent the Muslims before King Negus of Abyssinia. His eloquent speech about Islam and recitation of Surah Maryam moved the Christian king to tears.",ar:"جعفر بن أبي طالب رضي الله عنه — ابن عم النبي — اختير ليمثل المسلمين أمام الملك النجاشي. تأثَّر الملك المسيحي بخطابه الفصيح وتلاوته لسورة مريم.",fr:"Jafar ibn Abi Talib (RA) — cousin du Prophète — fut choisi pour représenter les musulmans devant le roi Négus d'Abyssinie. Son éloquence et la récitation de Sourate Maryam émurent le roi.",de:"Dschafar ibn Abi Talib (ra) — Cousin des Propheten — wurde gewählt, um die Muslime vor König Negus von Abessinien zu vertreten. Seine Rede über den Islam rührte den christlichen König."} },
-
-  { id:"hm18", category:"history", difficulty:"medium",
-    question:{en:"The Ottoman Empire conquered Constantinople in 1453 CE. Who was the Sultan who led this conquest?",ar:"فتح العثمانيون القسطنطينية عام 1453م. من كان السلطان الذي قاد هذا الفتح؟",fr:"L'Empire ottoman conquit Constantinople en 1453 EC. Qui était le Sultan qui dirigea cette conquête?",de:"Das Osmanische Reich eroberte Konstantinopel 1453 n. Chr. Wer war der Sultan, der diese Eroberung anführte?"},
-    options:{en:["Sultan Suleiman the Magnificent","Sultan Selim I","Sultan Murad II","Sultan Mehmed II (the Conqueror)"],ar:["السلطان سليمان القانوني","السلطان سليم الأول","السلطان مراد الثاني","السلطان محمد الفاتح (الثاني)"],fr:["Sultan Soliman le Magnifique","Sultan Selim I","Sultan Murad II","Sultan Mehmed II (le Conquérant)"],de:["Sultan Suleiman der Prächtige","Sultan Selim I","Sultan Murad II","Sultan Mehmed II (der Eroberer)"]},
-    answer:3,
-    explanation:{en:"Sultan Mehmed II (known as 'Fatih' — the Conqueror) conquered Constantinople in 1453 CE, ending the Byzantine Empire. The Prophet ﷺ had prophesied: 'Verily, Constantinople will be conquered; how excellent a commander is that commander and how excellent an army is that army.'",ar:"السلطان محمد الفاتح (الثاني) فتح القسطنطينية عام 1453م، مُنهياً الإمبراطورية البيزنطية. كان النبي ﷺ قد بشَّر بهذا الفتح.",fr:"Le Sultan Mehmed II (connu comme 'Fatih' — le Conquérant) conquit Constantinople en 1453 EC, mettant fin à l'Empire byzantin.",de:"Sultan Mehmed II (bekannt als 'Fatih' — der Eroberer) eroberte Konstantinopel 1453 n. Chr. und beendete das Byzantinische Reich."} },
-
-  { id:"hm19", category:"history", difficulty:"medium",
-    question:{en:"What was the significance of the Battle of Ain Jalut (1260 CE)?",ar:"ما أهمية معركة عين جالوت عام 1260م؟",fr:"Quelle était la signification de la Bataille d'Ain Jalut (1260 EC)?",de:"Was war die Bedeutung der Schlacht von Ain Dschalut (1260 n. Chr.)?"},
-    options:{en:["The first Muslim conquest of Egypt","The Crusader defeat in the Holy Land","The first major defeat of the Mongol armies — stopping their westward advance","The Ottoman conquest of Constantinople"],ar:["أول فتح إسلامي لمصر","هزيمة الصليبيين في الأرض المقدسة","أول هزيمة كبرى للجيوش المغولية — أوقفت تقدمهم غرباً","فتح العثمانيين للقسطنطينية"],fr:["La première conquête islamique de l'Égypte","La défaite des Croisés en Terre Sainte","La première grande défaite des armées mongoles — arrêtant leur avancée vers l'ouest","La conquête ottomane de Constantinople"],de:["Die erste muslimische Eroberung Ägyptens","Die Niederlage der Kreuzfahrer im Heiligen Land","Die erste große Niederlage der Mongolischen Armeen — Stopp ihres westlichen Vordringens","Die osmanische Eroberung Konstantinopels"]},
-    answer:2,
-    explanation:{en:"The Battle of Ain Jalut (1260 CE) in Palestine saw the Mamluk armies of Egypt, led by Sultan Qutuz and General Baybars, defeat the Mongols for the first time in history — halting the Mongol invasion of the Islamic world.",ar:"معركة عين جالوت (1260م) في فلسطين شهدت جيوش المماليك المصرية بقيادة قطز وبيبرس تهزم المغول لأول مرة في التاريخ.",fr:"La Bataille d'Ain Jalut (1260 EC) en Palestine vit les armées Mameloukes d'Égypte, sous Sultan Qutuz et le Général Baybars, vaincre les Mongols pour la première fois.",de:"Die Schlacht von Ain Dschalut (1260 n. Chr.) in Palästina sah die Mamlukischen Armeen Ägyptens die Mongolen erstmals in der Geschichte besiegen."} },
-
-  { id:"hm20", category:"history", difficulty:"medium",
-    question:{en:"Which Islamic scholar is known as 'Ibn Khaldun' and is considered the father of sociology and historiography?",ar:"أي عالم إسلامي يُعرف بـ'ابن خلدون' ويُعدّ أب علم الاجتماع والتاريخ؟",fr:"Quel savant islamique est connu comme 'Ibn Khaldun' et est considéré comme le père de la sociologie et de l'historiographie?",de:"Welcher islamische Gelehrte ist als 'Ibn Khaldun' bekannt und gilt als Vater der Soziologie und Geschichtsschreibung?"},
-    options:{en:["He was a 9th century scholar from Baghdad","He was a 14th century Tunisian historian who wrote the Muqaddimah","He was an Egyptian physician known for medical treatises","He was a 12th century Andalusian philosopher"],ar:["عالم من القرن التاسع من بغداد","مؤرخ تونسي من القرن الرابع عشر كتب المقدمة","طبيب مصري اشتُهر بالمؤلفات الطبية","فيلسوف أندلسي من القرن الثاني عشر"],fr:["Il était un savant du 9ème siècle de Bagdad","Il était un historien tunisien du 14ème siècle qui écrivit la Muqaddimah","Il était un médecin égyptien connu pour ses traités médicaux","Il était un philosophe andalou du 12ème siècle"],de:["Er war ein Gelehrter des 9. Jahrhunderts aus Bagdad","Er war ein tunesischer Historiker des 14. Jahrhunderts der die Muqaddimah schrieb","Er war ein ägyptischer Arzt bekannt für medizinische Abhandlungen","Er war ein andalusischer Philosoph des 12. Jahrhunderts"]},
-    answer:1,
-    explanation:{en:"Ibn Khaldun (1332-1406 CE) was a North African (Tunisian-born) scholar who wrote the Muqaddimah — an introduction to history that pioneered social sciences, economics, and the philosophy of history. He is widely regarded as the father of sociology.",ar:"ابن خلدون (1332-1406م) عالم شمال أفريقي كتب 'المقدمة' التي رائدت علم الاجتماع والاقتصاد وفلسفة التاريخ.",fr:"Ibn Khaldun (1332-1406 EC) était un savant nord-africain qui écrivit la Muqaddimah — pionnière des sciences sociales, de l'économie et de la philosophie de l'histoire.",de:"Ibn Khaldun (1332-1406 n. Chr.) war ein nordafrikanischer Gelehrter, der die Muqaddimah schrieb — Pionierarbeit in Sozialwissenschaften, Ökonomie und Geschichtsphilosophie."} },
-
-  // ═══════════════════════════════════════════════════════════════
-  // MEDIUM — QURAN (qm1–qm20)
-  // ═══════════════════════════════════════════════════════════════
-  { id:"qm1", category:"quran", difficulty:"medium",
-    question:{en:"Which surah is named after the 'Cave' and tells the story of the People of the Cave (Ashab al-Kahf)?",ar:"أي سورة سُميت بـ'الكهف' وتحكي قصة أصحاب الكهف؟",fr:"Quelle sourate est nommée d'après la 'Caverne' et raconte l'histoire des Gens de la Caverne?",de:"Welche Sure ist nach der 'Höhle' benannt und erzählt die Geschichte der Höhlenbewohner?"},
-    options:{en:["Surah Al-Fajr","Surah Al-Buruj","Surah Al-Kahf","Surah Al-Mulk"],ar:["سورة الفجر","سورة البروج","سورة الكهف","سورة الملك"],fr:["Sourate Al-Fajr","Sourate Al-Buruj","Sourate Al-Kahf","Sourate Al-Mulk"],de:["Sure Al-Fadschr","Sure Al-Burdschuh","Sure Al-Kahf","Sure Al-Mulk"]},
-    answer:2,
-    explanation:{en:"Surah Al-Kahf (Chapter 18) tells the story of the People of the Cave — young believers who fled persecution and slept in a cave for 309 years. The Prophet ﷺ said reciting it on Fridays grants protection from Dajjal.",ar:"سورة الكهف (الفصل 18) تروي قصة أصحاب الكهف — شباب مؤمنون فرُّوا من الاضطهاد ونوموا في كهف 309 سنوات.",fr:"La sourate Al-Kahf (chapitre 18) raconte l'histoire des Gens de la Caverne — de jeunes croyants qui fuyaient la persécution et dormirent dans une caverne 309 ans.",de:"Sure Al-Kahf (Kapitel 18) erzählt die Geschichte der Höhlenbewohner — junge Gläubige die vor Verfolgung flohen und 309 Jahre in einer Höhle schliefen."} },
-
-  { id:"qm2", category:"quran", difficulty:"medium",
-    question:{en:"How many verses (ayat) are in the entire Quran?",ar:"كم آية في القرآن الكريم كله؟",fr:"Combien de versets (ayat) y a-t-il dans l'ensemble du Coran?",de:"Wie viele Verse (Ayat) hat der gesamte Quran?"},
-    options:{en:["5,000","5,500","6,236","7,000"],ar:["5,000","5,500","6,236","7,000"],fr:["5 000","5 500","6 236","7 000"],de:["5.000","5.500","6.236","7.000"]},
-    answer:2,
-    explanation:{en:"The Quran contains 6,236 verses (according to the Hafs recitation). It is divided into 114 surahs and 30 juz' (parts).",ar:"القرآن الكريم يحتوي على 6,236 آية (وفق رواية حفص). مقسَّم إلى 114 سورة و30 جزءاً.",fr:"Le Coran contient 6 236 versets (selon la récitation de Hafs). Il est divisé en 114 sourates et 30 juz' (parties).",de:"Der Quran enthält 6.236 Verse (gemäß der Hafs-Rezitation). Er ist in 114 Suren und 30 Djuz' (Teile) unterteilt."} },
-
-  { id:"qm3", category:"quran", difficulty:"medium",
-    question:{en:"What is the 'Mushaf'?",ar:"ما هو المصحف؟",fr:"Qu'est-ce que le Mushaf?",de:"Was ist der 'Mushaf'?"},
-    options:{en:["The Arabic term for the Quran recited in prayer","The physical written copy of the Quran","A collection of hadith narrations","An Islamic prayer book"],ar:["المصطلح العربي للقرآن المتلوّ في الصلاة","النسخة المكتوبة من القرآن","مجموعة روايات الحديث","كتاب صلاة إسلامي"],fr:["Le terme arabe pour le Coran récité dans la prière","La copie écrite physique du Coran","Une collection de narrations de hadiths","Un livre de prière islamique"],de:["Der arabische Begriff für den im Gebet rezitierten Quran","Die physische geschriebene Kopie des Qurans","Eine Sammlung von Hadith-Überlieferungen","Ein islamisches Gebetbuch"]},
-    answer:1,
-    explanation:{en:"A Mushaf (plural: Masahif) is the physical written copy of the Quran. The first standardized Mushaf was compiled under Abu Bakr (RA) and later distributed under Uthman (RA).",ar:"المصحف (جمع: مصاحف) هو النسخة المكتوبة من القرآن. جُمع أول مصحف موحَّد في عهد أبي بكر رضي الله عنه.",fr:"Un Mushaf (pluriel: Masahif) est la copie écrite physique du Coran. Le premier Mushaf standardisé fut compilé sous Abu Bakr (RA).",de:"Ein Mushaf (Plural: Masahif) ist die physische geschriebene Kopie des Qurans. Der erste standardisierte Mushaf wurde unter Abu Bakr (ra) zusammengestellt."} },
-
-  { id:"qm4", category:"quran", difficulty:"medium",
-    question:{en:"Which surah is known as 'The Night Journey' and mentions Isra wal Mi'raj?",ar:"أي سورة تُعرف بـ'الإسراء' وتذكر الإسراء والمعراج؟",fr:"Quelle sourate est connue comme 'Le Voyage Nocturne' et mentionne l'Isra wal Mi'raj?",de:"Welche Sure ist als 'Die Nachtreise' bekannt und erwähnt Isra wal Mi'raj?"},
-    options:{en:["Surah Al-Nahl","Surah Al-Isra","Surah Al-Anbiya","Surah Al-Hajj"],ar:["سورة النحل","سورة الإسراء","سورة الأنبياء","سورة الحج"],fr:["Sourate Al-Nahl","Sourate Al-Isra","Sourate Al-Anbiya","Sourate Al-Hajj"],de:["Sure Al-Nahl","Sure Al-Isra","Sure Al-Anbiyya","Sure Al-Hadschsch"]},
-    answer:1,
-    explanation:{en:"Surah Al-Isra (Chapter 17) begins with: 'Glory be to the One Who took His servant by night from Masjid al-Haram to Masjid al-Aqsa.' — directly referencing the Night Journey (Isra).",ar:"تبدأ سورة الإسراء (الفصل 17) بـ: {سُبْحَانَ الَّذِي أَسْرَىٰ بِعَبْدِهِ لَيْلًا مِّنَ الْمَسْجِدِ الْحَرَامِ إِلَى الْمَسْجِدِ الْأَقْصَى} — إشارةً مباشرة إلى الإسراء.",fr:"La sourate Al-Isra (chapitre 17) commence par: 'Gloire à Celui qui a fait faire à Son serviteur un voyage nocturne de Masjid al-Haram à Masjid al-Aqsa.'",de:"Sure Al-Isra (Kapitel 17) beginnt mit: 'Gepriesen sei Der, der Seinen Diener nachts vom Masjid al-Haram zum Masjid al-Aqsa führte.'"} },
-
-  { id:"qm5", category:"quran", difficulty:"medium",
-    question:{en:"What are the Meccan surahs (Makkiyah)?",ar:"ما هي السور المكية؟",fr:"Que sont les sourates mecquoises (Makkiyah)?",de:"Was sind die mekkanischen Suren (Makkiyah)?"},
-    options:{en:["Surahs revealed after the conquest of Mecca","Surahs that deal only with legal rulings","Surahs revealed to the Prophet ﷺ during his time in Mecca (before the Hijra)","Surahs that contain the name of Mecca"],ar:["سور نزلت بعد فتح مكة","سور تتعلق فقط بالأحكام الفقهية","سور نزلت على النبي ﷺ في مكة (قبل الهجرة)","سور تحتوي على اسم مكة"],fr:["Sourates révélées après la conquête de La Mecque","Sourates traitant uniquement des règles juridiques","Sourates révélées au Prophète ﷺ durant son séjour à La Mecque (avant l'Hégire)","Sourates contenant le nom de La Mecque"],de:["Suren die nach der Eroberung Mekkas offenbart wurden","Suren die sich nur mit Rechtsurteilen befassen","Suren die dem Propheten ﷺ während seiner Zeit in Mekka offenbart wurden (vor der Hidschra)","Suren die den Namen Mekka enthalten"]},
-    answer:2,
-    explanation:{en:"Meccan surahs (Makkiyah) were revealed to the Prophet ﷺ before the Hijra (622 CE). They generally focus on monotheism (tawhid), prophethood, the Day of Judgment, and moral character — since the Meccans needed to believe first.",ar:"السور المكية نزلت على النبي ﷺ قبل الهجرة (622م). وهي تركز عموماً على التوحيد والنبوة ويوم القيامة والأخلاق.",fr:"Les sourates mecquoises (Makkiyah) furent révélées au Prophète ﷺ avant l'Hégire (622 EC). Elles se concentrent généralement sur le monothéisme, la prophétie, le Jour du Jugement.",de:"Mekkanische Suren (Makkiyah) wurden dem Propheten ﷺ vor der Hidschra (622 n. Chr.) offenbart. Sie konzentrieren sich im Allgemeinen auf Monotheismus, Prophetentum und den Jüngsten Tag."} },
-
-  { id:"qm6", category:"quran", difficulty:"medium",
-    question:{en:"Which surah mentions 'Dhul-Qarnayn' — the great king who built a wall against Gog and Magog?",ar:"أي سورة تذكر 'ذو القرنين' — الملك العظيم الذي بنى سداً ضد يأجوج ومأجوج؟",fr:"Quelle sourate mentionne 'Dhul-Qarnayn' — le grand roi qui construisit un mur contre Gog et Magog?",de:"Welche Sure erwähnt 'Dhul-Qarnayn' — den großen König der eine Mauer gegen Gog und Magog baute?"},
-    options:{en:["Surah Al-Kahf","Surah Al-Anbiya","Surah Al-Naml","Surah Yasin"],ar:["سورة الكهف","سورة الأنبياء","سورة النمل","سورة يس"],fr:["Sourate Al-Kahf","Sourate Al-Anbiya","Sourate Al-Naml","Sourate Yasin"],de:["Sure Al-Kahf","Sure Al-Anbiyya","Sure Al-Naml","Sure Yasin"]},
-    answer:0,
-    explanation:{en:"Surah Al-Kahf (Chapter 18) contains three stories: the People of the Cave, Musa and Khidr, and Dhul-Qarnayn — the righteous king who built an iron and copper wall to protect people from Gog and Magog.",ar:"سورة الكهف (الفصل 18) تحتوي على ثلاث قصص: أصحاب الكهف وموسى والخضر وذو القرنين — الملك الصالح الذي بنى سداً من الحديد والنحاس لحماية الناس من يأجوج ومأجوج.",fr:"La sourate Al-Kahf (chapitre 18) contient trois récits: les Gens de la Caverne, Moussa et Khidr, et Dhul-Qarnayn — le roi juste qui construisit un mur de fer et de cuivre.",de:"Sure Al-Kahf (Kapitel 18) enthält drei Geschichten: die Höhlenbewohner, Musa und Chidr, und Dhul-Qarnayn — der gerechte König der eine Eisen- und Kupfermauer baute."} },
-
-  { id:"qm7", category:"quran", difficulty:"medium",
-    question:{en:"The Quran is divided into 30 equal parts called what?",ar:"القرآن الكريم مقسَّم إلى 30 جزءاً متساوياً تُسمى بماذا؟",fr:"Le Coran est divisé en 30 parties égales appelées comment?",de:"Der Quran ist in 30 gleiche Teile unterteilt, die wie genannt werden?"},
-    options:{en:["Hizb","Manzil","Juz'","Ruku"],ar:["حزب","منزل","جزء","ركوع"],fr:["Hizb","Manzil","Juz'","Ruku"],de:["Hizb","Manzil","Dschuz'","Ruku"]},
-    answer:2,
-    explanation:{en:"The Quran is divided into 30 equal sections called Juz' (plural: Ajza). Each Juz' contains approximately 20 pages and is used to help Muslims complete the Quran over a month (1 Juz' per day).",ar:"القرآن مقسَّم إلى 30 جزءاً (جمع: أجزاء). يحتوي كل جزء على 20 صفحة تقريباً، ويُستخدم للختم في شهر واحد (جزء يومياً).",fr:"Le Coran est divisé en 30 sections appelées Juz' (pluriel: Ajza). Chaque Juz' contient environ 20 pages et aide les musulmans à compléter le Coran en un mois.",de:"Der Quran ist in 30 Abschnitte namens Dschuz' (Plural: Adschza) unterteilt. Jeder Dschuz' enthält ca. 20 Seiten und hilft Muslimen den Quran in einem Monat zu vollenden."} },
-
-  { id:"qm8", category:"quran", difficulty:"medium",
-    question:{en:"Which surah is referred to as the 'Bride of the Quran' and describes paradise in detail?",ar:"أي سورة تُعرف بـ'عروس القرآن' وتصف الجنة بالتفصيل؟",fr:"Quelle sourate est appelée la 'Mariée du Coran' et décrit le paradis en détail?",de:"Welche Sure wird als 'Braut des Qurans' bezeichnet und beschreibt das Paradies im Detail?"},
-    options:{en:["Surah Al-Baqarah","Surah Al-Rahman","Surah Al-Waqiah","Surah Al-Mulk"],ar:["سورة البقرة","سورة الرحمن","سورة الواقعة","سورة الملك"],fr:["Sourate Al-Baqarah","Sourate Al-Rahman","Sourate Al-Waqiah","Sourate Al-Mulk"],de:["Sure Al-Baqarah","Sure Al-Rahman","Sure Al-Waqia","Sure Al-Mulk"]},
-    answer:1,
-    explanation:{en:"Surah Al-Rahman (Chapter 55) is sometimes called the 'Bride of the Quran.' It repeatedly asks: 'So which of the favors of your Lord would you deny?' and beautifully describes the blessings of paradise.",ar:"تُعرف سورة الرحمن (الفصل 55) أحياناً بـ'عروس القرآن'. تتكرر فيها: {فَبِأَيِّ آلَاءِ رَبِّكُمَا تُكَذِّبَانِ} وتصف نعيم الجنة بديعاً.",fr:"La sourate Al-Rahman (chapitre 55) est parfois appelée la 'Mariée du Coran.' Elle répète: 'Alors laquelle des faveurs de votre Seigneur nierez-vous?'",de:"Sure Al-Rahman (Kapitel 55) wird manchmal 'Braut des Qurans' genannt. Sie wiederholt: 'Welche der Wohltaten eures Herrn wollt ihr denn leugnen?' und beschreibt das Paradies."} },
-
-  { id:"qm9", category:"quran", difficulty:"medium",
-    question:{en:"What is 'Tajweed'?",ar:"ما هو التجويد؟",fr:"Qu'est-ce que le Tajweed?",de:"Was ist 'Tajweed'?"},
-    options:{en:["The memorization of the entire Quran","The rules of proper pronunciation and recitation of the Quran","The translation of the Quran into other languages","The interpretation and explanation of Quranic verses"],ar:["حفظ القرآن كاملاً","قواعد النطق السليم وتلاوة القرآن","ترجمة القرآن إلى لغات أخرى","تفسير الآيات القرآنية وشرحها"],fr:["La mémorisation de l'intégralité du Coran","Les règles de prononciation et de récitation correctes du Coran","La traduction du Coran dans d'autres langues","L'interprétation et l'explication des versets coraniques"],de:["Die Auswendiglernen des gesamten Qurans","Die Regeln der korrekten Aussprache und Rezitation des Qurans","Die Übersetzung des Qurans in andere Sprachen","Die Interpretation und Erklärung koranischer Verse"]},
-    answer:1,
-    explanation:{en:"Tajweed is the set of rules governing the proper pronunciation, elongation, and characteristics of sounds when reciting the Quran. Allah says: 'And recite the Quran with measured recitation.' (73:4)",ar:"التجويد هو مجموعة قواعد النطق السليم والمد وخصائص الأصوات عند تلاوة القرآن. قال الله: {وَرَتِّلِ الْقُرْآنَ تَرْتِيلًا} (73:4).",fr:"Le Tajweed est l'ensemble des règles régissant la prononciation, l'allongement et les caractéristiques sonores lors de la récitation du Coran. Allah dit: 'Récite le Coran lentement et distinctement.' (73:4)",de:"Tajweed ist die Regelsammlung für die korrekte Aussprache, Verlängerung und Klangcharakteristiken bei der Koranrezitation. Allah sagt: 'Rezitiere den Quran in gemäßigter Rezitation.' (73:4)"} },
-
-  { id:"qm10", category:"quran", difficulty:"medium",
-    question:{en:"What does 'Hafiz' mean in Islamic terminology?",ar:"ما معنى 'الحافظ' في المصطلح الإسلامي؟",fr:"Que signifie 'Hafiz' dans la terminologie islamique?",de:"Was bedeutet 'Hafiz' in der islamischen Terminologie?"},
-    options:{en:["An Islamic judge","A person who has memorized the entire Quran by heart","An Islamic scholar who writes legal opinions","A person who leads the Friday prayer"],ar:["قاضٍ إسلامي","شخص حفظ القرآن كاملاً عن ظهر قلب","عالم إسلامي يكتب الفتاوى","شخص يؤم صلاة الجمعة"],fr:["Un juge islamique","Une personne qui a mémorisé l'intégralité du Coran par cœur","Un savant islamique qui rédige des avis juridiques","Une personne qui dirige la prière du vendredi"],de:["Ein islamischer Richter","Eine Person die den gesamten Quran auswendig gelernt hat","Ein islamischer Gelehrter der Rechtsgutachten schreibt","Eine Person die das Freitagsgebet leitet"]},
-    answer:1,
-    explanation:{en:"A Hafiz (feminine: Hafizah) is a Muslim who has memorized the entire Quran (6,236 verses) by heart. This is considered a great honor and achievement. There are millions of Huffaz (plural) worldwide.",ar:"الحافظ (أنثى: حافظة) هو مسلم حفظ القرآن الكريم كاملاً (6,236 آية). يُعدّ ذلك شرفاً كبيراً.",fr:"Un Hafiz (féminin: Hafizah) est un musulman qui a mémorisé l'intégralité du Coran (6 236 versets) par cœur. C'est considéré comme un grand honneur.",de:"Ein Hafiz (weiblich: Hafizah) ist ein Muslim der den gesamten Quran (6.236 Verse) auswendig gelernt hat. Dies gilt als große Ehre."} },
-
-  { id:"qm11", category:"quran", difficulty:"medium",
-    question:{en:"Which surah warns against the love of wealth and ends with a powerful reminder about death?",ar:"أي سورة تحذّر من حب المال وتختتم بتذكير قوي بالموت؟",fr:"Quelle sourate met en garde contre l'amour de la richesse et se termine par un puissant rappel de la mort?",de:"Welche Sure warnt vor der Liebe zum Reichtum und endet mit einer kraftvollen Erinnerung an den Tod?"},
-    options:{en:["Surah Al-Ma'un","Surah Al-Takathur","Surah Al-Humazah","Surah Al-Fil"],ar:["سورة الماعون","سورة التكاثر","سورة الهمزة","سورة الفيل"],fr:["Sourate Al-Ma'un","Sourate Al-Takathur","Sourate Al-Humazah","Sourate Al-Fil"],de:["Sure Al-Ma'un","Sure Al-Takathur","Sure Al-Humaza","Sure Al-Fil"]},
-    answer:1,
-    explanation:{en:"Surah Al-Takathur (Chapter 102) warns: 'The mutual rivalry for piling up (worldly things) diverts you (from the more serious things), until you visit the graves.' It reminds us that death will interrupt our obsession with wealth.",ar:"سورة التكاثر (الفصل 102): {أَلْهَاكُمُ التَّكَاثُرُ حَتَّىٰ زُرْتُمُ الْمَقَابِرَ} تذكّرنا بأن الموت سيقطع انشغالنا بالمال.",fr:"La sourate Al-Takathur (chapitre 102) avertit: 'La rivalité pour amasser (des biens) vous distrait jusqu'à ce que vous visitiez les tombes.'",de:"Sure Al-Takathur (Kapitel 102) warnt: 'Das gegenseitige Wetteifern um Mehrung (weltlicher Dinge) lenkt euch ab, bis ihr die Gräber besucht.'"} },
-
-  { id:"qm12", category:"quran", difficulty:"medium",
-    question:{en:"What is 'Tafsir'?",ar:"ما هو التفسير؟",fr:"Qu'est-ce que le Tafsir?",de:"Was ist 'Tafsir'?"},
-    options:{en:["The memorization of the Quran","The recitation rules of the Quran","The scholarly explanation and interpretation of the Quran","The translation of the Quran"],ar:["حفظ القرآن","قواعد تلاوة القرآن","الشرح العلمي وتفسير القرآن","ترجمة القرآن"],fr:["La mémorisation du Coran","Les règles de récitation du Coran","L'explication et l'interprétation savante du Coran","La traduction du Coran"],de:["Das Auswendiglernen des Qurans","Die Rezitationsregeln des Qurans","Die gelehrte Erklärung und Interpretation des Qurans","Die Übersetzung des Qurans"]},
-    answer:2,
-    explanation:{en:"Tafsir is the scholarly field of interpreting and explaining the meaning of the Quran. Famous works include Tafsir ibn Kathir, Tafsir al-Tabari, and Tafsir al-Jalalayn.",ar:"التفسير هو المجال العلمي لتفسير وشرح معاني القرآن. من أشهره: تفسير ابن كثير وتفسير الطبري وتفسير الجلالين.",fr:"Le Tafsir est le domaine savant d'interprétation et d'explication du sens du Coran. Les œuvres célèbres incluent Tafsir ibn Kathir et Tafsir al-Tabari.",de:"Tafsir ist das gelehrte Gebiet der Interpretation und Erklärung der Bedeutung des Qurans. Berühmte Werke sind Tafsir ibn Kathir und Tafsir al-Tabari."} },
-
-  { id:"qm13", category:"quran", difficulty:"medium",
-    question:{en:"Which surah protects against the 'whispering' of Shaytan (Satan)?",ar:"أي سورة تحمي من وساوس الشيطان؟",fr:"Quelle sourate protège des 'chuchotements' du Shaytan (Satan)?",de:"Welche Sure schützt vor dem 'Flüstern' des Shaytans (Satans)?"},
-    options:{en:["Al-Falaq","An-Nas","Al-Ikhlas","Al-Kawthar"],ar:["الفلق","الناس","الإخلاص","الكوثر"],fr:["Al-Falaq","An-Nas","Al-Ikhlas","Al-Kawthar"],de:["Al-Falaq","An-Nas","Al-Ikhlas","Al-Kawthar"]},
-    answer:1,
-    explanation:{en:"Surah An-Nas (Chapter 114) says: 'I seek refuge in the Lord of mankind...from the evil of the retreating whisperer — who whispers into the chests of people — from among jinn and people.' It specifically protects against the waswas (whispers) of Shaytan.",ar:"سورة الناس (الفصل 114): {أَعُوذُ بِرَبِّ النَّاسِ مِن شَرِّ الْوَسْوَاسِ الْخَنَّاسِ الَّذِي يُوَسْوِسُ فِي صُدُورِ النَّاسِ مِنَ الْجِنَّةِ وَالنَّاسِ}.",fr:"La sourate An-Nas (chapitre 114): 'Je cherche refuge auprès du Seigneur des hommes... contre le mal du mauvais conseiller qui chuchote dans la poitrine des hommes.'",de:"Sure An-Nas (Kapitel 114): 'Ich suche Zuflucht beim Herrn der Menschen...vor dem Übel des Rückzüglers der flüstert — der in die Brust der Menschen flüstert — unter den Dschinn und Menschen.'"} },
-
-  { id:"qm14", category:"quran", difficulty:"medium",
-    question:{en:"Which surah tells the story of Luqman and his wisdom to his son?",ar:"أي سورة تحكي قصة لقمان وحكمته لابنه؟",fr:"Quelle sourate raconte l'histoire de Luqman et sa sagesse à son fils?",de:"Welche Sure erzählt die Geschichte von Luqman und seiner Weisheit für seinen Sohn?"},
-    options:{en:["Surah Al-Mumtahinah","Surah Luqman","Surah Al-Ahqaf","Surah Al-Mu'minun"],ar:["سورة الممتحنة","سورة لقمان","سورة الأحقاف","سورة المؤمنون"],fr:["Sourate Al-Mumtahinah","Sourate Luqman","Sourate Al-Ahqaf","Sourate Al-Mu'minun"],de:["Sure Al-Mumtahina","Sure Luqman","Sure Al-Ahqaf","Sure Al-Mu'minun"]},
-    answer:1,
-    explanation:{en:"Surah Luqman (Chapter 31) contains the wisdom of Luqman — a wise man — who advises his son: to not associate partners with Allah, to be grateful to his parents, to establish prayer, and to not walk arrogantly on the earth.",ar:"سورة لقمان (الفصل 31) تتضمن حكمة لقمان الذي نصح ابنه بعدم الشرك بالله وبر الوالدين وإقامة الصلاة وعدم التكبر.",fr:"La sourate Luqman (chapitre 31) contient la sagesse de Luqman qui conseille son fils: ne pas associer à Allah, être reconnaissant envers ses parents, établir la prière.",de:"Sure Luqman (Kapitel 31) enthält die Weisheit Luqmans der seinen Sohn berät: Allah keine Partner beizugesellen, seinen Eltern dankbar zu sein, das Gebet zu verrichten."} },
-
-  { id:"qm15", category:"quran", difficulty:"medium",
-    question:{en:"Which surah is known as 'The Dominion' and is said to intercede for its reciter in the grave?",ar:"أي سورة تُعرف بـ'الملك' ويُقال إنها تشفع لتاليها في القبر؟",fr:"Quelle sourate est connue comme 'La Souveraineté' et intercèderait pour son récitant dans la tombe?",de:"Welche Sure ist als 'Die Herrschaft' bekannt und soll für ihren Rezitatoren im Grab Fürsprecher sein?"},
-    options:{en:["Surah Al-Waqiah","Surah Al-Hashr","Surah Al-Mulk","Surah Al-Jinn"],ar:["سورة الواقعة","سورة الحشر","سورة الملك","سورة الجن"],fr:["Sourate Al-Waqiah","Sourate Al-Hashr","Sourate Al-Mulk","Sourate Al-Jinn"],de:["Sure Al-Waqia","Sure Al-Haschir","Sure Al-Mulk","Sure Al-Dschinn"]},
-    answer:2,
-    explanation:{en:"Surah Al-Mulk (Chapter 67) — known as 'Al-Mani'ah' (the Protector) — The Prophet ﷺ said: 'There is a surah of thirty verses which intercedes for a man until he is forgiven — it is Blessed is He in Whose Hand is the sovereignty.' (Abu Dawud, Tirmidhi)",ar:"سورة الملك (الفصل 67) — قال النبي ﷺ: 'إن سورة من القرآن ثلاثون آية شفعت لرجل حتى غُفر له، وهي {تَبَارَكَ الَّذِي بِيَدِهِ الْمُلْكُ}.' (أبو داود والترمذي)",fr:"La sourate Al-Mulk (chapitre 67) — Le Prophète ﷺ dit: 'Il y a une sourate de trente versets qui intercède pour un homme jusqu'à ce qu'il soit pardonné.' (Abu Dawud, Tirmidhi)",de:"Sure Al-Mulk (Kapitel 67) — Der Prophet ﷺ sagte: 'Es gibt eine Sure von dreißig Versen die für einen Mann Fürsprecher ist bis er vergeben wird.' (Abu Dawud, Tirmidhi)"} },
-
-  { id:"qm16", category:"quran", difficulty:"medium",
-    question:{en:"What does 'Surah Al-Ikhlas' say about Allah having children or parents?",ar:"ماذا تقول سورة الإخلاص عن كون الله له أولاد أو والدان؟",fr:"Que dit Sourate Al-Ikhlas sur le fait qu'Allah ait des enfants ou des parents?",de:"Was sagt Sure Al-Ikhlas darüber, dass Allah Kinder oder Eltern hat?"},
-    options:{en:["That Allah has one son","That Allah's lineage is unknown","That He neither begot nor was begotten, and none is comparable to Him","That Allah created His family from light"],ar:["أن الله له ابن واحد","أن نسب الله مجهول","أنه لم يلد ولم يولَد ولم يكن له كفواً أحد","أن الله خلق عائلته من نور"],fr:["Qu'Allah a un fils","Que la lignée d'Allah est inconnue","Qu'Il n'a pas engendré et n'a pas été engendré et qu'aucun ne Lui est comparable","Qu'Allah créa Sa famille de lumière"],de:["Dass Allah einen Sohn hat","Dass Allahs Abstammung unbekannt ist","Dass Er weder gezeugt hat noch gezeugt wurde und keiner Ihm gleich ist","Dass Allah Seine Familie aus Licht erschuf"]},
-    answer:2,
-    explanation:{en:"Surah Al-Ikhlas says: 'Say, He is Allah, the One. Allah, the Self-Sufficient. He neither begot nor was begotten. And none is comparable to Him.' (112:1-4) — affirming Allah has no children, parents, or equals.",ar:"سورة الإخلاص: {قُلْ هُوَ اللَّهُ أَحَدٌ اللَّهُ الصَّمَدُ لَمْ يَلِدْ وَلَمْ يُولَدْ وَلَمْ يَكُن لَّهُ كُفُوًا أَحَدٌ} (112:1-4).",fr:"La sourate Al-Ikhlas dit: 'Dis: Il est Allah, l'Unique. Allah, l'Absolu. Il n'a pas engendré et n'a pas été engendré. Et aucun ne Lui est comparable.' (112:1-4)",de:"Sure Al-Ikhlas sagt: 'Sag: Er ist Allah, der Einzige. Allah, der Absolute. Er hat weder gezeugt noch wurde er gezeugt. Und keiner ist Ihm gleich.' (112:1-4)"} },
-
-  { id:"qm17", category:"quran", difficulty:"medium",
-    question:{en:"Which surah was revealed in one sitting to complete its powerful message?",ar:"أي سورة نزلت دفعةً واحدة تماماً؟",fr:"Quelle sourate fut révélée en une seule fois pour compléter son message puissant?",de:"Welche Sure wurde auf einmal herabgesandt um ihre kraftvolle Botschaft zu vervollständigen?"},
-    options:{en:["Surah Al-Fatiha","Surah Al-An'am","Surah Al-Baqarah","Surah Al-Kahf"],ar:["سورة الفاتحة","سورة الأنعام","سورة البقرة","سورة الكهف"],fr:["Sourate Al-Fatiha","Sourate Al-An'am","Sourate Al-Baqarah","Sourate Al-Kahf"],de:["Sure Al-Fatiha","Sure Al-An'am","Sure Al-Baqarah","Sure Al-Kahf"]},
-    answer:1,
-    explanation:{en:"Surah Al-An'am (Chapter 6) was revealed all at once as a complete surah, accompanied by 70,000 angels according to reports. It is one of the longest surahs revealed in Mecca.",ar:"نزلت سورة الأنعام (الفصل 6) دفعةً واحدة كاملة، مصحوبةً بـ70,000 ملك وفق الروايات. وهي من أطول سور مكة.",fr:"La sourate Al-An'am (chapitre 6) fut révélée d'un seul tenant, accompagnée de 70 000 anges selon les rapports.",de:"Sure Al-An'am (Kapitel 6) wurde auf einmal als vollständige Sure herabgesandt, begleitet von 70.000 Engeln laut Berichten."} },
-
-  { id:"qm18", category:"quran", difficulty:"medium",
-    question:{en:"Which surah contains the verse 'There is no compulsion in religion'?",ar:"أي سورة تحتوي على الآية 'لا إكراه في الدين'؟",fr:"Quelle sourate contient le verset 'Il n'y a pas de contrainte en matière de religion'?",de:"Welche Sure enthält den Vers 'Es gibt keinen Zwang in der Religion'?"},
-    options:{en:["Al-Fatiha","Al-Baqarah","Al-Imran","Al-Ma'idah"],ar:["الفاتحة","البقرة","آل عمران","المائدة"],fr:["Al-Fatiha","Al-Baqarah","Al-Imran","Al-Ma'idah"],de:["Al-Fatiha","Al-Baqarah","Al-Imran","Al-Ma'idah"]},
-    answer:1,
-    explanation:{en:"'There is no compulsion in religion; truth stands out from error.' (Al-Baqarah 2:256) — one of the most important verses establishing that faith must come voluntarily from the heart, not by force.",ar:"{لَا إِكْرَاهَ فِي الدِّينِ ۖ قَد تَّبَيَّنَ الرُّشْدُ مِنَ الْغَيِّ} (البقرة 2:256) — من أهم الآيات التي تؤكد أن الإيمان يجب أن يأتي طوعاً.",fr:"'Il n'y a pas de contrainte en matière de religion; la vérité se distingue clairement de l'erreur.' (Al-Baqarah 2:256)",de:"'Es gibt keinen Zwang in der Religion; die Rechtleitung hebt sich klar von der Verirrung ab.' (Al-Baqarah 2:256)"} },
-
-  { id:"qm19", category:"quran", difficulty:"medium",
-    question:{en:"What is 'Ijaz al-Quran'?",ar:"ما هو 'إعجاز القرآن'؟",fr:"Qu'est-ce que l'Ijaz al-Quran?",de:"Was ist 'Ijaz al-Quran'?"},
-    options:{en:["The memorization of the Quran in record time","The miraculous nature of the Quran — its inimitability that cannot be replicated by humans","The proper way to hold the Quran","The process of translating the Quran"],ar:["حفظ القرآن في وقت قياسي","الطبيعة المعجزة للقرآن — إعجازه الذي لا يستطيع البشر تقليده","الطريقة الصحيحة لحمل القرآن","عملية ترجمة القرآن"],fr:["La mémorisation du Coran en un temps record","La nature miraculeuse du Coran — son inimitabilité que les humains ne peuvent reproduire","La bonne façon de tenir le Coran","Le processus de traduction du Coran"],de:["Das Auswendiglernen des Qurans in Rekordzeit","Die wundersame Natur des Qurans — seine Unnachahmlichkeit die Menschen nicht replizieren können","Die richtige Art den Quran zu halten","Der Prozess der Übersetzung des Qurans"]},
-    answer:1,
-    explanation:{en:"I'jaz al-Quran refers to the miraculous and inimitable nature of the Quran. Allah challenges humanity: 'If mankind and jinn gathered to produce the like of this Quran, they could not produce the like of it.' (17:88)",ar:"إعجاز القرآن يشير إلى طبيعته المعجزة التي لا يمكن تقليدها. قال الله: {قُل لَّئِنِ اجْتَمَعَتِ الْإِنسُ وَالْجِنُّ عَلَىٰ أَن يَأْتُوا بِمِثْلِ هَٰذَا الْقُرْآنِ لَا يَأْتُونَ بِمِثْلِهِ} (17:88).",fr:"L'I'jaz al-Quran désigne la nature miraculeuse et inimitable du Coran. Allah défie: 'Si les hommes et les djinns se réunissaient pour produire quelque chose de semblable à ce Coran...' (17:88)",de:"I'jaz al-Quran bezeichnet die wundersame und unnachahmliche Natur des Qurans. Allah fordert heraus: 'Wenn Menschheit und Dschinn zusammenkämen um etwas wie diesen Quran zu erschaffen...' (17:88)"} },
-
-  { id:"qm20", category:"quran", difficulty:"medium",
-    question:{en:"Which verse is known as the 'last verse revealed' before the Prophet ﷺ passed away?",ar:"أي آية تُعرف بأنها 'آخر آية نزلت' قبل وفاة النبي ﷺ؟",fr:"Quel verset est connu comme le 'dernier verset révélé' avant la mort du Prophète ﷺ?",de:"Welcher Vers ist als 'letzter offenbarter Vers' vor dem Tod des Propheten ﷺ bekannt?"},
-    options:{en:["Surah Al-Fatiha verse 1","Surah Al-Ma'idah verse 3 — 'This day I have perfected your religion for you'","Surah Al-Baqarah verse 282","Surah An-Nisa verse 176"],ar:["الآية الأولى من الفاتحة","المائدة الآية 3: 'اليوم أكملت لكم دينكم'","البقرة الآية 282","النساء الآية 176"],fr:["Verset 1 de Sourate Al-Fatiha","Verset 3 de Sourate Al-Ma'idah — 'Ce jour j'ai parfait votre religion'","Verset 282 de Sourate Al-Baqarah","Verset 176 de Sourate An-Nisa"],de:["Sure Al-Fatiha Vers 1","Sure Al-Ma'idah Vers 3 — 'Heute habe Ich eure Religion für euch vervollständigt'","Sure Al-Baqarah Vers 282","Sure An-Nisa Vers 176"]},
-    answer:1,
-    explanation:{en:"'This day I have perfected your religion for you, completed My favor upon you, and approved Islam as your religion.' (Al-Ma'idah 5:3) — revealed on the Day of Arafah during the Prophet's ﷺ Farewell Pilgrimage, shortly before his death.",ar:"'الْيَوْمَ أَكْمَلْتُ لَكُمْ دِينَكُمْ وَأَتْمَمْتُ عَلَيْكُمْ نِعْمَتِي وَرَضِيتُ لَكُمُ الْإِسْلَامَ دِينًا' (المائدة 5:3) — نزلت يوم عرفة في حجة الوداع.",fr:"'Ce jour J'ai parfait votre religion, accompli Ma grâce sur vous et agréé l'Islam comme religion.' (Al-Ma'idah 5:3) — révélé le Jour d'Arafah lors du Pèlerinage d'Adieu.",de:"'Heute habe Ich eure Religion für euch vervollständigt, Meine Gunst über euch vollendet und den Islam als eure Religion gebilligt.' (Al-Ma'idah 5:3) — offenbart am Tag von Arafah."} },
-
-  // ═══════════════════════════════════════════════════════════════
-  // MEDIUM — FIQH (fm1–fm20)
-  // ═══════════════════════════════════════════════════════════════
-  { id:"fm1", category:"fiqh", difficulty:"medium",
-    question:{en:"What is the 'Nisab' threshold for Zakat on gold?",ar:"ما هو نصاب الزكاة على الذهب؟",fr:"Quel est le seuil du 'Nisab' pour la Zakat sur l'or?",de:"Was ist die 'Nisab'-Schwelle für Zakat auf Gold?"},
-    options:{en:["50 grams","85 grams","100 grams","120 grams"],ar:["50 غرام","85 غرام","100 غرام","120 غرام"],fr:["50 grammes","85 grammes","100 grammes","120 grammes"],de:["50 Gramm","85 Gramm","100 Gramm","120 Gramm"]},
-    answer:1,
-    explanation:{en:"The nisab threshold for Zakat on gold is 85 grams (7.5 tola). If one owns 85g or more of gold for a full lunar year, Zakat of 2.5% is due. For silver, the nisab is 595 grams (52.5 tola).",ar:"نصاب الزكاة على الذهب هو 85 غراماً (7.5 مثقال). إذا امتلك المرء 85 غراماً أو أكثر من الذهب طوال سنة قمرية كاملة، وجبت الزكاة بنسبة 2.5%.",fr:"Le seuil du nisab pour la Zakat sur l'or est de 85 grammes (7,5 tola). Si l'on possède 85g ou plus d'or pendant une année lunaire complète, la Zakat de 2,5% est due.",de:"Die Nisab-Schwelle für Zakat auf Gold beträgt 85 Gramm (7,5 Tola). Wenn jemand 85g oder mehr Gold für ein vollständiges Mondjahr besitzt, ist Zakat von 2,5% fällig."} },
-
-  { id:"fm2", category:"fiqh", difficulty:"medium",
-    question:{en:"How many rak'ahs (units) does the Fajr (dawn) prayer have?",ar:"كم ركعة في صلاة الفجر؟",fr:"Combien de rak'ahs (unités) compte la prière du Fajr (aube)?",de:"Wie viele Rak'ahs (Einheiten) hat das Fajr-Gebet (Morgengrauen)?"},
-    options:{en:["1","2","3","4"],ar:["1","2","3","4"],fr:["1","2","3","4"],de:["1","2","3","4"]},
-    answer:1,
-    explanation:{en:"The Fajr prayer has 2 obligatory rak'ahs (fard), preceded by 2 optional rak'ahs (sunnah). Total number of rak'ahs for all 5 daily prayers: Fajr 2, Dhuhr 4, Asr 4, Maghrib 3, Isha 4 = 17 fard rak'ahs.",ar:"صلاة الفجر 2 ركعة فريضة، يسبقها 2 سنة. مجموع ركعات الفروض الخمسة: فجر 2، ظهر 4، عصر 4، مغرب 3، عشاء 4 = 17 ركعة فرضاً.",fr:"La prière du Fajr compte 2 rak'ahs obligatoires (fard), précédées de 2 optionnelles (sunnah). Total des rak'ahs: Fajr 2, Dhuhr 4, Asr 4, Maghrib 3, Isha 4 = 17 fard.",de:"Das Fajr-Gebet hat 2 Pflicht-Rak'ahs (Fard), denen 2 freiwillige Rak'ahs (Sunnah) vorangehen. Gesamtzahl: Fajr 2, Dhuhr 4, Asr 4, Maghrib 3, Isha 4 = 17 Pflicht-Rak'ahs."} },
-
-  { id:"fm3", category:"fiqh", difficulty:"medium",
-    question:{en:"What are the 8 categories of people who are entitled to receive Zakat?",ar:"ما هي الأصناف الثمانية المستحقة للزكاة؟",fr:"Quelles sont les 8 catégories de personnes ayant droit à recevoir la Zakat?",de:"Was sind die 8 Kategorien von Menschen, die berechtigt sind Zakat zu empfangen?"},
-    options:{en:["Only orphans and widows","Scholars, students, mosques, and travelers","The poor, indebted, stranded travelers, new converts, those who collect Zakat, freeing slaves, in the cause of Allah, and the needy","The government, schools, hospitals, and roads"],ar:["اليتامى والأرامل فقط","العلماء والطلاب والمساجد والمسافرون","الفقراء والمدينون والمسافرون المنقطعون والمؤلفة قلوبهم والعاملون عليها والرقاب وفي سبيل الله والمساكين","الحكومة والمدارس والمستشفيات والطرق"],fr:["Seulement les orphelins et les veuves","Les savants, étudiants, mosquées et voyageurs","Les pauvres, endettés, voyageurs bloqués, nouveaux convertis, collecteurs de Zakat, affranchissement d'esclaves, dans la voie d'Allah et les nécessiteux","Le gouvernement, les écoles, les hôpitaux et les routes"],de:["Nur Waisen und Witwen","Gelehrte, Studenten, Moscheen und Reisende","Arme, Verschuldete, gestrandete Reisende, Neue Konvertiten, Zakat-Sammler, Sklavenbefreiung, für Allahs Sache und Bedürftige","Regierung, Schulen, Krankenhäuser und Straßen"]},
-    answer:2,
-    explanation:{en:"Allah specifies in Surah At-Tawbah (9:60) the 8 categories: 1) The poor (fuqara), 2) The needy (masakin), 3) Zakat collectors, 4) Those whose hearts need to be reconciled (new converts), 5) To free slaves, 6) Those in debt, 7) In the cause of Allah, 8) Stranded travelers.",ar:"حدَّد الله في سورة التوبة (9:60) 8 مصارف للزكاة: الفقراء والمساكين والعاملين عليها والمؤلفة قلوبهم والرقاب والغارمين وفي سبيل الله وابن السبيل.",fr:"Allah spécifie dans Sourate At-Tawbah (9:60) les 8 catégories: pauvres, nécessiteux, collecteurs de Zakat, nouveaux convertis, affranchissement d'esclaves, endettés, dans la voie d'Allah, voyageurs bloqués.",de:"Allah nennt in Sure At-Tawbah (9:60) die 8 Kategorien: Arme, Bedürftige, Zakat-Sammler, Neue Konvertiten, Sklavenbefreiung, Verschuldete, Für Allahs Sache, Gestrandete Reisende."} },
-
-  { id:"fm4", category:"fiqh", difficulty:"medium",
-    question:{en:"What is 'Sujood al-Sahw' (prostration of forgetfulness)?",ar:"ما هو 'سجود السهو'؟",fr:"Qu'est-ce que le 'Sujood al-Sahw' (prosternation de l'oubli)?",de:"Was ist 'Sujood al-Sahw' (Niederwerfung des Vergessens)?"},
-    options:{en:["A voluntary prayer performed at night","Two extra prostrations performed if a mistake is made in the prayer","The prostration of thanksgiving after a blessing","The prostration when hearing certain Quran verses"],ar:["صلاة نافلة تُؤدَّى ليلاً","سجدتان إضافيتان تُؤدَّيان عند الخطأ في الصلاة","سجدة الشكر بعد نعمة","السجود عند سماع بعض آيات القرآن"],fr:["Une prière volontaire effectuée la nuit","Deux prosternations supplémentaires effectuées en cas d'erreur dans la prière","La prosternation de gratitude après une bénédiction","La prosternation en entendant certains versets coraniques"],de:["Ein freiwilliges Gebet das nachts verrichtet wird","Zwei zusätzliche Niederwerfungen wenn im Gebet ein Fehler gemacht wird","Die Dankbarkeitsniederwerfung nach einer Segen","Die Niederwerfung beim Hören bestimmter Koranverse"]},
-    answer:1,
-    explanation:{en:"Sujood al-Sahw consists of two prostrations performed at the end of prayer to compensate for unintentional mistakes (like forgetting a rak'ah or adding extra ones). The Prophet ﷺ taught this in the hadith of Ibn Mas'ud (Bukhari).",ar:"سجود السهو يتكون من سجدتين تُؤدَّيان في نهاية الصلاة تعويضاً عن الأخطاء غير المقصودة (كنسيان ركعة أو إضافة أخرى).",fr:"Le Sujood al-Sahw consiste en deux prosternations effectuées à la fin de la prière pour compenser les erreurs involontaires (oublier une rak'a, en ajouter une de plus).",de:"Sujood al-Sahw besteht aus zwei Niederwerfungen am Ende des Gebets um unbeabsichtigte Fehler zu kompensieren (wie das Vergessen einer Rak'ah oder das Hinzufügen zusätzlicher)."} },
-
-  { id:"fm5", category:"fiqh", difficulty:"medium",
-    question:{en:"What is 'Itikaf'?",ar:"ما هو الاعتكاف؟",fr:"Qu'est-ce que l'Itikaf?",de:"Was ist 'Itikaf'?"},
-    options:{en:["A voluntary extra prayer before Fajr","Spiritual seclusion in a mosque, especially during the last 10 nights of Ramadan","The night prayer of Tarawih","A voluntary fast on Mondays and Thursdays"],ar:["صلاة نافلة إضافية قبل الفجر","الانعزال الروحي في المسجد خاصةً في العشر الأواخر من رمضان","صلاة التراويح","صوم نافلة يوم الاثنين والخميس"],fr:["Une prière supplémentaire volontaire avant Fajr","La retraite spirituelle dans une mosquée, notamment pendant les 10 dernières nuits du Ramadan","La prière nocturne des Tarawih","Un jeûne volontaire le lundi et le jeudi"],de:["Ein freiwilliges zusätzliches Gebet vor Fajr","Spiritueller Rückzug in einer Moschee besonders in den letzten 10 Nächten des Ramadans","Das Nachtgebet Tarawih","Ein freiwilliges Fasten montags und donnerstags"]},
-    answer:1,
-    explanation:{en:"I'tikaf is the practice of secluding oneself in a mosque for worship, remembrance of Allah, and Quran recitation. The Prophet ﷺ performed i'tikaf in the last 10 nights of Ramadan every year to seek Laylat al-Qadr.",ar:"الاعتكاف هو الانعزال في المسجد للعبادة وذكر الله وتلاوة القرآن. كان النبي ﷺ يعتكف في العشر الأواخر من رمضان كل سنة التماساً لليلة القدر.",fr:"L'I'tikaf est la pratique de se retirer dans une mosquée pour le culte. Le Prophète ﷺ accomplissait l'i'tikaf lors des 10 dernières nuits du Ramadan pour chercher la Nuit du Destin.",de:"I'tikaf ist die Praxis des Rückzugs in eine Moschee für Gottesdienst und Quranrezitation. Der Prophet ﷺ praktizierte I'tikaf in den letzten 10 Nächten des Ramadans."} },
-
-  { id:"fm6", category:"fiqh", difficulty:"medium",
-    question:{en:"What is 'Laylat al-Qadr' (Night of Power)?",ar:"ما هي 'ليلة القدر'؟",fr:"Qu'est-ce que la 'Laylat al-Qadr' (Nuit du Destin)?",de:"Was ist 'Laylat al-Qadr' (Nacht der Macht)?"},
-    options:{en:["The night of Eid al-Fitr","The night the Prophet ﷺ was born","A blessed night in the last 10 days of Ramadan that is better than 1000 months","The night of the Hijra"],ar:["ليلة عيد الفطر","ليلة مولد النبي ﷺ","ليلة مباركة في العشر الأواخر من رمضان تعادل خيراً من ألف شهر","ليلة الهجرة"],fr:["La nuit de l'Aïd al-Fitr","La nuit de la naissance du Prophète ﷺ","Une nuit bénie dans les 10 derniers jours du Ramadan qui vaut mieux que 1000 mois","La nuit de l'Hégire"],de:["Die Nacht von Eid al-Fitr","Die Nacht der Geburt des Propheten ﷺ","Eine gesegnete Nacht in den letzten 10 Tagen des Ramadans die besser ist als 1000 Monate","Die Nacht der Hidschra"]},
-    answer:2,
-    explanation:{en:"Laylat al-Qadr is the blessed night on which the Quran was first revealed. The Quran says: 'The Night of Power is better than a thousand months.' (97:3) It is sought in the odd nights of the last 10 days of Ramadan.",ar:"ليلة القدر هي الليلة المباركة التي نزل فيها القرآن لأول مرة. قال الله: {لَيْلَةُ الْقَدْرِ خَيْرٌ مِّنْ أَلْفِ شَهْرٍ} (97:3).",fr:"La Laylat al-Qadr est la nuit bénie où le Coran fut révélé pour la première fois. Le Coran dit: 'La Nuit du Destin est meilleure que mille mois.' (97:3)",de:"Laylat al-Qadr ist die gesegnete Nacht in der der Quran erstmals offenbart wurde. Der Quran sagt: 'Die Nacht der Macht ist besser als tausend Monate.' (97:3)"} },
-
-  { id:"fm7", category:"fiqh", difficulty:"medium",
-    question:{en:"What are the pillars of Hajj?",ar:"ما هي أركان الحج؟",fr:"Quels sont les piliers du Hajj?",de:"Was sind die Säulen des Hajj?"},
-    options:{en:["Prayer, fasting, and charity","Ihram, standing at Arafah, Tawaf al-Ifadah, and Sa'i","Ihram, Tawaf, Sai, Rami al-Jamarat, and Udhiyah","Ihram, Mina, Muzdalifah, and Mecca"],ar:["الصلاة والصيام والصدقة","الإحرام والوقوف بعرفة وطواف الإفاضة والسعي","الإحرام والطواف والسعي ورمي الجمرات والأضحية","الإحرام ومنى ومزدلفة ومكة"],fr:["Prière, jeûne et charité","Ihram, station à Arafah, Tawaf al-Ifadah et Sa'i","Ihram, Tawaf, Sa'i, Rami al-Jamarat et Udhiyah","Ihram, Mina, Muzdalifah et La Mecque"],de:["Gebet, Fasten und Almosen","Ihram, Stehen auf Arafah, Tawaf al-Ifadah und Sa'i","Ihram, Tawaf, Sa'i, Rami al-Jamarat und Udhiyah","Ihram, Mina, Muzdalifah und Mekka"]},
-    answer:1,
-    explanation:{en:"The four obligatory pillars (arkan) of Hajj are: 1) Ihram (entering the state of consecration), 2) Wuquf (standing at Arafah) on 9 Dhul Hijjah, 3) Tawaf al-Ifadah (circling the Kaaba), 4) Sa'i (walking between Safa and Marwa).",ar:"أركان الحج الأربعة هي: 1) الإحرام، 2) الوقوف بعرفة في 9 ذي الحجة، 3) طواف الإفاضة، 4) السعي بين الصفا والمروة.",fr:"Les quatre piliers obligatoires du Hajj sont: 1) Ihram, 2) Wuquf (station à Arafah) le 9 Dhul Hijja, 3) Tawaf al-Ifadah, 4) Sa'i (marche entre Safa et Marwa).",de:"Die vier Pflicht-Säulen des Hajj sind: 1) Ihram, 2) Wuquf (Stehen auf Arafah) am 9. Dhul Hijjah, 3) Tawaf al-Ifadah, 4) Sa'i (Gehen zwischen Safa und Marwa)."} },
-
-  { id:"fm8", category:"fiqh", difficulty:"medium",
-    question:{en:"What is the ruling on eating meat that is not slaughtered in the Islamic way?",ar:"ما حكم أكل اللحم الذي لم يُذبح بالطريقة الإسلامية؟",fr:"Quelle est la règle concernant la viande non abattue selon la méthode islamique?",de:"Was ist das Urteil über das Essen von Fleisch das nicht auf islamische Weise geschlachtet wurde?"},
-    options:{en:["It is makruh (disliked) but allowed","It is haram (forbidden) — except for fish and seafood which don't require slaughter","It is allowed if the animal was healthy","It is allowed in all circumstances"],ar:["مكروه لكن مسموح","حرام — إلا السمك والمأكولات البحرية التي لا تحتاج ذبحاً","مسموح إذا كان الحيوان سليماً","مسموح في جميع الظروف"],fr:["C'est makruh (répréhensible) mais autorisé","C'est haram (interdit) — sauf pour le poisson et les fruits de mer qui ne nécessitent pas d'abattage","C'est autorisé si l'animal était sain","C'est autorisé dans toutes les circonstances"],de:["Es ist makruh (missbilligt) aber erlaubt","Es ist haram (verboten) — außer Fisch und Meeresfrüchte die kein Schlachten benötigen","Es ist erlaubt wenn das Tier gesund war","Es ist unter allen Umständen erlaubt"]},
-    answer:1,
-    explanation:{en:"Meat not slaughtered in the Islamic way (dhabihah — severing the windpipe, esophagus, and jugular veins while saying 'Bismillah') is haram. Exception: fish and most seafood are halal without ritual slaughter. Meat of People of the Book (Jews/Christians) may be consumed according to most scholars.",ar:"اللحم غير المذبوح بالطريقة الإسلامية (الذبح الشرعي: قطع الأوداج مع ذكر اسم الله) حرام. استثناء: السمك وأكثر المأكولات البحرية حلال دون ذبح.",fr:"La viande non abattue selon la méthode islamique (couper la trachée, l'œsophage et les jugulaires en disant 'Bismillah') est haram. Exception: le poisson et la plupart des fruits de mer.",de:"Fleisch das nicht auf islamische Weise geschlachtet wurde (Dhabihah — Durchtrennen von Luftröhre, Speiseröhre und Halsvenen mit 'Bismillah') ist haram. Ausnahme: Fisch und die meisten Meeresfrüchte."} },
-
-  { id:"fm9", category:"fiqh", difficulty:"medium",
-    question:{en:"What is 'Tayammum'?",ar:"ما هو التيمم؟",fr:"Qu'est-ce que le Tayammum?",de:"Was ist 'Tayammum'?"},
-    options:{en:["A prayer performed during travel","Dry ablution using clean soil or dust — a substitute when water is unavailable","A shortened form of Wudu","A special prayer performed at night"],ar:["صلاة تُؤدَّى في السفر","الوضوء بالتراب النظيف — بديل عند عدم توفر الماء","شكل مختصر من الوضوء","صلاة خاصة تُؤدَّى ليلاً"],fr:["Une prière effectuée en voyage","L'ablution sèche avec de la terre propre ou de la poussière — substitut quand l'eau n'est pas disponible","Une forme abrégée du Wudu","Une prière spéciale effectuée la nuit"],de:["Ein während der Reise verrichtetes Gebet","Trockene Waschung mit sauberem Boden oder Staub — Ersatz wenn kein Wasser verfügbar ist","Eine verkürzte Form des Wudu","Ein spezielles Gebet das nachts verrichtet wird"]},
-    answer:1,
-    explanation:{en:"Tayammum is the Islamic method of dry ablution using clean earth or dust, permitted when water is unavailable or its use is harmful. Allah says: '...and you find no water, then perform tayammum with clean earth.' (4:43)",ar:"التيمم هو التطهر بالتراب النظيف، مسموح به عند عدم توفر الماء أو ضرر استعماله. قال الله: {فَلَمْ تَجِدُوا مَاءً فَتَيَمَّمُوا صَعِيدًا طَيِّبًا} (4:43).",fr:"Le Tayammum est la méthode islamique d'ablution sèche avec de la terre propre, permise quand l'eau est indisponible. Allah dit: '...et vous ne trouvez pas d'eau, purifiez-vous alors avec de la bonne terre.' (4:43)",de:"Tayammum ist die islamische Methode der trockenen Reinigung mit sauberem Boden, erlaubt wenn kein Wasser verfügbar ist. Allah sagt: '...und ihr findet kein Wasser, so reinigt euch mit reinem Boden.' (4:43)"} },
-
-  { id:"fm10", category:"fiqh", difficulty:"medium",
-    question:{en:"What is the Islamic ruling on music?",ar:"ما هو الحكم الإسلامي على الموسيقى؟",fr:"Quelle est la règle islamique sur la musique?",de:"Was ist das islamische Urteil über Musik?"},
-    options:{en:["It is completely permissible (halal) in all forms","Scholars differ: most prohibit instruments and singing with lewd content, while percussion (duff) at weddings is generally permitted","It is fully forbidden (haram) with no exceptions","It is obligatory to learn Islamic nasheeds"],ar:["حلال تماماً في جميع الأشكال","العلماء مختلفون: الأغلب يحرم الآلات الموسيقية والغناء الفاحش، بينما الدف في الأعراس مسموح عموماً","حرام كلياً دون استثناء","واجب تعلم الأناشيد الإسلامية"],fr:["C'est entièrement permis (halal) sous toutes ses formes","Les savants diffèrent: la plupart interdisent les instruments et le chant licencieux, tandis que la percussion (duff) aux mariages est généralement permise","C'est totalement interdit (haram) sans exception","C'est obligatoire d'apprendre les nasheed islamiques"],de:["Es ist in allen Formen vollständig erlaubt (Halal)","Gelehrte sind uneinig: die meisten verbieten Instrumente und anstößigen Gesang während Perkussion (Duff) bei Hochzeiten generell erlaubt ist","Es ist vollständig verboten (Haram) ohne Ausnahmen","Es ist Pflicht islamische Nasheeds zu lernen"]},
-    answer:1,
-    explanation:{en:"The majority of classical scholars hold that musical instruments (especially those associated with immoral environments) are haram, while the duff (frame drum) for weddings and celebrations is permissible. Contemporary scholars have varying opinions on the permissibility of other music.",ar:"أغلب العلماء الكلاسيكيين يرون أن الآلات الموسيقية (خاصةً المرتبطة بالبيئات الفاسدة) حرام، بينما الدف في الأعراس مسموح به.",fr:"La majorité des savants classiques estiment que les instruments de musique sont haram, tandis que le duff pour les mariages est permis. Les savants contemporains ont des avis variés.",de:"Die Mehrheit der klassischen Gelehrten hält Musikinstrumente für haram, während die Duff (Rahmentrommel) bei Hochzeiten erlaubt ist. Zeitgenössische Gelehrte haben unterschiedliche Meinungen."} },
-
-  { id:"fm11", category:"fiqh", difficulty:"medium",
-    question:{en:"What is 'Sadaqa Jariyah'?",ar:"ما هي 'الصدقة الجارية'؟",fr:"Qu'est-ce que la 'Sadaqa Jariyah'?",de:"Was ist 'Sadaqa Jariyah'?"},
-    options:{en:["The Zakat paid at Eid al-Fitr","A continuous ongoing charity whose rewards keep flowing after a person's death","The charity given only in Ramadan","The tax paid to Islamic rulers"],ar:["زكاة الفطر المدفوعة في عيد الفطر","صدقة جارية مستمرة تستمر مكافآتها بعد وفاة الشخص","الصدقة التي تُعطى في رمضان فقط","الضريبة المدفوعة للحكام المسلمين"],fr:["La Zakat al-Fitr payée à l'Aïd al-Fitr","Une charité continue et permanente dont les récompenses continuent après la mort","La charité donnée uniquement en Ramadan","L'impôt payé aux dirigeants islamiques"],de:["Die Zakat al-Fitr die zu Eid al-Fitr gezahlt wird","Eine kontinuierliche fortlaufende Wohltätigkeit deren Belohnungen nach dem Tod einer Person weiter fließen","Die Almosen die nur im Ramadan gegeben werden","Die an islamische Herrscher gezahlte Steuer"]},
-    answer:1,
-    explanation:{en:"The Prophet ﷺ said: 'When a person dies, all their deeds end except three: ongoing charity (sadaqa jariyah), beneficial knowledge, or a righteous child who prays for them.' (Muslim) — Examples include building a mosque, well, or hospital.",ar:"قال النبي ﷺ: 'إذا مات الإنسان انقطع عنه عمله إلا من ثلاثة: إلا من صدقة جارية أو علم ينتفع به أو ولد صالح يدعو له.' (مسلم)",fr:"Le Prophète ﷺ dit: 'Quand une personne meurt, toutes ses actions s'arrêtent sauf trois: une charité continue, une connaissance bénéfique, ou un enfant vertueux qui prie pour elle.' (Muslim)",de:"Der Prophet ﷺ sagte: 'Wenn ein Mensch stirbt, hören alle seine Taten auf außer drei: fortlaufende Wohltätigkeit, nützliches Wissen oder ein rechtschaffenes Kind das für ihn betet.' (Muslim)"} },
-
-  { id:"fm12", category:"fiqh", difficulty:"medium",
-    question:{en:"What is 'Mahr' in Islamic marriage?",ar:"ما هو 'المهر' في الزواج الإسلامي؟",fr:"Qu'est-ce que le 'Mahr' dans le mariage islamique?",de:"Was ist 'Mahr' in der islamischen Ehe?"},
-    options:{en:["The bridal dress","The mandatory gift given by the groom to the bride as part of the marriage contract","The dowry paid by the bride's family to the groom","The wedding celebration feast"],ar:["فستان العروس","الهدية الإلزامية التي يعطيها الزوج للعروس كجزء من عقد الزواج","المهر الذي تدفعه عائلة العروس للعريس","وليمة حفل الزفاف"],fr:["La robe de mariée","Le cadeau obligatoire donné par le marié à la mariée dans le cadre du contrat de mariage","La dot payée par la famille de la mariée au marié","Le festin de célébration du mariage"],de:["Das Brautkleid","Das vom Bräutigam an die Braut zu gebende Pflichtgeschenk als Teil des Ehevertrages","Die von der Familie der Braut an den Bräutigam gezahlte Mitgift","Das Hochzeitsfestmahl"]},
-    answer:1,
-    explanation:{en:"Mahr (dowry/bridal gift) is a mandatory gift that the groom must give the bride upon marriage. Allah says: 'And give women their mahr as a gift.' (4:4) It belongs entirely to the wife and cannot be taken back.",ar:"المهر هو هدية إلزامية على الزوج أن يقدمها للعروس عند الزواج. قال الله: {وَآتُوا النِّسَاءَ صَدُقَاتِهِنَّ نِحْلَةً} (4:4). وهو ملك للزوجة وحدها.",fr:"Le Mahr (dot/cadeau nuptial) est un cadeau obligatoire que le marié doit donner à la mariée. Allah dit: 'Donnez aux femmes leur mahr comme un don.' (4:4)",de:"Mahr (Brautgabe) ist ein Pflichtgeschenk das der Bräutigam der Braut bei der Heirat geben muss. Allah sagt: 'Und gebt den Frauen ihren Mahr als Geschenk.' (4:4)"} },
-
-  { id:"fm13", category:"fiqh", difficulty:"medium",
-    question:{en:"What is 'Khul'' in Islamic law?",ar:"ما هو 'الخلع' في الشريعة الإسلامية؟",fr:"Qu'est-ce que le 'Khul'' en droit islamique?",de:"Was ist 'Khul'' im islamischen Recht?"},
-    options:{en:["A man's right to divorce his wife","A woman's right to seek divorce by returning her mahr to her husband","A court-ordered separation","A temporary marriage arrangement"],ar:["حق الرجل في طلاق زوجته","حق المرأة في طلب الطلاق بإعادة مهرها إلى زوجها","فصل بأمر المحكمة","ترتيب زواج مؤقت"],fr:["Le droit d'un homme de divorcer de sa femme","Le droit d'une femme à demander le divorce en rendant son mahr à son mari","Une séparation ordonnée par un tribunal","Un arrangement de mariage temporaire"],de:["Das Recht eines Mannes seine Frau zu scheiden","Das Recht einer Frau auf Scheidung durch Rückgabe ihres Mahrs an den Mann","Eine gerichtlich angeordnete Trennung","Eine temporäre Ehevereinbarung"]},
-    answer:1,
-    explanation:{en:"Khul' is the right of a wife to seek separation from her husband by returning her mahr (bridal gift). It is established in the Quran (2:229) and in the hadith of Thabit ibn Qays's wife who sought khul' from the Prophet ﷺ.",ar:"الخلع هو حق الزوجة في طلب الفراق من زوجها بردِّ مهرها. ثبت في القرآن (2:229) وفي حديث زوجة ثابت بن قيس التي طلبت الخلع من النبي ﷺ.",fr:"Le Khul' est le droit d'une épouse à demander la séparation de son mari en rendant son mahr. Établi dans le Coran (2:229).",de:"Khul' ist das Recht einer Ehefrau die Trennung von ihrem Mann zu verlangen, indem sie ihren Mahr zurückgibt. Es ist im Quran (2:229) festgelegt."} },
-
-  { id:"fm14", category:"fiqh", difficulty:"medium",
-    question:{en:"What are the conditions for Islamic prayer to be valid?",ar:"ما هي شروط صحة الصلاة الإسلامية؟",fr:"Quelles sont les conditions pour que la prière islamique soit valide?",de:"Was sind die Voraussetzungen für ein gültiges islamisches Gebet?"},
-    options:{en:["Being Muslim, being male, and knowing Arabic","Physical purity (wudu/ghusl), clean body and clothes, facing the Qibla, being in the correct prayer time, and intention","Having a beard, wearing white, and praying in congregation","Only needing intention"],ar:["كون الشخص مسلماً وذكراً وعارفاً بالعربية","الطهارة الجسدية (وضوء/غسل) ونظافة الجسد والثياب والتوجه للقبلة وكون الوقت قد دخل والنية","امتلاك لحية وارتداء الأبيض والصلاة في جماعة","النية فقط"],fr:["Être musulman, être de sexe masculin et connaître l'arabe","Pureté physique (wudu/ghusl), corps et vêtements propres, faire face à la Qibla, être au bon moment de prière et avoir l'intention","Avoir une barbe, porter du blanc et prier en congrégation","Seulement avoir l'intention"],de:["Muslim sein männlich sein und Arabisch können","Körperliche Reinheit (Wudu/Ghusl), sauberer Körper und Kleidung, Richtung zur Qibla, korrekte Gebetszeit und Absicht","Einen Bart haben weiß tragen und in der Gemeinschaft beten","Nur Absicht benötigen"]},
-    answer:1,
-    explanation:{en:"The conditions for valid prayer include: 1) Ritual purity (wudu or ghusl), 2) Clean body, clothes, and place, 3) Facing the Qibla, 4) Prayer time must have entered, 5) Proper covering (awrah), 6) Intention (niyyah).",ar:"شروط صحة الصلاة: 1) الطهارة (وضوء/غسل)، 2) نظافة الجسد والثياب والمكان، 3) استقبال القبلة، 4) دخول الوقت، 5) ستر العورة، 6) النية.",fr:"Les conditions d'une prière valide: 1) Pureté rituelle (wudu/ghusl), 2) Corps, vêtements et lieu propres, 3) Face à la Qibla, 4) Le moment de prière doit être entré, 5) Couvrir l'awra, 6) Intention.",de:"Voraussetzungen für gültiges Gebet: 1) Rituelle Reinheit (Wudu/Ghusl), 2) Sauberer Körper, Kleidung und Ort, 3) Richtung zur Qibla, 4) Gebetszeit muss begonnen haben, 5) Bedeckung der Awra, 6) Absicht."} },
-
-  { id:"fm15", category:"fiqh", difficulty:"medium",
-    question:{en:"What is 'Riba' in Islamic finance?",ar:"ما هو 'الربا' في التمويل الإسلامي؟",fr:"Qu'est-ce que le 'Riba' dans la finance islamique?",de:"Was ist 'Riba' in der islamischen Finanzwirtschaft?"},
-    options:{en:["Charitable giving in Islam","Usury/interest — any guaranteed increase on a loan that is prohibited in Islam","Islamic profit-sharing partnership","The obligatory Zakat on wealth"],ar:["العطاء الخيري في الإسلام","الربا — أي زيادة مضمونة على قرض محرَّمة في الإسلام","الشراكة الإسلامية في تقاسم الأرباح","الزكاة الواجبة على الثروة"],fr:["La charité en Islam","L'usure/intérêt — toute augmentation garantie sur un prêt qui est interdite en Islam","Le partenariat islamique de partage des bénéfices","La Zakat obligatoire sur la richesse"],de:["Wohltätigkeit im Islam","Wucher/Zinsen — jede garantierte Zunahme auf ein Darlehen die im Islam verboten ist","Islamische Gewinnbeteiligungs-Partnerschaft","Die Pflicht-Zakat auf Vermögen"]},
-    answer:1,
-    explanation:{en:"Riba (interest/usury) is strictly forbidden in Islam. Allah says: 'Allah has permitted trade and forbidden riba.' (2:275) Any guaranteed excess return on a loan is riba. Islamic finance uses profit-sharing (mudarabah) and partnership (musharakah) instead.",ar:"الربا محرَّم بشكل صريح في الإسلام. قال الله: {وَأَحَلَّ اللَّهُ الْبَيْعَ وَحَرَّمَ الرِّبَا} (2:275). يستخدم التمويل الإسلامي المضاربة والمشاركة بدلاً من ذلك.",fr:"Le Riba (intérêt/usure) est strictement interdit en Islam. Allah dit: 'Allah a permis le commerce et interdit le riba.' (2:275). La finance islamique utilise le partage des bénéfices.",de:"Riba (Zinsen/Wucher) ist im Islam streng verboten. Allah sagt: 'Allah hat Handel erlaubt und Riba verboten.' (2:275). Die islamische Finanzwirtschaft nutzt stattdessen Gewinnbeteiligung."} },
-
-  { id:"fm16", category:"fiqh", difficulty:"medium",
-    question:{en:"What is the Islamic ruling on wearing gold for men?",ar:"ما هو الحكم الإسلامي على ارتداء الذهب للرجال؟",fr:"Quelle est la règle islamique concernant le port d'or pour les hommes?",de:"Was ist das islamische Urteil über das Tragen von Gold für Männer?"},
-    options:{en:["It is obligatory to wear gold on special occasions","It is permissible but discouraged","It is forbidden (haram) for men — but permitted for women","It is permissible only in small amounts"],ar:["يجب ارتداؤه في المناسبات الخاصة","مسموح لكن غير محبَّذ","محرَّم للرجال — لكن مسموح للنساء","مسموح بكميات صغيرة فقط"],fr:["Il est obligatoire d'en porter lors d'occasions spéciales","C'est permis mais déconseillé","C'est interdit (haram) pour les hommes — mais permis pour les femmes","C'est permis en petites quantités seulement"],de:["Es ist Pflicht zu besonderen Anlässen Gold zu tragen","Es ist erlaubt aber unerwünscht","Es ist für Männer verboten (Haram) — aber für Frauen erlaubt","Es ist nur in kleinen Mengen erlaubt"]},
-    answer:2,
-    explanation:{en:"The Prophet ﷺ said: 'Gold and silk are forbidden for the males of my Ummah and permitted for the females.' (Ibn Majah, Tirmidhi) — Men may only wear a silver ring, not gold.",ar:"قال النبي ﷺ: 'الذهب والحرير حرام على ذكور أمتي حل لإناثها.' (ابن ماجه والترمذي). يُسمح للرجال بخاتم فضة فقط دون الذهب.",fr:"Le Prophète ﷺ dit: 'L'or et la soie sont interdits aux mâles de ma communauté et permis aux femelles.' (Ibn Majah, Tirmidhi)",de:"Der Prophet ﷺ sagte: 'Gold und Seide sind für die Männer meiner Umma verboten und für die Frauen erlaubt.' (Ibn Madschah, Tirmidhi)"} },
-
-  { id:"fm17", category:"fiqh", difficulty:"medium",
-    question:{en:"How many witnesses are required for a valid Islamic marriage contract?",ar:"كم شاهداً مطلوب لعقد زواج إسلامي صحيح؟",fr:"Combien de témoins sont requis pour un contrat de mariage islamique valide?",de:"Wie viele Zeugen sind für einen gültigen islamischen Ehevertrag erforderlich?"},
-    options:{en:["No witnesses needed","1 witness","2 Muslim male witnesses (or equivalent)","4 witnesses"],ar:["لا شهود مطلوبون","شاهد واحد","شاهدان مسلمان (أو ما يعادلهما)","4 شهود"],fr:["Aucun témoin n'est nécessaire","1 témoin","2 témoins musulmans (ou équivalent)","4 témoins"],de:["Keine Zeugen nötig","1 Zeuge","2 muslimische männliche Zeugen (oder gleichwertig)","4 Zeugen"]},
-    answer:2,
-    explanation:{en:"A valid Islamic marriage (nikah) requires: 1) Offer (ijab) by the bride's wali (guardian), 2) Acceptance (qabul) by the groom, 3) Two adult Muslim witnesses, 4) A mahr. The Prophet ﷺ said: 'There is no marriage without a wali and two just witnesses.' (Ahmad, al-Bayhaqi)",ar:"يستلزم عقد النكاح الصحيح: 1) الإيجاب من وليّ أمر العروس، 2) القبول من العريس، 3) شاهدَين مسلمَين بالغَين، 4) مهر.",fr:"Un mariage islamique valide (nikah) nécessite: 1) Offre (ijab) par le wali de la mariée, 2) Acceptation (qabul) du marié, 3) Deux témoins adultes musulmans, 4) Un mahr.",de:"Eine gültige islamische Ehe (Nikah) erfordert: 1) Angebot (Ijab) durch den Wali (Vormund) der Braut, 2) Annahme (Qabul) des Bräutigams, 3) Zwei erwachsene muslimische Zeugen, 4) Einen Mahr."} },
-
-  { id:"fm18", category:"fiqh", difficulty:"medium",
-    question:{en:"What is 'Taqlid' in Islamic jurisprudence?",ar:"ما هو 'التقليد' في الفقه الإسلامي؟",fr:"Qu'est-ce que le 'Taqlid' dans la jurisprudence islamique?",de:"Was ist 'Taqlid' in der islamischen Rechtswissenschaft?"},
-    options:{en:["Independent interpretation of Islamic law","Following a qualified Islamic scholar's legal opinion without requiring evidence","Memorizing the Quran","The tradition of Islamic calligraphy"],ar:["الاجتهاد المستقل في الشريعة الإسلامية","اتباع رأي عالم إسلامي مؤهل دون طلب الدليل","حفظ القرآن","تقليد الخط الإسلامي"],fr:["L'interprétation indépendante du droit islamique","Suivre l'opinion juridique d'un savant islamique qualifié sans exiger de preuve","La mémorisation du Coran","La tradition de la calligraphie islamique"],de:["Unabhängige Interpretation des islamischen Rechts","Der Meinung eines qualifizierten islamischen Gelehrten ohne Beweisanforderung zu folgen","Das Auswendiglernen des Qurans","Die Tradition der islamischen Kalligraphie"]},
-    answer:1,
-    explanation:{en:"Taqlid is the practice of following the legal opinion of a qualified Islamic jurist (mufti or mujtahid) without demanding all the underlying evidence. The opposite is ijtihad (independent legal reasoning). For most Muslims, following one of the four madhabs is considered taqlid.",ar:"التقليد هو اتباع رأي فقيه إسلامي مؤهل (مفتٍ أو مجتهد) دون طلب الأدلة التفصيلية. نقيضه الاجتهاد.",fr:"Le Taqlid est la pratique de suivre l'opinion juridique d'un juriste islamique qualifié sans exiger toutes les preuves sous-jacentes. L'opposé est l'ijtihad.",de:"Taqlid ist die Praxis einer Meinung eines qualifizierten islamischen Juristen (Mufti oder Mujtahid) zu folgen ohne alle zugrunde liegenden Beweise zu verlangen. Das Gegenteil ist Ijtihad."} },
-
-  { id:"fm19", category:"fiqh", difficulty:"medium",
-    question:{en:"What is the ruling on making a will (wasiyyah) in Islam?",ar:"ما حكم الوصية في الإسلام؟",fr:"Quelle est la règle sur la rédaction d'un testament (wasiyyah) en Islam?",de:"Was ist das Urteil über das Erstellen eines Testaments (Wasiyyah) im Islam?"},
-    options:{en:["It is forbidden as Muslims must rely on Allah","It is recommended (mustahabb) — especially for those who have wealth or obligations","It is obligatory (fard) for every Muslim","It is only permissible for rulers"],ar:["محرَّمة لأن المسلمين يجب أن يتوكلوا على الله","مستحبة — خاصةً لمن لديه مال أو التزامات","فريضة على كل مسلم","مسموح فقط للحكام"],fr:["C'est interdit car les musulmans doivent se fier à Allah","C'est recommandé (mustahabb) — surtout pour ceux qui ont de la richesse ou des obligations","C'est obligatoire (fard) pour tout musulman","C'est seulement permis pour les dirigeants"],de:["Es ist verboten da Muslime sich auf Allah verlassen müssen","Es ist empfohlen (Mustahabb) — besonders für diejenigen mit Reichtum oder Verpflichtungen","Es ist Pflicht (Fard) für jeden Muslim","Es ist nur Herrschern erlaubt"]},
-    answer:1,
-    explanation:{en:"The Prophet ﷺ said: 'It is not right for a Muslim who has anything to bequeath to go for two nights without having a written will.' (Bukhari, Muslim) — Making a will is highly recommended. A wasiyyah can bequeath up to 1/3 of the estate to non-heirs.",ar:"قال النبي ﷺ: 'ما حق امرئ مسلم له شيء يوصي فيه يبيت ليلتين إلا ووصيته مكتوبة عنده.' (البخاري ومسلم).",fr:"Le Prophète ﷺ dit: 'Il n'est pas juste qu'un musulman passe deux nuits sans avoir un testament écrit.' (Bukhari, Muslim)",de:"Der Prophet ﷺ sagte: 'Es ist nicht richtig für einen Muslim der etwas zu vermachen hat zwei Nächte ohne schriftliches Testament zu verbringen.' (Bukhari, Muslim)"} },
-
-  { id:"fm20", category:"fiqh", difficulty:"medium",
-    question:{en:"What is 'Hisbah' in Islamic governance?",ar:"ما هي 'الحسبة' في الحوكمة الإسلامية؟",fr:"Qu'est-ce que la 'Hisbah' dans la gouvernance islamique?",de:"Was ist 'Hisbah' in der islamischen Regierungsführung?"},
-    options:{en:["The Islamic treasury system","The system of promoting good and forbidding evil — includes market inspection, moral oversight, and public welfare","The Islamic court system","The collection of Zakat"],ar:["نظام بيت المال الإسلامي","نظام الأمر بالمعروف والنهي عن المنكر — يشمل تفتيش الأسواق والرقابة الأخلاقية ورعاية المجتمع","نظام القضاء الإسلامي","جمع الزكاة"],fr:["Le système du trésor islamique","Le système de promotion du bien et d'interdiction du mal — comprend l'inspection des marchés, la surveillance morale et le bien-être public","Le système judiciaire islamique","La collecte de la Zakat"],de:["Das islamische Kassensystem","Das System der Förderung des Guten und des Verbietens des Bösen — beinhaltet Marktinspektion, moralische Aufsicht und öffentliches Wohl","Das islamische Gerichtssystem","Die Zakat-Sammlung"]},
-    answer:1,
-    explanation:{en:"Hisbah is the Islamic institution of 'commanding the good and forbidding the evil' (amr bil ma'ruf wa nahy an al-munkar). The 'muhtasib' oversees markets, weights and measures, prices, and moral standards in public life.",ar:"الحسبة هي مؤسسة إسلامية لـ'الأمر بالمعروف والنهي عن المنكر'. يُشرف المحتسب على الأسواق والموازين والأسعار والمعايير الأخلاقية.",fr:"La Hisbah est l'institution islamique 'd'ordonner le bien et d'interdire le mal'. Le 'muhtasib' supervise les marchés, les poids et mesures.",de:"Hisbah ist die islamische Institution des 'Befehlens des Guten und Verbietens des Bösen'. Der 'Muhtasib' überwacht Märkte, Gewichte und Maße und öffentliche moralische Standards."} },
-
-  // ═══════════════════════════════════════════════════════════════
-  // MEDIUM — PROPHETS (pm1–pm20)
-  // ═══════════════════════════════════════════════════════════════
-  { id:"pm1", category:"prophets", difficulty:"medium",
-    question:{en:"What was the miracle of Prophet Ibrahim (AS) when thrown into the fire?",ar:"ما هي معجزة النبي إبراهيم عليه السلام حين أُلقي في النار؟",fr:"Quel fut le miracle du Prophète Ibrahim (AS) quand il fut jeté dans le feu?",de:"Was war das Wunder des Propheten Ibrahim (AS) als er ins Feuer geworfen wurde?"},
-    options:{en:["He escaped before reaching the fire","Allah commanded the fire to be cool and peaceful for Ibrahim — and he walked out unharmed","Allah sent rain to extinguish the fire","An angel shielded him from the flames"],ar:["هرب قبل الوصول إلى النار","أمر الله النار أن تكون برداً وسلاماً على إبراهيم — فخرج سالماً","أرسل الله مطراً لإطفاء النار","حمى ملاك من النيران"],fr:["Il s'échappa avant d'atteindre le feu","Allah ordonna au feu d'être fraîcheur et paix pour Ibrahim — et il en sortit indemne","Allah envoya la pluie pour éteindre le feu","Un ange le protégea des flammes"],de:["Er entkam bevor er das Feuer erreichte","Allah befahl dem Feuer kühl und friedlich für Ibrahim zu sein — und er kam unversehrt heraus","Allah sandte Regen um das Feuer zu löschen","Ein Engel schirmte ihn von den Flammen ab"]},
-    answer:1,
-    explanation:{en:"When Nimrod and his people threw Ibrahim (AS) into the fire for destroying their idols, Allah said: 'O fire, be coolness and safety for Ibrahim!' (21:69). The fire did not harm him — a miracle demonstrating Allah's absolute power over creation.",ar:"حين ألقى نمرود وقومه إبراهيم في النار بسبب تحطيمه الأصنام، قال الله: {يَا نَارُ كُونِي بَرْدًا وَسَلَامًا عَلَىٰ إِبْرَاهِيمَ} (21:69) فلم تضره النار.",fr:"Quand Nimrod et son peuple jetèrent Ibrahim (AS) dans le feu pour avoir brisé leurs idoles, Allah dit: 'O feu, sois fraîcheur et paix pour Ibrahim!' (21:69). Le feu ne lui fit aucun mal.",de:"Als Nimrod und sein Volk Ibrahim (AS) ins Feuer warfen weil er ihre Götzen zerstört hatte, sagte Allah: 'O Feuer, sei kühl und sicher für Ibrahim!' (21:69). Das Feuer schadete ihm nicht."} },
-
-  { id:"pm2", category:"prophets", difficulty:"medium",
-    question:{en:"What test did Allah give Prophet Ibrahim (AS) regarding his son Ismail?",ar:"ما الاختبار الذي أعطاه الله للنبي إبراهيم عليه السلام بشأن ابنه إسماعيل؟",fr:"Quelle épreuve Allah donna-t-Il au Prophète Ibrahim (AS) concernant son fils Ismail?",de:"Welche Prüfung gab Allah dem Propheten Ibrahim (AS) bezüglich seines Sohnes Ismail?"},
-    options:{en:["To leave Ismail in the desert alone","Allah commanded him in a dream to sacrifice his son Ismail — to test his obedience","To teach Ismail all the knowledge of the prophets","To leave Ismail in Mecca and never return"],ar:["ترك إسماعيل في الصحراء وحيداً","أمره الله في المنام بذبح ابنه إسماعيل — اختباراً لطاعته","تعليم إسماعيل كل علوم الأنبياء","ترك إسماعيل في مكة دون عودة"],fr:["Laisser Ismail seul dans le désert","Allah lui commanda dans un rêve de sacrifier son fils Ismail — pour tester son obéissance","Enseigner à Ismail toutes les connaissances des prophètes","Laisser Ismail à La Mecque et ne jamais revenir"],de:["Ismail allein in der Wüste zu lassen","Allah befahl ihm in einem Traum seinen Sohn Ismail zu opfern — um seinen Gehorsam zu testen","Ismail alles Wissen der Propheten zu lehren","Ismail in Mekka zu lassen und nie zurückzukehren"]},
-    answer:1,
-    explanation:{en:"Allah tested Ibrahim (AS) with a vision/dream to sacrifice his beloved son Ismail (AS). Both submitted to Allah's command. At the moment of sacrifice, Allah replaced Ismail with a ram. This is commemorated every year during Eid al-Adha. (Surah As-Saffat, 37:100-111)",ar:"اختبر الله إبراهيم برؤيا/حلم بذبح ابنه إسماعيل. خضع الاثنان لأمر الله. وعند لحظة الذبح أبدل الله إسماعيل بكبش. يُحيَا هذا الحدث في عيد الأضحى (الصافات:100-111).",fr:"Allah testa Ibrahim avec une vision/rêve de sacrifier son fils Ismail. Tous deux se soumirent à l'ordre d'Allah. Au moment du sacrifice, Allah remplaça Ismail par un bélier.",de:"Allah prüfte Ibrahim mit einer Vision/einem Traum seinen geliebten Sohn Ismail zu opfern. Beide unterwarfen sich Allahs Befehl. Im Moment des Opfers ersetzte Allah Ismail durch einen Widder."} },
-
-  { id:"pm3", category:"prophets", difficulty:"medium",
-    question:{en:"What is the story of Prophet Ayyub (Job) known for?",ar:"بماذا تشتهر قصة النبي أيوب عليه السلام؟",fr:"Pour quoi est connue l'histoire du Prophète Ayyub (Job)?",de:"Wofür ist die Geschichte des Propheten Ayyub (Hiob) bekannt?"},
-    options:{en:["His military victories","His exceptional patience and trust in Allah during severe illness and loss","His miraculous ability to split the sea","His extraordinary wealth and kingdom"],ar:["انتصاراته العسكرية","صبره الاستثنائي وتوكله على الله خلال مرض شديد وخسارة","قدرته المعجزة على شق البحر","ثروته الاستثنائية ومملكته"],fr:["Ses victoires militaires","Sa patience exceptionnelle et sa confiance en Allah lors d'une grave maladie et d'une perte","Sa capacité miraculeuse à fendre la mer","Sa richesse et son royaume extraordinaires"],de:["Seine militärischen Siege","Seine außergewöhnliche Geduld und Vertrauen in Allah während schwerer Krankheit und Verlust","Seine wundersame Fähigkeit das Meer zu teilen","Sein außergewöhnlicher Reichtum und Königreich"]},
-    answer:1,
-    explanation:{en:"Prophet Ayyub (Job, AS) was afflicted with severe illness for many years, lost his wealth and family, yet remained patient and grateful to Allah. His story is a model of patience (sabr). Allah eventually restored his health, wealth, and family. (Surah Al-Anbiya, 21:83-84)",ar:"أُصيب النبي أيوب بمرض شديد سنوات طويلة وفقد ثروته وعائلته، لكنه بقي صابراً شاكراً لله. أعاد الله له صحته وثروته وعائلته (الأنبياء:83-84).",fr:"Le Prophète Ayyub (Job, AS) fut affligé d'une grave maladie pendant de nombreuses années, perdit sa richesse et sa famille, mais resta patient et reconnaissant. Allah restaura finalement sa santé, richesse et famille.",de:"Prophet Ayyub (Hiob, AS) litt viele Jahre unter schwerer Krankheit, verlor Reichtum und Familie, blieb aber geduldig und dankbar Allah gegenüber. Allah stellte schließlich seine Gesundheit, Reichtum und Familie wieder her."} },
-
-  { id:"pm4", category:"prophets", difficulty:"medium",
-    question:{en:"What was Prophet Musa's (AS) miracle against Pharaoh's magicians?",ar:"ما كانت معجزة النبي موسى عليه السلام ضد سحرة فرعون؟",fr:"Quel fut le miracle du Prophète Moussa (AS) contre les magiciens du Pharaon?",de:"Was war das Wunder des Propheten Musa (AS) gegen die Zauberer des Pharaos?"},
-    options:{en:["He turned water into gold","His staff turned into a serpent that swallowed all the magicians' snakes","He called down fire from heaven","He made the sky turn dark"],ar:["حوَّل الماء إلى ذهب","تحوَّل عصاه إلى ثعبان ابتلع كل ثعابين السحرة","نزَّل النار من السماء","أظلمت السماء"],fr:["Il transforma l'eau en or","Son bâton se transforma en serpent qui avala tous les serpents des magiciens","Il fit descendre du feu du ciel","Il fit assombrir le ciel"],de:["Er verwandelte Wasser in Gold","Sein Stab verwandelte sich in eine Schlange die alle Schlangen der Zauberer verschluckte","Er ließ Feuer vom Himmel fallen","Er ließ den Himmel dunkel werden"]},
-    answer:1,
-    explanation:{en:"When Pharaoh gathered his magicians to counter Musa (AS), they threw their ropes and staffs which appeared as snakes. Musa threw his staff and it turned into a real snake (serpent) that swallowed all their illusions. The magicians then recognized a real miracle and believed. (7:117-122)",ar:"حين جمع فرعون سحرته، ألقوا حبالهم وعصيّهم فبدت كأنها ثعابين. ألقى موسى عصاه فتحوَّلت ثعباناً حقيقياً ابتلع سحرهم. فآمن السحرة (7:117-122).",fr:"Quand le Pharaon réunit ses magiciens, ils lancèrent leurs cordes et bâtons qui semblaient être des serpents. Moussa lança son bâton qui se transforma en vrai serpent qui avala leurs illusions.",de:"Als Pharao seine Zauberer versammelte, warfen sie ihre Seile und Stäbe die wie Schlangen aussahen. Musa warf seinen Stab der sich in eine echte Schlange verwandelte und ihre Illusionen verschluckte."} },
-
-  { id:"pm5", category:"prophets", difficulty:"medium",
-    question:{en:"What was special about Prophet Isa's (Jesus) birth according to the Quran?",ar:"ما الذي كان مميزاً في ميلاد النبي عيسى عليه السلام وفق القرآن؟",fr:"Qu'est-ce qui était spécial dans la naissance du Prophète Isa (Jésus) selon le Coran?",de:"Was war an der Geburt des Propheten Isa (Jesus) laut dem Quran besonders?"},
-    options:{en:["He was born in a palace","He was born without a mother","He was born miraculously without a father, to the virgin Maryam, as a sign from Allah","He was born already speaking as an adult"],ar:["وُلد في قصر","وُلد بلا أم","وُلد معجزةً بلا أب من العذراء مريم، آيةً من الله","وُلد يتكلم كالبالغين"],fr:["Il naquit dans un palais","Il naquit sans mère","Il naquit miraculeusement sans père, de la vierge Maryam, en signe d'Allah","Il naquit déjà parlant comme un adulte"],de:["Er wurde in einem Palast geboren","Er wurde ohne Mutter geboren","Er wurde wundersam ohne Vater von der Jungfrau Maryam als Zeichen Allahs geboren","Er wurde bereits als Erwachsener sprechend geboren"]},
-    answer:2,
-    explanation:{en:"Prophet Isa (AS) was born miraculously without a father to the virgin Maryam. Allah says: 'The likeness of Isa with Allah is as the likeness of Adam — He created him from dust.' (3:59). He was a sign and a mercy from Allah.",ar:"وُلد النبي عيسى معجزةً بلا أب من العذراء مريم. قال الله: {إِنَّ مَثَلَ عِيسَىٰ عِندَ اللَّهِ كَمَثَلِ آدَمَ خَلَقَهُ مِن تُرَابٍ} (3:59).",fr:"Le Prophète Isa (AS) naquit miraculeusement sans père de la vierge Maryam. Allah dit: 'La ressemblance d'Isa auprès d'Allah est comme celle d'Adam — Il le créa de terre.' (3:59)",de:"Prophet Isa (AS) wurde wundersam ohne Vater von der Jungfrau Maryam geboren. Allah sagt: 'Das Gleichnis Isas bei Allah ist wie das Gleichnis Adams — Er erschuf ihn aus Staub.' (3:59)"} },
-
-  { id:"pm6", category:"prophets", difficulty:"medium",
-    question:{en:"What was the miracle of Prophet Sulayman (Solomon) related to the Queen of Sheba?",ar:"ما كانت معجزة النبي سليمان عليه السلام المتعلقة بملكة سبأ؟",fr:"Quel fut le miracle du Prophète Sulayman (Salomon) lié à la Reine de Saba?",de:"Was war das Wunder des Propheten Sulayman (Salomo) im Zusammenhang mit der Königin von Saba?"},
-    options:{en:["He defeated her armies in battle","He summoned her throne from distant Yemen to his court in an instant","He turned her palace into gold","He made her kingdom float in the sky"],ar:["هزم جيوشها في المعركة","استدعى عرشها من اليمن البعيد إلى قصره في لحظة","حوَّل قصرها إلى ذهب","جعل مملكتها تطفو في السماء"],fr:["Il vainquit ses armées au combat","Il fit appeler son trône depuis le lointain Yémen jusqu'à sa cour en un instant","Il transforma son palais en or","Il fit flotter son royaume dans le ciel"],de:["Er besiegte ihre Armeen in der Schlacht","Er ließ ihren Thron aus dem fernen Jemen in einem Augenblick zu seinem Hof rufen","Er verwandelte ihren Palast in Gold","Er ließ ihr Königreich in der Luft schweben"]},
-    answer:1,
-    explanation:{en:"When Sulayman (AS) learned of the Queen of Sheba (Bilqis), he summoned her throne from Yemen to his court. A man 'with knowledge of the Book' (Asif ibn Barkhiya) brought it 'before you could blink.' (27:40). This miracle demonstrated divine power and convinced her to submit to Allah.",ar:"حين عُلِم سليمان بملكة سبأ (بلقيس)، طلب إحضار عرشها من اليمن. أحضره {الَّذِي عِندَهُ عِلْمٌ مِّنَ الْكِتَابِ} قبل ارتداد الطرف (27:40).",fr:"Quand Sulayman (AS) apprit l'existence de la Reine de Saba (Bilqis), il fit appeler son trône du Yémen. Celui 'qui avait la connaissance du Livre' l'apporta avant qu'il puisse cligner des yeux. (27:40)",de:"Als Sulayman (AS) von der Königin von Saba (Bilqis) erfuhr, ließ er ihren Thron aus Jemen rufen. Jemand 'mit Wissen aus dem Buch' brachte ihn 'bevor du blinzeln konntest.' (27:40)"} },
-
-  { id:"pm7", category:"prophets", difficulty:"medium",
-    question:{en:"Which prophet was known for his wisdom and was given the ability to judge between people justly?",ar:"أي نبي اشتُهر بحكمته وأُعطي القدرة على الحكم بين الناس بالعدل؟",fr:"Quel prophète était connu pour sa sagesse et se vit accorder la capacité de juger entre les gens avec équité?",de:"Welcher Prophet war für seine Weisheit bekannt und erhielt die Fähigkeit gerecht zwischen Menschen zu urteilen?"},
-    options:{en:["Prophet Musa","Prophet Nuh","Prophet Dawud (David)","Prophet Ibrahim"],ar:["النبي موسى","النبي نوح","النبي داوود","النبي إبراهيم"],fr:["Le Prophète Moussa","Le Prophète Nuh","Le Prophète Dawud (David)","Le Prophète Ibrahim"],de:["Prophet Musa","Prophet Nuh","Prophet Dawud (David)","Prophet Ibrahim"]},
-    answer:2,
-    explanation:{en:"Prophet Dawud (David, AS) was given wisdom, prophethood, and sovereignty. He was known for his just judgments — one famous case where he ruled between two disputing parties with wisdom. The Quran says: 'We strengthened his kingdom and gave him wisdom and discernment in speech.' (38:20)",ar:"أُعطي النبي داوود الحكمة والنبوة والملك. اشتُهر بأحكامه العادلة. قال القرآن: {وَشَدَدْنَا مُلْكَهُ وَآتَيْنَاهُ الْحِكْمَةَ وَفَصْلَ الْخِطَابِ} (38:20).",fr:"Le Prophète Dawud (David, AS) reçut la sagesse, la prophétie et la souveraineté. Il était connu pour ses jugements justes. Le Coran dit: 'Nous fortifiâmes son royaume et lui donnâmes sagesse et tranchant dans la parole.' (38:20)",de:"Prophet Dawud (David, AS) erhielt Weisheit, Prophetentum und Herrschaft. Er war für seine gerechten Urteile bekannt. Der Quran sagt: 'Wir stärkten sein Königreich und gaben ihm Weisheit und Unterscheidungsvermögen in der Rede.' (38:20)"} },
-
-  { id:"pm8", category:"prophets", difficulty:"medium",
-    question:{en:"What were the 'Ulul Azm' (Resolute) Prophets known for?",ar:"بماذا اشتُهر أولو العزم من الأنبياء؟",fr:"Pour quoi les Prophètes 'Ulul Azm' (Résolus) étaient-ils connus?",de:"Wofür waren die 'Ulul Azm' (Entschlossenen) Propheten bekannt?"},
-    options:{en:["Being the fastest runners","Being the wealthiest prophets","Being five prophets who showed extraordinary patience and perseverance: Nuh, Ibrahim, Musa, Isa, and Muhammad ﷺ","Being the first five prophets sent"],ar:["كونهم أسرع الجري","كونهم أغنى الأنبياء","خمسة أنبياء أظهروا صبراً وعزيمة استثنائيَّين: نوح وإبراهيم وموسى وعيسى ومحمد ﷺ","كونهم أوائل الأنبياء المرسَلين"],fr:["Être les coureurs les plus rapides","Être les prophètes les plus riches","Cinq prophètes qui firent preuve d'une patience et persévérance extraordinaires: Nuh, Ibrahim, Moussa, Isa et Muhammad ﷺ","Être les cinq premiers prophètes envoyés"],de:["Die schnellsten Läufer zu sein","Die reichsten Propheten zu sein","Fünf Propheten die außergewöhnliche Geduld und Beharrlichkeit zeigten: Nuh Ibrahim Musa Isa und Muhammad ﷺ","Die ersten fünf gesandten Propheten zu sein"]},
-    answer:2,
-    explanation:{en:"Ulul Azm (Prophets of Strong Resolve/Determination) are five: Nuh, Ibrahim, Musa, Isa, and Muhammad ﷺ. They are distinguished for their extraordinary patience and perseverance in delivering their message despite immense hardship. Allah says: 'So be patient as those of strong determination among the messengers were patient.' (46:35)",ar:"أولو العزم خمسة: نوح وإبراهيم وموسى وعيسى ومحمد ﷺ. يتميزون بصبرهم الاستثنائي وعزيمتهم. قال الله: {فَاصْبِرْ كَمَا صَبَرَ أُولُو الْعَزْمِ مِنَ الرُّسُلِ} (46:35).",fr:"Les Ulul Azm sont cinq: Nuh, Ibrahim, Moussa, Isa et Muhammad ﷺ. Ils se distinguent par leur patience et persévérance extraordinaires. Allah dit: 'Sois donc patient comme furent patients ceux qui avaient de la résolution parmi les messagers.' (46:35)",de:"Ulul Azm sind fünf: Nuh, Ibrahim, Musa, Isa und Muhammad ﷺ. Sie zeichnen sich durch außergewöhnliche Geduld und Beharrlichkeit aus. Allah sagt: 'Sei geduldig wie die Entschlossenen unter den Gesandten geduldig waren.' (46:35)"} },
-
-  { id:"pm9", category:"prophets", difficulty:"medium",
-    question:{en:"What is significant about Prophet Idris (Enoch) in Islamic tradition?",ar:"ما الأمر اللافت في سيرة النبي إدريس عليه السلام في التقليد الإسلامي؟",fr:"Qu'est-ce qui est significatif concernant le Prophète Idris (Enoch) dans la tradition islamique?",de:"Was ist bedeutsam am Propheten Idris (Henoch) in der islamischen Tradition?"},
-    options:{en:["He was the first prophet to fast","He was never tested by Allah","He was raised to a high station and was among the first to write with a pen — and never tasted death by being raised alive","He built the first mosque"],ar:["كان أول نبي يصوم","لم يختبره الله قط","رُفع إلى مكانة عالية وكان من أوائل الكتّاب بالقلم — ولم يذُق الموت لرفعه حياً","بنى أول مسجد"],fr:["Il fut le premier prophète à jeûner","Il ne fut jamais éprouvé par Allah","Il fut élevé à un rang élevé et fut l'un des premiers à écrire avec une plume — et ne goûta jamais la mort en étant élevé vivant","Il construisit la première mosquée"],de:["Er war der erste Prophet der fastete","Er wurde nie von Allah geprüft","Er wurde zu einem hohen Rang erhoben und war einer der ersten die mit einem Stift schrieben — und kostete nie den Tod indem er lebend erhoben wurde","Er baute die erste Moschee"]},
-    answer:2,
-    explanation:{en:"Prophet Idris (Enoch, AS) was raised to a high station by Allah. The Quran says: 'And mention in the Book, Idris. Indeed, he was a man of truth and a prophet. And We raised him to a high station.' (19:56-57) Tradition holds he was the first to write with a pen.",ar:"رفع الله النبي إدريس إلى مكانة عالية. قال القرآن: {وَاذْكُرْ فِي الْكِتَابِ إِدْرِيسَ إِنَّهُ كَانَ صِدِّيقًا نَّبِيًّا وَرَفَعْنَاهُ مَكَانًا عَلِيًّا} (19:56-57).",fr:"Le Prophète Idris (Enoch, AS) fut élevé à un rang élevé par Allah. Le Coran dit: 'Et mentionne dans le Livre Idris. C'était un homme de vérité et un prophète. Et Nous l'élevâmes à un rang élevé.' (19:56-57)",de:"Prophet Idris (Henoch, AS) wurde von Allah zu einem hohen Rang erhoben. Der Quran sagt: 'Und erwähne im Buch Idris. Er war ein Wahrhaftiger und ein Prophet. Und Wir erhoben ihn zu einem hohen Rang.' (19:56-57)"} },
-
-  { id:"pm10", category:"prophets", difficulty:"medium",
-    question:{en:"Which prophet's people were destroyed by a thunderbolt for rejecting Allah's message?",ar:"قوم أي نبي دُمِّروا بصاعقة لرفضهم رسالة الله؟",fr:"Le peuple de quel prophète fut détruit par un coup de tonnerre pour avoir rejeté le message d'Allah?",de:"Das Volk welches Propheten wurde durch einen Blitz vernichtet weil es Allahs Botschaft ablehnte?"},
-    options:{en:["Prophet Salih's people (Thamud) — by a thunderous blast","Prophet Nuh's people — by the flood","Prophet Ibrahim's people — by fire","Prophet Lut's people — by stones from the sky"],ar:["قوم صالح (ثمود) — بالصيحة","قوم نوح — بالطوفان","قوم إبراهيم — بالنار","قوم لوط — بحجارة من السماء"],fr:["Le peuple de Salih (Thamud) — par un coup de tonnerre","Le peuple de Nuh — par le déluge","Le peuple d'Ibrahim — par le feu","Le peuple de Lut — par des pierres venant du ciel"],de:["Das Volk von Salih (Thamud) — durch einen Donnerknall","Das Volk von Nuh — durch die Flut","Das Volk von Ibrahim — durch Feuer","Das Volk von Lut — durch Steine vom Himmel"]},
-    answer:0,
-    explanation:{en:"Prophet Salih (AS) was sent to the tribe of Thamud. He gave them the she-camel of Allah as a sign — they slaughtered it. Allah said: 'So they hamstrung her, and he said: Enjoy yourselves in your homes for three days.' After three days, a thunderous blast destroyed them. (11:65-67)",ar:"أُرسل النبي صالح لقبيلة ثمود. أعطاهم ناقة الله آيةً فعقروها. فقال الله: {فَعَقَرُوهَا فَقَالَ تَمَتَّعُوا فِي دَارِكُمْ ثَلَاثَةَ أَيَّامٍ} ثم أخذتهم الصيحة (11:65-67).",fr:"Le Prophète Salih (AS) fut envoyé à la tribu de Thamud. Il leur donna la chamelle d'Allah comme signe — ils la tuèrent. Après trois jours, un coup de tonnerre les détruisit.",de:"Prophet Salih (AS) wurde zum Stamm der Thamud gesandt. Er gab ihnen die Sie-Kamel Allahs als Zeichen — sie schlachteten es. Nach drei Tagen vernichtete sie ein Donnerknall."} },
-
-  { id:"pm11", category:"prophets", difficulty:"medium",
-    question:{en:"Which prophet was sent to the people of Madyan (Midian) and was known for his eloquent speech?",ar:"أي نبي أُرسل لأهل مدين واشتُهر بخطابه الفصيح؟",fr:"Quel prophète fut envoyé aux habitants de Madyan (Madian) et était connu pour son éloquence?",de:"Welcher Prophet wurde zu den Menschen von Madyan (Midian) gesandt und war für seine eloquente Rede bekannt?"},
-    options:{en:["Prophet Hud","Prophet Shu'ayb","Prophet Yunus","Prophet Zakariyya"],ar:["النبي هود","النبي شعيب","النبي يونس","النبي زكريا"],fr:["Le Prophète Hud","Le Prophète Shu'ayb","Le Prophète Yunus","Le Prophète Zakariyya"],de:["Prophet Hud","Prophet Schu'aib","Prophet Yunus","Prophet Zakariyya"]},
-    answer:1,
-    explanation:{en:"Prophet Shu'ayb (AS) — referred to as the 'Khatib al-Anbiya' (Preacher of the Prophets) for his eloquence — was sent to the people of Madyan and Aykah. He called them to worship Allah and be honest in commerce. They rejected him and were destroyed by a thunderous cry and earthquake.",ar:"النبي شعيب عليه السلام — المعروف بـ'خطيب الأنبياء' لفصاحته — أُرسل لأهل مدين والأيكة. دعاهم لعبادة الله والأمانة في التجارة. رفضوه فأُهلكوا.",fr:"Le Prophète Shu'ayb (AS) — appelé 'Khatib al-Anbiya' pour son éloquence — fut envoyé aux habitants de Madyan et d'Aykah. Il les appela à adorer Allah et être honnêtes dans le commerce.",de:"Prophet Schu'aib (AS) — als 'Khatib al-Anbiya' (Prediger der Propheten) für seine Eloquenz bezeichnet — wurde zu den Menschen von Madyan und Aykah gesandt."} },
-
-  { id:"pm12", category:"prophets", difficulty:"medium",
-    question:{en:"Which prophet built and ruled the Temple in Jerusalem and whose kingdom included jinn and animals?",ar:"أي نبي بنى هيكل القدس وحكم مملكةً شملت الجن والحيوانات؟",fr:"Quel prophète construisit et gouverna le Temple de Jérusalem et dont le royaume comprenait les djinns et les animaux?",de:"Welcher Prophet baute und regierte den Tempel in Jerusalem und dessen Königreich Dschinn und Tiere umfasste?"},
-    options:{en:["Prophet Dawud","Prophet Musa","Prophet Sulayman","Prophet Ibrahim"],ar:["النبي داوود","النبي موسى","النبي سليمان","النبي إبراهيم"],fr:["Le Prophète Dawud","Le Prophète Moussa","Le Prophète Sulayman","Le Prophète Ibrahim"],de:["Prophet Dawud","Prophet Musa","Prophet Sulayman","Prophet Ibrahim"]},
-    answer:2,
-    explanation:{en:"Prophet Sulayman (Solomon, AS) inherited the kingdom of Dawud (David) and was given unprecedented dominion: over jinn, winds, and animals. He directed the jinn to build the Temple (Bayt al-Maqdis/Jerusalem). The Quran says: 'And the jinn worked for him.' (34:12-13)",ar:"ورث النبي سليمان ملك داوود وأُعطي سلطاناً لا مثيل له: على الجن والريح والحيوانات. وجَّه الجن لبناء القدس. {وَالشَّيَاطِينَ كُلَّ بَنَّاءٍ وَغَوَّاصٍ} (34:12-13).",fr:"Le Prophète Sulayman (Salomon, AS) hérita du royaume de Dawud et reçut une domination sans précédent: sur les djinns, les vents et les animaux. Il dirigea les djinns pour construire le Temple.",de:"Prophet Sulayman (Salomo, AS) erbte Dawuds Königreich und erhielt beispiellose Herrschaft: über Dschinn, Winde und Tiere. Er ließ die Dschinn den Tempel bauen."} },
-
-  { id:"pm13", category:"prophets", difficulty:"medium",
-    question:{en:"Who were the parents of Prophet Yahya (John the Baptist) according to the Quran?",ar:"من كانا والدا النبي يحيى عليه السلام وفق القرآن؟",fr:"Qui étaient les parents du Prophète Yahya (Jean-Baptiste) selon le Coran?",de:"Wer waren die Eltern des Propheten Yahya (Johannes der Täufer) laut dem Quran?"},
-    options:{en:["Ibrahim and Sarah","Zakariyya and his elderly wife","Imran and Hannah","Ishaq and Rifqa"],ar:["إبراهيم وسارة","زكريا وزوجته العجوز","عمران وحنة","إسحاق ورفقة"],fr:["Ibrahim et Sarah","Zakariyya et sa femme âgée","Imran et Hanna","Ishaq et Rifqa"],de:["Ibrahim und Sarah","Zakariyya und seine alte Frau","Imran und Hannah","Ishaq und Rifqa"]},
-    answer:1,
-    explanation:{en:"Prophet Yahya (John, AS) was born to Prophet Zakariyya (Zechariah, AS) and his wife, both of old age, after Zakariyya prayed for an heir. Allah granted his prayer. The Quran says: 'O Zakariyya, We give you good tidings of a boy whose name will be Yahya.' (19:7)",ar:"وُلد النبي يحيى لنبي الله زكريا وزوجته وهما في شيخوخة، بعد أن دعا زكريا بوارث. قال الله: {يَا زَكَرِيَّا إِنَّا نُبَشِّرُكَ بِغُلَامٍ اسْمُهُ يَحْيَىٰ} (19:7).",fr:"Le Prophète Yahya naquit du Prophète Zakariyya et de sa femme, tous deux vieux, après que Zakariyya pria pour un héritier. Allah dit: 'O Zakariyya, Nous t'annonçons un garçon dont le nom sera Yahya.' (19:7)",de:"Prophet Yahya (AS) wurde dem Propheten Zakariyya (AS) und seiner Frau geboren, beide in hohem Alter, nachdem Zakariyya um einen Erben gebetet hatte."} },
-
-  { id:"pm14", category:"prophets", difficulty:"medium",
-    question:{en:"Which prophet is associated with the miracle of the 'white hand' and 'staff becoming a serpent'?",ar:"أي نبي ارتبط بمعجزتَي 'اليد البيضاء' و'العصا تتحول ثعباناً'؟",fr:"Quel prophète est associé aux miracles de la 'main blanche' et du 'bâton devenant un serpent'?",de:"Welcher Prophet wird mit den Wundern der 'weißen Hand' und des 'Stabes der zur Schlange wird' assoziiert?"},
-    options:{en:["Prophet Ibrahim","Prophet Isa","Prophet Musa","Prophet Sulayman"],ar:["النبي إبراهيم","النبي عيسى","النبي موسى","النبي سليمان"],fr:["Le Prophète Ibrahim","Le Prophète Isa","Le Prophète Moussa","Le Prophète Sulayman"],de:["Prophet Ibrahim","Prophet Isa","Prophet Musa","Prophet Sulayman"]},
-    answer:2,
-    explanation:{en:"Prophet Musa (AS) was given two miracles as signs for Pharaoh: 1) His staff became a real serpent (20:20), 2) His hand became brilliantly white (the 'white hand') when inserted into his garment (20:22). These were signs of divine authority.",ar:"أُعطي النبي موسى معجزتين لفرعون: 1) تحوَّلت عصاه ثعباناً (20:20)، 2) أضاءت يده بياضاً ساطعاً 'اليد البيضاء' عند إدخالها في جيبه (20:22).",fr:"Le Prophète Moussa (AS) reçut deux miracles comme signes pour le Pharaon: 1) Son bâton devint un vrai serpent (20:20), 2) Sa main devint brillamment blanche (la 'main blanche') (20:22).",de:"Prophet Musa (AS) erhielt zwei Wunder als Zeichen für Pharao: 1) Sein Stab wurde eine echte Schlange (20:20), 2) Seine Hand wurde strahlend weiß (die 'weiße Hand') (20:22)."} },
-
-  { id:"pm15", category:"prophets", difficulty:"medium",
-    question:{en:"Which city is called 'The Destroyed City' in the Quran, associated with Prophet Lut?",ar:"أي مدينة يُقال لها 'المدينة المدمَّرة' في القرآن وترتبط بالنبي لوط؟",fr:"Quelle ville est appelée 'La Ville Détruite' dans le Coran, associée au Prophète Lut?",de:"Welche Stadt wird im Quran 'Die zerstörte Stadt' genannt und ist mit Prophet Lut verbunden?"},
-    options:{en:["Babylon","Nineveh","Sodom (Sadum) and Gomorrah","Pompeii"],ar:["بابل","نينوى","سدوم (سذوم) وعمورة","بومبي"],fr:["Babylone","Ninive","Sodome (Sadum) et Gomorrhe","Pompéi"],de:["Babylon","Ninive","Sodom (Sadum) und Gomorra","Pompeji"]},
-    answer:2,
-    explanation:{en:"Prophet Lut (Lot, AS) was sent to the people of Sodom (Sadum). They engaged in grave sins and rejected his message. Allah destroyed their cities by raining down stones from the sky, overturning the cities. Their location is believed to be near the Dead Sea.",ar:"أُرسل النبي لوط إلى أهل سدوم. ارتكبوا الفواحش ورفضوا رسالته. دمَّر الله مدنهم بحجارة من السجيل وقلَّب ما كان أعلاها أسفلها.",fr:"Le Prophète Lut (Lot, AS) fut envoyé aux habitants de Sodome (Sadum). Ils commettaient de graves péchés et rejetaient son message. Allah détruisit leurs villes en faisant pleuvoir des pierres du ciel.",de:"Prophet Lut (Lot, AS) wurde zu den Menschen von Sodom (Sadum) gesandt. Sie beging schwere Sünden und lehnten seine Botschaft ab. Allah zerstörte ihre Städte durch Steinregen vom Himmel."} },
-
-  { id:"pm16", category:"prophets", difficulty:"medium",
-    question:{en:"Prophet Zakariyya (Zechariah) asked Allah for a righteous heir. How did Allah respond?",ar:"طلب النبي زكريا من الله وارثاً صالحاً. كيف استجاب الله؟",fr:"Le Prophète Zakariyya (Zacharie) demanda à Allah un héritier juste. Comment Allah répondit-Il?",de:"Prophet Zakariyya (Zacharias) bat Allah um einen rechtschaffenen Erben. Wie antwortete Allah?"},
-    options:{en:["Allah told him to adopt an orphan","Allah granted him Yahya — a son in his old age — despite his wife being barren","Allah gave him wealth instead","Allah told him his students would be his heirs"],ar:["أمره الله بتبني يتيم","منحه الله يحيى — ابناً في شيخوخته — رغم عقم زوجته","أعطاه الله ثروةً بدلاً عن ذلك","أخبره الله أن طلابه سيكونون ورثته"],fr:["Allah lui dit d'adopter un orphelin","Allah lui accorda Yahya — un fils dans sa vieillesse — malgré la stérilité de sa femme","Allah lui donna de la richesse à la place","Allah lui dit que ses étudiants seraient ses héritiers"],de:["Allah sagte ihm er soll ein Waisenkind adoptieren","Allah schenkte ihm Yahya — einen Sohn in seinem Alter — obwohl seine Frau unfruchtbar war","Allah gab ihm stattdessen Reichtum","Allah sagte ihm seine Schüler würden seine Erben sein"]},
-    answer:1,
-    explanation:{en:"Zakariyya (AS) said: 'My Lord, my bones have weakened and my head has filled with white, and I have never been unhappy in my supplication to You, my Lord.' (19:4). Allah responded with the gift of Yahya (John), even though both Zakariyya and his wife were very old.",ar:"قال زكريا: {رَبِّ إِنِّي وَهَنَ الْعَظْمُ مِنِّي وَاشْتَعَلَ الرَّأْسُ شَيْبًا وَلَمْ أَكُن بِدُعَائِكَ رَبِّ شَقِيًّا} (19:4). فوهب الله له يحيى.",fr:"Zakariyya (AS) dit: 'Mon Seigneur, mes os sont affaiblis et ma tête est remplie de blanc... Accorde-moi un héritier.' (19:4). Allah lui accorda Yahya malgré son grand âge.",de:"Zakariyya (AS) sagte: 'Mein Herr, meine Knochen sind geschwächt und mein Kopf ist mit Weiß gefüllt...' (19:4). Allah schenkte ihm Yahya trotz seines hohen Alters."} },
-
-  { id:"pm17", category:"prophets", difficulty:"medium",
-    question:{en:"Which prophet is known as 'Shaykh al-Anbiya' (Elder of the Prophets) due to his long life?",ar:"أي نبي يُعرف بـ'شيخ الأنبياء' بسبب عمره الطويل؟",fr:"Quel prophète est connu comme 'Shaykh al-Anbiya' (le Doyen des Prophètes) en raison de sa longévité?",de:"Welcher Prophet ist als 'Shaykh al-Anbiya' (Ältester der Propheten) wegen seines langen Lebens bekannt?"},
-    options:{en:["Ibrahim","Idris","Nuh","Adam"],ar:["إبراهيم","إدريس","نوح","آدم"],fr:["Ibrahim","Idris","Nuh","Adam"],de:["Ibrahim","Idris","Nuh","Adam"]},
-    answer:2,
-    explanation:{en:"Prophet Nuh (Noah, AS) is called 'Shaykh al-Anbiya' (Elder of the Prophets) because he lived the longest — he preached to his people for 950 years (Quran 29:14), making him the longest-lived prophet.",ar:"يُعرف النبي نوح بـ'شيخ الأنبياء' لأنه عاش أطول عمر — دعا قومه 950 سنة (القرآن 29:14).",fr:"Le Prophète Nuh (Noé, AS) est appelé 'Shaykh al-Anbiya' car il vécut le plus longtemps — il prêcha à son peuple pendant 950 ans (Coran 29:14).",de:"Prophet Nuh (Noah, AS) wird 'Shaykh al-Anbiya' genannt weil er am längsten lebte — er predigte 950 Jahre seinem Volk (Quran 29:14)."} },
-
-  { id:"pm18", category:"prophets", difficulty:"medium",
-    question:{en:"What was Prophet Hud's (AS) people (Ad) punished with for rejecting his message?",ar:"بماذا عُوقب قوم النبي هود (عاد) لرفضهم رسالته؟",fr:"De quelle punition le peuple du Prophète Hud (AS) (Ad) fut-il puni pour avoir rejeté son message?",de:"Womit wurde das Volk des Propheten Hud (AS) (Ad) für die Ablehnung seiner Botschaft bestraft?"},
-    options:{en:["By a great flood","By fire from the sky","By a violent windstorm lasting seven nights and eight days","By an earthquake"],ar:["بطوفان عظيم","بنار من السماء","بريح عاتية استمرت سبع ليالٍ وثمانية أيام","بزلزال"],fr:["Par un grand déluge","Par du feu venant du ciel","Par une violente tempête de vent durant sept nuits et huit jours","Par un tremblement de terre"],de:["Durch eine große Flut","Durch Feuer vom Himmel","Durch einen heftigen Windstorm der sieben Nächte und acht Tage dauerte","Durch ein Erdbeben"]},
-    answer:2,
-    explanation:{en:"The people of Ad (Prophet Hud's AS people) were destroyed by a violent windstorm. The Quran says: 'We sent against them a screaming wind, for seven nights and eight days consecutively, so you could see the people therein fallen as if they were hollow trunks of palm trees.' (69:6-7)",ar:"دُمِّر قوم عاد (قوم النبي هود) بريح عاتية. قال القرآن: {سَخَّرَهَا عَلَيْهِمْ سَبْعَ لَيَالٍ وَثَمَانِيَةَ أَيَّامٍ} فأُهلكوا جميعاً (69:6-7).",fr:"Le peuple de Ad fut détruit par une violente tempête de vent. Le Coran dit: 'Nous leur envoyâmes un vent hurlant pendant sept nuits et huit jours consécutifs.' (69:6-7)",de:"Das Volk von Ad wurde durch einen heftigen Windstorm vernichtet. Der Quran sagt: 'Wir schickten gegen sie einen schreienden Wind für sieben Nächte und acht Tage hintereinander.' (69:6-7)"} },
-
-  { id:"pm19", category:"prophets", difficulty:"medium",
-    question:{en:"Which prophet's name means 'God is gracious' and was a cousin of Prophet Isa (Jesus)?",ar:"اسم أي نبي معناه 'الله كريم' وكان ابن عم النبي عيسى عليه السلام؟",fr:"Le nom de quel prophète signifie 'Dieu est généreux' et était le cousin du Prophète Isa (Jésus)?",de:"Der Name welchen Propheten bedeutet 'Gott ist gnädig' und war ein Cousin des Propheten Isa (Jesus)?"},
-    options:{en:["Zakariyya","Idris","Shu'ayb","Yahya (John)"],ar:["زكريا","إدريس","شعيب","يحيى"],fr:["Zakariyya","Idris","Shu'ayb","Yahya (Jean)"],de:["Zakariyya","Idris","Schu'aib","Yahya (Johannes)"]},
-    answer:3,
-    explanation:{en:"Prophet Yahya (John the Baptist, AS) was the cousin of Prophet Isa (Jesus, AS) through their mothers (Maryam and Yahya's mother were cousins). Yahya's name comes from Arabic roots related to 'living/gracious.' The Quran says he was named by Allah Himself: 'We have not given this name to anyone before you.' (19:7)",ar:"النبي يحيى كان ابن عم النبي عيسى عليه السلام من ناحية أمهاتهم. قال القرآن: {لَمْ نَجْعَل لَّهُ مِن قَبْلُ سَمِيًّا} (19:7).",fr:"Le Prophète Yahya (Jean-Baptiste, AS) était le cousin du Prophète Isa (Jésus, AS). Le Coran dit qu'Allah lui donna personnellement ce nom: 'Nous n'avons donné ce nom à personne avant toi.' (19:7)",de:"Prophet Yahya (Johannes der Täufer, AS) war der Cousin des Propheten Isa (Jesus, AS). Der Quran sagt, Allah gab ihm persönlich diesen Namen: 'Wir haben diesen Namen keinem vor dir gegeben.' (19:7)"} },
-
-  { id:"pm20", category:"prophets", difficulty:"medium",
-    question:{en:"What did Prophet Nuh's (AS) ark contain according to Islamic tradition?",ar:"ما الذي احتوى عليه فُلك النبي نوح عليه السلام وفق التقليد الإسلامي؟",fr:"Que contenait l'arche du Prophète Nuh (AS) selon la tradition islamique?",de:"Was enthielt die Arche des Propheten Nuh (AS) gemäß islamischer Überlieferung?"},
-    options:{en:["Only the prophet and his family","Animals and his family only","Pairs of every creature and the believing members of his community","Only the righteous scholars of his time"],ar:["النبي وعائلته فقط","الحيوانات وعائلته فقط","أزواجاً من كل كائن وأفراد مؤمنون من قومه","علماء عصره الصالحون فقط"],fr:["Seulement le prophète et sa famille","Les animaux et sa famille seulement","Des paires de chaque créature et les membres croyants de sa communauté","Seulement les savants pieux de son époque"],de:["Nur der Prophet und seine Familie","Nur Tiere und seine Familie","Paare jeder Kreatur und die gläubigen Mitglieder seiner Gemeinschaft","Nur die frommen Gelehrten seiner Zeit"]},
-    answer:2,
-    explanation:{en:"Allah commanded Nuh (AS): 'Load on it from each pair, two, and your family — except those against whom the word has preceded — and those who have believed.' (11:40). The ark carried pairs of animals and the believers.",ar:"أمر الله نوحاً: {احْمِلْ فِيهَا مِن كُلٍّ زَوْجَيْنِ اثْنَيْنِ وَأَهْلَكَ إِلَّا مَن سَبَقَ عَلَيْهِ الْقَوْلُ وَمَنْ آمَنَ} (11:40).",fr:"Allah ordonna à Nuh: 'Charge-y de chaque espèce une paire, ta famille — sauf ceux contre qui la parole a déjà été prononcée — et les croyants.' (11:40)",de:"Allah befahl Nuh: 'Lade darauf von jedem Paar zwei, und deine Familie — außer denen über die das Wort schon ergangen ist — und die Gläubigen.' (11:40)"} },
-
-  // ═══════════════════════════════════════════════════════════════
-  // MEDIUM — COMPANIONS (cm1–cm20)
-  // ═══════════════════════════════════════════════════════════════
-  { id:"cm1", category:"companions", difficulty:"medium",
-    question:{en:"What title did the Prophet ﷺ give to Uthman ibn Affan (RA)?",ar:"ما اللقب الذي أعطاه النبي ﷺ لعثمان بن عفان رضي الله عنه؟",fr:"Quel titre le Prophète ﷺ donna-t-Il à Uthman ibn Affan (RA)?",de:"Welchen Titel gab der Prophet ﷺ Uthman ibn Affan (ra)?"},
-    options:{en:["Asadullah (Lion of Allah)","Saifullah (Sword of Allah)","Dhul-Nurayn (Possessor of Two Lights)","Al-Farouq (Distinguisher of Truth)"],ar:["أسد الله","سيف الله","ذو النورين","الفاروق"],fr:["Asadullah (Lion d'Allah)","Saifullah (Épée d'Allah)","Dhul-Nurayn (Possesseur des Deux Lumières)","Al-Farouq (Distingueur de Vérité)"],de:["Asadullah (Löwe Allahs)","Saifullah (Schwert Allahs)","Dhul-Nurayn (Besitzer der Zwei Lichter)","Al-Farouq (Unterscheider der Wahrheit)"]},
-    answer:2,
-    explanation:{en:"Uthman ibn Affan (RA) was given the title 'Dhul-Nurayn' (Possessor of Two Lights) because he married two daughters of the Prophet ﷺ — Ruqayyah (RA) and after her death, Umm Kulthum (RA).",ar:"لُقِّب عثمان بن عفان بـ'ذي النورين' لأنه تزوَّج بنتَي النبي ﷺ رقية ثم أم كلثوم رضي الله عنهما.",fr:"Uthman ibn Affan (RA) reçut le titre 'Dhul-Nurayn' car il épousa deux filles du Prophète ﷺ — Ruqayyah et après sa mort, Umm Kulthum.",de:"Uthman ibn Affan (ra) erhielt den Titel 'Dhul-Nurayn' weil er zwei Töchter des Propheten ﷺ heiratete — Ruqayyah und nach ihrem Tod Umm Kulthum."} },
-
-  { id:"cm2", category:"companions", difficulty:"medium",
-    question:{en:"Which companion was known as the 'scribe of the Prophet' ﷺ and later the 'scribe of the revelation'?",ar:"أي صحابي اشتُهر بـ'كاتب النبي ﷺ' ثم 'كاتب الوحي'؟",fr:"Quel compagnon était connu comme le 'scribe du Prophète' ﷺ et plus tard le 'scribe de la révélation'?",de:"Welcher Gefährte war als 'Schreiber des Propheten' ﷺ und später als 'Schreiber der Offenbarung' bekannt?"},
-    options:{en:["Abdullah ibn Masud","Ubayy ibn Ka'b","Muawiyah ibn Abi Sufyan","Zayd ibn Thabit"],ar:["عبد الله بن مسعود","أُبيُّ بن كعب","معاوية بن أبي سفيان","زيد بن ثابت"],fr:["Abdullah ibn Masud","Ubayy ibn Ka'b","Muawiyah ibn Abi Sufyan","Zayd ibn Thabit"],de:["Abdullah ibn Masud","Ubayy ibn Ka'b","Muawiyah ibn Abi Sufyan","Zayd ibn Thabit"]},
-    answer:3,
-    explanation:{en:"Zayd ibn Thabit (RA) served as the Prophet's ﷺ primary scribe of revelation and correspondence. He was also assigned by Abu Bakr (RA) to compile the Quran after the Battle of Yamamah, and by Uthman (RA) to standardize its copies.",ar:"زيد بن ثابت رضي الله عنه كان الكاتب الرئيسي للنبي ﷺ. عيَّنه أبو بكر لجمع القرآن وعثمان لتوحيد نسخه.",fr:"Zayd ibn Thabit (RA) servit comme scribe principal de la révélation du Prophète ﷺ. Il fut chargé par Abu Bakr de compiler le Coran, puis par Uthman de standardiser ses copies.",de:"Zayd ibn Thabit (ra) diente als primärer Schreiber der Offenbarung des Propheten ﷺ. Er wurde von Abu Bakr beauftragt den Quran zu kompilieren und von Uthman seine Kopien zu standardisieren."} },
-
-  { id:"cm3", category:"companions", difficulty:"medium",
-    question:{en:"What was the name of the 'Ansar' and who were they?",ar:"ما اسم 'الأنصار' ومن كانوا؟",fr:"Quel était le nom des 'Ansar' et qui étaient-ils?",de:"Was war der Name der 'Ansar' und wer waren sie?"},
-    options:{en:["The early Meccan companions who migrated to Medina","The Muslims of Medina who welcomed and supported the Prophet ﷺ and the Muhajirun","The non-Muslim allies of the Prophet ﷺ in Medina","The first Muslims to accept Islam before the Hijra"],ar:["المسلمون المكيون الأوائل الذين هاجروا إلى المدينة","مسلمو المدينة الذين استقبلوا ودعموا النبي ﷺ والمهاجرين","الحلفاء غير المسلمين للنبي ﷺ في المدينة","أوائل المسلمين الذين أسلموا قبل الهجرة"],fr:["Les premiers compagnons mecquois qui migrèrent à Médine","Les musulmans de Médine qui accueillirent et soutinrent le Prophète ﷺ et les Muhajirun","Les alliés non-musulmans du Prophète ﷺ à Médine","Les premiers musulmans à accepter l'Islam avant l'Hégire"],de:["Die frühen mekkanischen Gefährten die nach Medina migrierten","Die Muslime von Medina die den Propheten ﷺ und die Muhadschiroun willkommen hießen und unterstützten","Die nichtmuslimischen Verbündeten des Propheten ﷺ in Medina","Die ersten Muslime die den Islam vor der Hidschra annahmen"]},
-    answer:1,
-    explanation:{en:"The Ansar (Helpers) were the Muslims of Medina — primarily from the tribes of Aws and Khazraj — who welcomed the Prophet ﷺ and the Muhajirun (Meccan emigrants) and shared their homes and wealth with them.",ar:"الأنصار هم مسلمو المدينة — خاصةً من قبيلتَي الأوس والخزرج — الذين استقبلوا النبي ﷺ والمهاجرين وشاركوهم بيوتهم وأموالهم.",fr:"Les Ansar (Auxiliaires) étaient les musulmans de Médine — principalement des tribus Aws et Khazraj — qui accueillirent le Prophète ﷺ et les Muhajirun, partageant leurs maisons et richesses.",de:"Die Ansar (Helfer) waren die Muslime von Medina — hauptsächlich aus den Stämmen Aws und Khazraj — die den Propheten ﷺ und die Muhadschiroun willkommen hießen und Häuser und Reichtum teilten."} },
-
-  { id:"cm4", category:"companions", difficulty:"medium",
-    question:{en:"Who were the 'Muhajirun' in Islamic history?",ar:"من كانوا 'المهاجرون' في التاريخ الإسلامي؟",fr:"Qui étaient les 'Muhajirun' dans l'histoire islamique?",de:"Wer waren die 'Muhadschiroun' in der islamischen Geschichte?"},
-    options:{en:["The companions who stayed in Mecca","Muslims who migrated from Mecca to Medina (or Abyssinia) for their faith","Non-Muslim traders who visited Medina","Companions who participated in the Battle of Badr"],ar:["الصحابة الذين بقوا في مكة","مسلمون هاجروا من مكة إلى المدينة (أو الحبشة) بسبب دينهم","تجار غير مسلمين زاروا المدينة","صحابة شاركوا في غزوة بدر"],fr:["Les compagnons restés à La Mecque","Musulmans qui émigrèrent de La Mecque à Médine (ou Abyssinie) pour leur foi","Commerçants non-musulmans qui visitèrent Médine","Compagnons qui participèrent à la bataille de Badr"],de:["Die Gefährten die in Mekka blieben","Muslime die wegen ihres Glaubens von Mekka nach Medina (oder Abessinien) migrierten","Nichtmuslimische Händler die Medina besuchten","Gefährten die an der Schlacht von Badr teilnahmen"]},
-    answer:1,
-    explanation:{en:"The Muhajirun (Emigrants) were Muslims who left their homes, families, and wealth in Mecca to migrate to Medina (622 CE) or earlier to Abyssinia (615 CE) for the sake of their faith. The Quran praises their sacrifice greatly.",ar:"المهاجرون هم المسلمون الذين تركوا بيوتهم وعائلاتهم وأموالهم في مكة وهاجروا إلى المدينة (622م) أو الحبشة (615م) في سبيل دينهم.",fr:"Les Muhajirun (Emigrants) étaient des musulmans qui quittèrent leurs maisons, familles et richesses à La Mecque pour émigrer à Médine (622 EC) ou en Abyssinie (615 EC) pour leur foi.",de:"Die Muhadschiroun (Auswanderer) waren Muslime die ihre Häuser, Familien und Reichtum in Mekka verließen um nach Medina (622 n. Chr.) oder Abessinien (615 n. Chr.) zu migrieren."} },
-
-  { id:"cm5", category:"companions", difficulty:"medium",
-    question:{en:"Which companion conquered Egypt and founded the city of Fustat?",ar:"أي صحابي فتح مصر وأسَّس مدينة الفسطاط؟",fr:"Quel compagnon conquit l'Égypte et fonda la ville de Fustat?",de:"Welcher Gefährte eroberte Ägypten und gründete die Stadt Fustat?"},
-    options:{en:["Khalid ibn al-Walid","Sa'd ibn Abi Waqqas","Amr ibn al-As","Yazid ibn Abi Sufyan"],ar:["خالد بن الوليد","سعد بن أبي وقاص","عمرو بن العاص","يزيد بن أبي سفيان"],fr:["Khalid ibn al-Walid","Sa'd ibn Abi Waqqas","Amr ibn al-As","Yazid ibn Abi Sufyan"],de:["Chalid ibn al-Walid","Sa'd ibn Abi Waqqas","Amr ibn al-As","Yazid ibn Abi Sufyan"]},
-    answer:2,
-    explanation:{en:"Amr ibn al-As (RA) led the Muslim conquest of Egypt in 641 CE (20 AH) during Umar ibn al-Khattab's caliphate. He founded Fustat (near modern Cairo) as the first Islamic capital of Egypt.",ar:"عمرو بن العاص رضي الله عنه قاد فتح مصر عام 641م (20هـ) في عهد عمر بن الخطاب. أسَّس الفسطاط (قرب القاهرة الحديثة) عاصمةً إسلاميةً أولى لمصر.",fr:"Amr ibn al-As (RA) dirigea la conquête islamique de l'Égypte en 641 EC sous le califat d'Umar ibn al-Khattab. Il fonda Fustat (près du Caire moderne) comme première capitale islamique d'Égypte.",de:"Amr ibn al-As (ra) leitete die muslimische Eroberung Ägyptens 641 n. Chr. während Umars Kalifat. Er gründete Fustat (nahe dem modernen Kairo) als erste islamische Hauptstadt Ägyptens."} },
-
-  { id:"cm6", category:"companions", difficulty:"medium",
-    question:{en:"Which companion is known for being the wealthiest among the early Muslims and donated greatly for Islam?",ar:"أي صحابي اشتُهر بكونه أغنى المسلمين الأوائل وتبرع بسخاء للإسلام؟",fr:"Quel compagnon est connu pour être le plus riche parmi les premiers musulmans et avoir beaucoup donné pour l'Islam?",de:"Welcher Gefährte ist dafür bekannt der reichste unter den frühen Muslimen zu sein und großzügig für den Islam gespendet zu haben?"},
-    options:{en:["Abu Bakr al-Siddiq","Umar ibn al-Khattab","Abd al-Rahman ibn Awf","Uthman ibn Affan"],ar:["أبو بكر الصديق","عمر بن الخطاب","عبد الرحمن بن عوف","عثمان بن عفان"],fr:["Abu Bakr al-Siddiq","Umar ibn al-Khattab","Abd al-Rahman ibn Awf","Uthman ibn Affan"],de:["Abu Bakr al-Siddiq","Umar ibn al-Khattab","Abd al-Rahman ibn Awf","Uthman ibn Affan"]},
-    answer:2,
-    explanation:{en:"Abd al-Rahman ibn Awf (RA) was one of the wealthiest companions and one of the Ten Promised Paradise. Despite his wealth, he was humble. He donated enormous amounts for jihad. When he arrived in Medina as a muhajir with nothing, he became prosperous within weeks through honest trade.",ar:"عبد الرحمن بن عوف رضي الله عنه كان من أثرى الصحابة ومن العشرة المبشَّرين بالجنة. تبرَّع بمبالغ طائلة للجهاد.",fr:"Abd al-Rahman ibn Awf (RA) était l'un des compagnons les plus riches et l'un des Dix à qui le Paradis est promis. Malgré sa richesse, il était humble et donna d'énormes sommes pour le jihad.",de:"Abd al-Rahman ibn Awf (ra) war einer der reichsten Gefährten und einer der Zehn denen das Paradies verheißen wurde. Trotz seines Reichtums war er bescheiden."} },
-
-  { id:"cm7", category:"companions", difficulty:"medium",
-    question:{en:"What was unique about Jafar ibn Abi Talib (RA) when he was killed at the Battle of Mu'tah?",ar:"ما الذي كان مميزاً في شهادة جعفر بن أبي طالب رضي الله عنه في معركة مؤتة؟",fr:"Qu'est-ce qui était unique dans la mort de Jafar ibn Abi Talib (RA) lors de la Bataille de Mu'tah?",de:"Was war einzigartig am Tod von Dschafar ibn Abi Talib (ra) in der Schlacht von Mu'tah?"},
-    options:{en:["He was the first companion to be martyred","He was found with 90 wounds on the front of his body — showing he never turned back","He recited the entire Quran before the battle","He was given the title of commander by the Prophet ﷺ"],ar:["كان أول صحابي يُستشهد","وُجد به 90 جرحاً في مقدمة جسمه — دليل على أنه لم يولِّ الدبر أبداً","تلا القرآن كاملاً قبل المعركة","منحه النبي ﷺ لقب القائد"],fr:["Il fut le premier compagnon à être martyrisé","On le trouva avec 90 blessures sur le devant de son corps — prouvant qu'il ne recula jamais","Il récita le Coran entier avant la bataille","Le Prophète ﷺ lui donna le titre de commandant"],de:["Er war der erste Gefährte der ein Märtyrer wurde","Er wurde mit 90 Wunden an der Vorderseite seines Körpers gefunden — was zeigt dass er sich nie umdrehte","Er rezitierte den gesamten Quran vor der Schlacht","Der Prophet ﷺ gab ihm den Titel Kommandant"]},
-    answer:1,
-    explanation:{en:"Jafar ibn Abi Talib (RA) was the standard-bearer at Mu'tah. When his right hand was cut, he held the flag with his left. When that was cut, he held it with his chest/arms until he was martyred. He was found with 90 wounds on the front of his body. The Prophet ﷺ said Allah gave him two wings in paradise.",ar:"حمل جعفر بن أبي طالب راية المسلمين في مؤتة. قُطعت يده اليمنى فحملها بيسراه، فقُطعت فاحتضنها بصدره حتى استُشهد. وُجد به 90 جرحاً من الأمام.",fr:"Jafar ibn Abi Talib (RA) porta l'étendard à Mu'tah. Quand sa main droite fut coupée, il le tint avec la gauche. Quand celle-ci fut coupée, il l'étreignit avec sa poitrine jusqu'à son martyre.",de:"Dschafar ibn Abi Talib (ra) trug das Banner bei Mu'tah. Als seine rechte Hand abgeschnitten wurde hielt er es mit der linken. Als diese abgeschnitten wurde hielt er es mit seiner Brust bis er fiel."} },
-
-  { id:"cm8", category:"companions", difficulty:"medium",
-    question:{en:"Which companion was known for his encyclopedic knowledge and was asked by Umar to be his advisor?",ar:"أي صحابي اشتُهر بمعرفته الموسوعية وطلب منه عمر أن يكون مستشاره؟",fr:"Quel compagnon était connu pour ses connaissances encyclopédiques et fut demandé par Umar d'être son conseiller?",de:"Welcher Gefährte war für sein enzyklopädisches Wissen bekannt und wurde von Umar gebeten sein Berater zu sein?"},
-    options:{en:["Abu Hurairah","Abdullah ibn Abbas","Muadh ibn Jabal","Ali ibn Abi Talib"],ar:["أبو هريرة","عبد الله بن عباس","معاذ بن جبل","علي بن أبي طالب"],fr:["Abu Hurairah","Abdullah ibn Abbas","Muadh ibn Jabal","Ali ibn Abi Talib"],de:["Abu Hurairah","Abdullah ibn Abbas","Muadh ibn Jabal","Ali ibn Abi Talib"]},
-    answer:2,
-    explanation:{en:"Muadh ibn Jabal (RA) was considered one of the most knowledgeable companions in Islamic law (fiqh) and the Quran. The Prophet ﷺ said: 'The most knowledgeable of my Ummah about halal and haram is Muadh ibn Jabal.' He was also sent as a teacher/judge to Yemen.",ar:"معاذ بن جبل رضي الله عنه اعتُبر من أعلم الصحابة بالفقه والقرآن. قال النبي ﷺ: 'أعلم أمتي بالحلال والحرام معاذ بن جبل.'",fr:"Muadh ibn Jabal (RA) était considéré comme l'un des compagnons les plus savants en droit islamique. Le Prophète ﷺ dit: 'Le plus savant de ma communauté sur le halal et le haram est Muadh ibn Jabal.'",de:"Muadh ibn Dschabal (ra) galt als einer der kenntnisreichsten Gefährten in islamischem Recht. Der Prophet ﷺ sagte: 'Der Wissenreichste meiner Umma über Halal und Haram ist Muadh ibn Dschabal.'"} },
-
-  { id:"cm9", category:"companions", difficulty:"medium",
-    question:{en:"Which companion was the first to use a sword for Islam and is buried in Medina?",ar:"أي صحابي كان أول من رفع سيفاً في سبيل الإسلام ومدفون في المدينة؟",fr:"Quel compagnon fut le premier à utiliser une épée pour l'Islam et est enterré à Médine?",de:"Welcher Gefährte war der erste der ein Schwert für den Islam benutzte und ist in Medina begraben?"},
-    options:{en:["Khalid ibn al-Walid","Al-Zubayr ibn al-Awwam","Hamzah ibn Abdul-Muttalib","Sa'd ibn Abi Waqqas"],ar:["خالد بن الوليد","الزبير بن العوام","حمزة بن عبد المطلب","سعد بن أبي وقاص"],fr:["Khalid ibn al-Walid","Al-Zubayr ibn al-Awwam","Hamzah ibn Abd al-Muttalib","Sa'd ibn Abi Waqqas"],de:["Chalid ibn al-Walid","Al-Zubayr ibn al-Awwam","Hamza ibn Abd al-Muttalib","Sa'd ibn Abi Waqqas"]},
-    answer:1,
-    explanation:{en:"Al-Zubayr ibn al-Awwam (RA) is reported to be the first person to unsheathe a sword in the cause of Allah. He was also the nephew of Khadijah (RA) and the Prophet's ﷺ disciple. He was one of the Ten Promised Paradise.",ar:"الزبير بن العوام رضي الله عنه يُقال إنه أول من سلَّ سيفاً في سبيل الله. وكان ابن أخت خديجة رضي الله عنها وحواري النبي ﷺ ومن العشرة المبشَّرين بالجنة.",fr:"Al-Zubayr ibn al-Awwam (RA) serait la première personne à avoir dégainé une épée dans la cause d'Allah. Il était aussi le neveu de Khadija et l'un des Dix à qui le Paradis est promis.",de:"Al-Zubayr ibn al-Awwam (ra) soll die erste Person gewesen sein die ein Schwert für Allahs Sache zog. Er war auch der Neffe von Khadija und einer der Zehn denen das Paradies verheißen wurde."} },
-
-  { id:"cm10", category:"companions", difficulty:"medium",
-    question:{en:"Aisha bint Abi Bakr (RA) narrated how many hadiths according to scholarly consensus?",ar:"كم حديثاً روت عائشة بنت أبي بكر رضي الله عنها وفق إجماع العلماء؟",fr:"Combien de hadiths Aïcha bint Abi Bakr (RA) a-t-elle rapportés selon le consensus savant?",de:"Wie viele Hadiths überlieferte Aisha bint Abi Bakr (ra) laut gelehrtem Konsens?"},
-    options:{en:["Over 500","Over 1,000","Over 2,000","Over 5,000"],ar:["أكثر من 500","أكثر من 1,000","أكثر من 2,000","أكثر من 5,000"],fr:["Plus de 500","Plus de 1 000","Plus de 2 000","Plus de 5 000"],de:["Über 500","Über 1.000","Über 2.000","Über 5.000"]},
-    answer:2,
-    explanation:{en:"Aisha (RA) is one of the most prolific narrators of hadith, having narrated over 2,210 hadiths. She was the primary source for many intimate details of the Prophet's ﷺ private life, prayer, and worship.",ar:"عائشة رضي الله عنها من أكثر الراويات للحديث، إذ روت أكثر من 2,210 حديثاً. كانت المصدر الرئيسي لكثير من تفاصيل الحياة الخاصة للنبي ﷺ وصلاته وعبادته.",fr:"Aïcha (RA) est l'une des narratrices les plus prolifiques de hadiths, ayant rapporté plus de 2 210 hadiths. Elle était la principale source pour de nombreux détails de la vie privée du Prophète ﷺ.",de:"Aisha (ra) ist eine der produktivsten Hadith-Überlieferinnen mit über 2.210 Hadiths. Sie war die Hauptquelle für viele intime Details des Privatlebens des Propheten ﷺ."} },
-
-  { id:"cm11", category:"companions", difficulty:"medium",
-    question:{en:"Which companion was known as 'Amin al-Ummah' (Trustee of the Nation) and was among the Ten Promised Paradise?",ar:"أي صحابي اشتُهر بـ'أمين الأمة' وكان من العشرة المبشَّرين بالجنة؟",fr:"Quel compagnon était connu comme 'Amin al-Ummah' (Gardien de la Nation) et était parmi les Dix à qui le Paradis est promis?",de:"Welcher Gefährte war als 'Amin al-Umma' (Treuhänder der Nation) bekannt und war unter den Zehn denen das Paradies verheißen wurde?"},
-    options:{en:["Talhah ibn Ubaydullah","Sa'd ibn Abi Waqqas","Abu Ubayda ibn al-Jarrah","Abd al-Rahman ibn Awf"],ar:["طلحة بن عبيد الله","سعد بن أبي وقاص","أبو عبيدة بن الجراح","عبد الرحمن بن عوف"],fr:["Talhah ibn Ubaydullah","Sa'd ibn Abi Waqqas","Abu Ubayda ibn al-Jarrah","Abd al-Rahman ibn Awf"],de:["Talha ibn Ubaidullah","Sa'd ibn Abi Waqqas","Abu Ubaidah ibn al-Dscherrah","Abd al-Rahman ibn Awf"]},
-    answer:2,
-    explanation:{en:"Abu Ubayda ibn al-Jarrah (RA) was given the title 'Amin al-Ummah' (Trustee of the Nation) by the Prophet ﷺ. He commanded the Muslim forces in the Levant and died in 638 CE during the plague of Amwas (Syria).",ar:"لقَّب النبي ﷺ أبا عبيدة بن الجراح بـ'أمين هذه الأمة'. قاد القوات الإسلامية في الشام وتوفي عام 638م في طاعون عمواس.",fr:"Abu Ubayda ibn al-Jarrah (RA) reçut le titre d'Amin al-Ummah du Prophète ﷺ. Il commanda les forces musulmanes au Levant et mourut en 638 EC lors de la Peste d'Amwas.",de:"Abu Ubaidah ibn al-Dscherrah (ra) erhielt vom Propheten ﷺ den Titel 'Amin al-Umma'. Er befehligte die muslimischen Kräfte in der Levante und starb 638 n. Chr. während der Pest von Amwas."} },
-
-  { id:"cm12", category:"companions", difficulty:"medium",
-    question:{en:"Which companion was the first to migrate from Mecca to Medina before the Hijra?",ar:"أي صحابي كان أول من هاجر من مكة إلى المدينة قبل الهجرة؟",fr:"Quel compagnon fut le premier à émigrer de La Mecque à Médine avant l'Hégire?",de:"Welcher Gefährte war der erste der vor der Hidschra von Mekka nach Medina auswanderte?"},
-    options:{en:["Abu Bakr al-Siddiq","Umar ibn al-Khattab","Abu Salama al-Makhzumi","Bilal ibn Rabah"],ar:["أبو بكر الصديق","عمر بن الخطاب","أبو سلمة المخزومي","بلال بن رباح"],fr:["Abu Bakr al-Siddiq","Umar ibn al-Khattab","Abu Salama al-Makhzumi","Bilal ibn Rabah"],de:["Abu Bakr al-Siddiq","Umar ibn al-Khattab","Abu Salama al-Makhzumi","Bilal ibn Rabah"]},
-    answer:2,
-    explanation:{en:"Abu Salama al-Makhzumi (RA) — husband of Umm Salama — is generally considered the first companion to migrate individually from Mecca to Medina, even before the formal Hijra in 622 CE.",ar:"أبو سلمة المخزومي رضي الله عنه — زوج أم سلمة — يُعتبر عموماً أول من هاجر بمفرده من مكة إلى المدينة حتى قبل الهجرة الرسمية عام 622م.",fr:"Abu Salama al-Makhzumi (RA) — mari d'Umm Salama — est généralement considéré comme le premier compagnon à émigrer individuellement de La Mecque à Médine.",de:"Abu Salama al-Makhzumi (ra) — Mann von Umm Salama — gilt allgemein als der erste Gefährte der individuell von Mekka nach Medina auswanderte."} },
-
-  { id:"cm13", category:"companions", difficulty:"medium",
-    question:{en:"Which companion performed the adhan from the roof of the Kaaba after the conquest of Mecca?",ar:"أي صحابي أذَّن من سطح الكعبة بعد فتح مكة؟",fr:"Quel compagnon appela l'Adhan depuis le toit de la Kaaba après la conquête de La Mecque?",de:"Welcher Gefährte rief den Adhan vom Dach der Kaaba nach der Eroberung Mekkas?"},
-    options:{en:["Abdullah ibn Masud","Ammar ibn Yasir","Bilal ibn Rabah","Suhayb al-Rumi"],ar:["عبد الله بن مسعود","عمار بن ياسر","بلال بن رباح","صهيب الرومي"],fr:["Abdullah ibn Masud","Ammar ibn Yasir","Bilal ibn Rabah","Suhayb al-Rumi"],de:["Abdullah ibn Masud","Ammar ibn Yasir","Bilal ibn Rabah","Suhayb al-Rumi"]},
-    answer:2,
-    explanation:{en:"On the day of the conquest of Mecca (630 CE), the Prophet ﷺ commanded Bilal (RA) to climb on top of the Kaaba — the holiest structure in Islam — and call the Adhan. This was a powerful and emotional moment for the early Muslims.",ar:"في يوم فتح مكة (630م) أمر النبي ﷺ بلالاً رضي الله عنه بالصعود على الكعبة والأذان. كان لحظةً بالغة التأثير في تاريخ الإسلام.",fr:"Le jour de la conquête de La Mecque (630 EC), le Prophète ﷺ ordonna à Bilal (RA) de monter sur le toit de la Kaaba pour appeler l'Adhan. Ce fut un moment fort.",de:"Am Tag der Eroberung Mekkas (630 n. Chr.) befahl der Prophet ﷺ Bilal (ra) auf das Dach der Kaaba zu klettern und den Adhan zu rufen."} },
-
-  { id:"cm14", category:"companions", difficulty:"medium",
-    question:{en:"Who was Sa'd ibn Abi Waqqas (RA) and what was his major achievement?",ar:"من كان سعد بن أبي وقاص رضي الله عنه وما كان إنجازه الكبير؟",fr:"Qui était Sa'd ibn Abi Waqqas (RA) et quelle était sa grande réalisation?",de:"Wer war Sa'd ibn Abi Waqqas (ra) und was war seine große Leistung?"},
-    options:{en:["He compiled the Quran under Uthman","He was the first person to shoot an arrow in the path of Allah and commanded the victory at Qadisiyyah","He was the first to give the khutbah in Medina","He was the first companion to learn the rules of fiqh"],ar:["جمع القرآن في عهد عثمان","كان أول من رمى بسهم في سبيل الله وقاد النصر في القادسية","كان أول من ألقى خطبة في المدينة","كان أول صحابي يتعلم أحكام الفقه"],fr:["Il compila le Coran sous Uthman","Il fut le premier à tirer une flèche dans la cause d'Allah et commanda la victoire à Qadisiyyah","Il fut le premier à prononcer le khutbah à Médine","Il fut le premier compagnon à apprendre les règles du fiqh"],de:["Er kompilierte den Quran unter Uthman","Er war der erste der einen Pfeil für Allahs Sache schoss und befehligte den Sieg bei Qadisiyya","Er war der erste der die Khutbah in Medina hielt","Er war der erste Gefährte der Fiqh-Regeln lernte"]},
-    answer:1,
-    explanation:{en:"Sa'd ibn Abi Waqqas (RA) is traditionally held to be the first person to shoot an arrow in the path of Allah. He also commanded the Muslim armies at the decisive Battle of Qadisiyyah (636 CE), defeating the Sassanid Persian Empire and opening Persia to Islam.",ar:"يُقال إن سعد بن أبي وقاص كان أول من رمى بسهم في سبيل الله. كما قاد الجيوش الإسلامية في معركة القادسية (636م) فهزم الإمبراطورية الفارسية الساسانية.",fr:"Sa'd ibn Abi Waqqas (RA) serait le premier à avoir tiré une flèche dans la cause d'Allah. Il commanda les armées islamiques à la bataille décisive de Qadisiyyah (636 EC).",de:"Sa'd ibn Abi Waqqas (ra) gilt als der erste der einen Pfeil für Allahs Sache schoss. Er befehligte die muslimischen Armeen in der entscheidenden Schlacht von Qadisiyya (636 n. Chr.)."} },
-
-  { id:"cm15", category:"companions", difficulty:"medium",
-    question:{en:"Which companion is credited with organizing the first collection of Hadiths into a book?",ar:"أي صحابي يُنسب إليه تنظيم أول مجموعة أحاديث في كتاب؟",fr:"Quel compagnon est crédité d'avoir organisé la première collection de Hadiths en un livre?",de:"Welchem Gefährten wird die Organisation der ersten Hadith-Sammlung in einem Buch zugeschrieben?"},
-    options:{en:["Abu Hurairah","Aisha bint Abi Bakr","Abdullah ibn Amr ibn al-As","Zayd ibn Thabit"],ar:["أبو هريرة","عائشة بنت أبي بكر","عبد الله بن عمرو بن العاص","زيد بن ثابت"],fr:["Abu Hurairah","Aïcha bint Abi Bakr","Abdullah ibn Amr ibn al-As","Zayd ibn Thabit"],de:["Abu Hurairah","Aisha bint Abi Bakr","Abdullah ibn Amr ibn al-As","Zayd ibn Thabit"]},
-    answer:2,
-    explanation:{en:"Abdullah ibn Amr ibn al-As (RA) was given special permission by the Prophet ﷺ to write down hadiths. He compiled 'Al-Sahifah al-Sadiqah' — considered the first written collection of hadiths.",ar:"أُذن لعبد الله بن عمرو بن العاص رضي الله عنه بكتابة الأحاديث. جمع 'الصحيفة الصادقة' التي تُعدّ أول مجموعة مكتوبة من الأحاديث.",fr:"Abdullah ibn Amr ibn al-As (RA) reçut la permission spéciale du Prophète ﷺ d'écrire des hadiths. Il compila 'Al-Sahifah al-Sadiqah' — considérée comme la première collection écrite de hadiths.",de:"Abdullah ibn Amr ibn al-As (ra) erhielt vom Propheten ﷺ die besondere Erlaubnis Hadiths zu schreiben. Er stellte 'Al-Sahifah al-Sadiqah' zusammen — die als erste schriftliche Hadith-Sammlung gilt."} },
-
-  { id:"cm16", category:"companions", difficulty:"medium",
-    question:{en:"Which companion came from Rome and gave all his wealth for his religion?",ar:"أي صحابي أتى من الروم وبذل كل أمواله في سبيل دينه؟",fr:"Quel compagnon venait de Rome et donna toute sa richesse pour sa religion?",de:"Welcher Gefährte kam aus Rom und gab seinen gesamten Reichtum für seine Religion?"},
-    options:{en:["Salman al-Farisi","Bilal ibn Rabah","Suhayb al-Rumi (Suhayb the Roman)","Ammar ibn Yasir"],ar:["سلمان الفارسي","بلال بن رباح","صهيب الرومي","عمار بن ياسر"],fr:["Salman al-Farisi","Bilal ibn Rabah","Suhayb al-Rumi (Suhayb le Romain)","Ammar ibn Yasir"],de:["Salman al-Farisi","Bilal ibn Rabah","Suhayb al-Rumi (Suhayb der Römer)","Ammar ibn Yasir"]},
-    answer:2,
-    explanation:{en:"Suhayb al-Rumi (RA) was a companion from the Byzantine (Roman) lands. When he migrated to Medina, the Quraysh blocked him and demanded he give up his wealth. He offered all his money to be free. The Prophet ﷺ praised him: 'Suhayb has profited! Suhayb has profited!'",ar:"صهيب الرومي رضي الله عنه كان من بلاد الروم. حين هاجر إلى المدينة حاصرته قريش وطالبت بثروته. فأعطى ماله كله مقابل حريته. قال النبي ﷺ: 'ربح صهيب! ربح صهيب!'",fr:"Suhayb al-Rumi (RA) venait des terres byzantines (romaines). Quand il émigra à Médine, les Quraysh le bloquèrent et exigèrent sa richesse. Il offrit tout son argent pour être libre.",de:"Suhayb al-Rumi (ra) stammte aus dem Byzantinischen Reich. Als er nach Medina auswanderte, blockierten die Quraisch ihn und verlangten seinen Reichtum. Er bot all sein Geld für seine Freiheit an."} },
-
-  { id:"cm17", category:"companions", difficulty:"medium",
-    question:{en:"Which female companion is known as 'Umm al-Mu'minin' (Mother of Believers) and was a great Islamic scholar?",ar:"أي صحابية تُعرف بـ'أم المؤمنين' وكانت عالمةً إسلاميةً كبيرة؟",fr:"Quelle compagne est connue comme 'Umm al-Mu'minin' (Mère des Croyants) et était une grande savante islamique?",de:"Welche weibliche Gefährtin ist als 'Umm al-Mu'minin' (Mutter der Gläubigen) bekannt und war eine große islamische Gelehrte?"},
-    options:{en:["Fatimah al-Zahra","Hafsa bint Umar","Aisha bint Abi Bakr","Khadijah bint Khuwaylid"],ar:["فاطمة الزهراء","حفصة بنت عمر","عائشة بنت أبي بكر","خديجة بنت خويلد"],fr:["Fatima al-Zahra","Hafsa bint Umar","Aïcha bint Abi Bakr","Khadija bint Khuwaylid"],de:["Fatima al-Zahra","Hafsa bint Umar","Aisha bint Abi Bakr","Khadija bint Khuwailid"]},
-    answer:2,
-    explanation:{en:"Aisha bint Abi Bakr (RA) is often called the greatest female Islamic scholar. She narrated over 2,000 hadiths, taught thousands of students (male and female), and was a reference for Islamic law. She is one of the 'Ummahat al-Mu'minin' (Mothers of the Believers).",ar:"عائشة بنت أبي بكر رضي الله عنها تُعدّ أعظم عالمة إسلامية. روت أكثر من 2000 حديث وعلَّمت آلاف الطلاب وكانت مرجعاً في الفقه الإسلامي.",fr:"Aïcha bint Abi Bakr (RA) est souvent appelée la plus grande savante islamique. Elle rapporta plus de 2 000 hadiths et enseigna des milliers d'étudiants.",de:"Aisha bint Abi Bakr (ra) gilt oft als die größte islamische Gelehrte. Sie überlieferte über 2.000 Hadiths, lehrte Tausende von Studenten und war eine Referenz für islamisches Recht."} },
-
-  { id:"cm18", category:"companions", difficulty:"medium",
-    question:{en:"What was remarkable about Umar ibn al-Khattab's conversion to Islam?",ar:"ما الذي كان مميزاً في إسلام عمر بن الخطاب رضي الله عنه؟",fr:"Qu'est-ce qui était remarquable dans la conversion de Umar ibn al-Khattab à l'Islam?",de:"Was war bemerkenswert an der Konversion von Umar ibn al-Khattab zum Islam?"},
-    options:{en:["He was the first to accept Islam","He converted secretly and told no one","He was originally going to kill the Prophet ﷺ but converted after hearing Quran recitation and found his sister had already converted","He converted after a dream about paradise"],ar:["كان أول من أسلم","أسلم سراً ولم يخبر أحداً","كان يقصد قتل النبي ﷺ لكنه أسلم بعد سماع تلاوة القرآن وعلم أن أخته أسلمت","أسلم بعد رؤية حلم عن الجنة"],fr:["Il fut le premier à accepter l'Islam","Il se convertit secrètement sans le dire à personne","Il allait tuer le Prophète ﷺ mais se convertit après avoir entendu la récitation coranique et découvert que sa sœur s'était convertie","Il se convertit après un rêve sur le paradis"],de:["Er war der erste der den Islam annahm","Er konvertierte heimlich und sagte niemandem davon","Er wollte ursprünglich den Propheten ﷺ töten konvertierte aber nachdem er Koranrezitation hörte und feststellte dass seine Schwester bereits konvertiert war","Er konvertierte nach einem Traum über das Paradies"]},
-    answer:2,
-    explanation:{en:"Umar (RA) set out to kill the Prophet ﷺ but was redirected to his sister's house where he heard her reciting Quran. He was deeply moved, demanded to read it, and then said 'Show me where Muhammad ﷺ is.' He went directly to Dar al-Arqam and embraced Islam, bringing great joy to the Muslims.",ar:"خرج عمر ليقتل النبي ﷺ لكن أُعيد إلى بيت أخته حيث سمع تلاوة القرآن. تأثَّر عميقاً وذهب مباشرةً إلى دار الأرقم وأسلم، مما أدخل الفرح على المسلمين.",fr:"Umar (RA) partait pour tuer le Prophète ﷺ mais fut redirigé vers la maison de sa sœur où il entendit la récitation du Coran. Profondément ému, il se rendit à Dar al-Arqam et embrassa l'Islam.",de:"Umar (ra) machte sich auf den Propheten ﷺ zu töten wurde aber zum Haus seiner Schwester umgeleitet wo er Koranrezitation hörte. Tief bewegt ging er zu Dar al-Arqam und nahm den Islam an."} },
-
-  { id:"cm19", category:"companions", difficulty:"medium",
-    question:{en:"Which companion carried the standard (flag) of the Prophet ﷺ in most battles?",ar:"أي صحابي حمل راية النبي ﷺ في أغلب المعارك؟",fr:"Quel compagnon porta l'étendard (drapeau) du Prophète ﷺ dans la plupart des batailles?",de:"Welcher Gefährte trug das Banner (Fahne) des Propheten ﷺ in den meisten Schlachten?"},
-    options:{en:["Khalid ibn al-Walid","Ali ibn Abi Talib","Sa'd ibn Abi Waqqas","Abu Bakr al-Siddiq"],ar:["خالد بن الوليد","علي بن أبي طالب","سعد بن أبي وقاص","أبو بكر الصديق"],fr:["Khalid ibn al-Walid","Ali ibn Abi Talib","Sa'd ibn Abi Waqqas","Abu Bakr al-Siddiq"],de:["Chalid ibn al-Walid","Ali ibn Abi Talib","Sa'd ibn Abi Waqqas","Abu Bakr al-Siddiq"]},
-    answer:1,
-    explanation:{en:"Ali ibn Abi Talib (RA) was entrusted with carrying the Prophet's ﷺ standard in numerous major battles including Badr, Uhud, Khandaq, Khaybar, and many others. He was known for his bravery and skill in combat.",ar:"علي بن أبي طالب رضي الله عنه أُوكل إليه حمل راية النبي ﷺ في معارك كبرى عديدة، منها بدر وأحد والخندق وخيبر وغيرها.",fr:"Ali ibn Abi Talib (RA) fut chargé de porter l'étendard du Prophète ﷺ dans de nombreuses batailles majeures, notamment Badr, Uhud, Khandaq et Khaybar.",de:"Ali ibn Abi Talib (ra) wurde damit betraut das Banner des Propheten ﷺ in zahlreichen großen Schlachten zu tragen darunter Badr, Uhud, Khandaq und Khaibar."} },
-
-  { id:"cm20", category:"companions", difficulty:"medium",
-    question:{en:"Which companion was sent as a teacher and judge to Yemen by the Prophet ﷺ and is known for his Quranic knowledge?",ar:"أي صحابي أرسله النبي ﷺ معلماً وقاضياً إلى اليمن ويُعرف بعلمه بالقرآن؟",fr:"Quel compagnon fut envoyé comme enseignant et juge au Yémen par le Prophète ﷺ et est connu pour sa connaissance du Coran?",de:"Welcher Gefährte wurde vom Propheten ﷺ als Lehrer und Richter in den Jemen gesandt und ist für sein Koranwissen bekannt?"},
-    options:{en:["Abu Bakr al-Siddiq","Muadh ibn Jabal","Abdullah ibn Abbas","Abdullah ibn Masud"],ar:["أبو بكر الصديق","معاذ بن جبل","عبد الله بن عباس","عبد الله بن مسعود"],fr:["Abu Bakr al-Siddiq","Muadh ibn Jabal","Abdullah ibn Abbas","Abdullah ibn Masud"],de:["Abu Bakr al-Siddiq","Muadh ibn Dschabal","Abdullah ibn Abbas","Abdullah ibn Masud"]},
-    answer:1,
-    explanation:{en:"The Prophet ﷺ sent Muadh ibn Jabal (RA) to Yemen as a teacher, preacher, and judge. The Prophet ﷺ gave him famous advice: 'Your people are People of the Book — the first thing you should invite them to is the testimony that there is no god but Allah.'",ar:"أرسل النبي ﷺ معاذ بن جبل رضي الله عنه إلى اليمن معلماً وداعياً وقاضياً. أوصاه النبي بالبدء بالدعوة إلى التوحيد.",fr:"Le Prophète ﷺ envoya Muadh ibn Jabal (RA) au Yémen comme enseignant, prédicateur et juge. Le Prophète lui donna le célèbre conseil: 'Ton peuple est un Peuple du Livre — invite-les d'abord à témoigner qu'il n'y a pas de dieu sauf Allah.'",de:"Der Prophet ﷺ schickte Muadh ibn Dschabal (ra) in den Jemen als Lehrer, Prediger und Richter mit dem berühmten Rat: 'Dein Volk sind Schriftleute — lade sie zuerst zum Zeugnis ein dass es keinen Gott außer Allah gibt.'"} },
-
-  // ═══════════════════════════════════════════════════════════════
-  // HARD — HISTORY (hh1–hh20)
-  // ═══════════════════════════════════════════════════════════════
-  { id:"hh1", category:"history", difficulty:"hard",
-    question:{en:"The 'Year of the Elephant' ('Am al-Fil) in which the Prophet ﷺ was born refers to what event?",ar:"'عام الفيل' الذي وُلد فيه النبي ﷺ يشير إلى أي حدث؟",fr:"L'Année de l'Éléphant ('Am al-Fil) dans laquelle le Prophète ﷺ est né fait référence à quel événement?",de:"Das 'Jahr des Elefanten' ('Am al-Fil) in dem der Prophet ﷺ geboren wurde bezieht sich auf welches Ereignis?"},
-    options:{en:["The year the Arabs first encountered war elephants","The attempt by Abraha al-Ashram, the Abyssinian governor of Yemen, to destroy the Kaaba with war elephants","The year elephants were used in a battle near Mecca","The year an elephant was sacrificed at the Kaaba"],ar:["العام الذي لاقى فيه العرب الأفيال الحربية أول مرة","محاولة أبرهة الأشرم الحاكم الحبشي لليمن تدمير الكعبة بأفيال الحرب","العام الذي استُخدمت فيه الأفيال في معركة قرب مكة","العام الذي ذُبح فيه فيل في الكعبة"],fr:["L'année où les Arabes rencontrèrent pour la première fois des éléphants de guerre","La tentative d'Abraha al-Ashram, gouverneur abyssinien du Yémen, de détruire la Kaaba avec des éléphants de guerre","L'année où des éléphants furent utilisés dans une bataille près de La Mecque","L'année où un éléphant fut sacrifié à la Kaaba"],de:["Das Jahr als die Araber erstmals Kriegselefanten begegneten","Der Versuch von Abraha al-Ashram dem abessinischen Gouverneur des Jemen die Kaaba mit Kriegselefanten zu zerstören","Das Jahr als Elefanten in einer Schlacht nahe Mekka eingesetzt wurden","Das Jahr als ein Elefant an der Kaaba geopfert wurde"]},
-    answer:1,
-    explanation:{en:"Abraha al-Ashram, the Christian Abyssinian governor of Yemen, led an army with war elephants to destroy the Kaaba and redirect pilgrimage to his grand church in Yemen. Allah sent birds (Ababil) carrying stones that destroyed the army. This is described in Surah Al-Fil (Chapter 105).",ar:"أبرهة الأشرم الحاكم الحبشي المسيحي لليمن قاد جيشاً بأفيال الحرب لتدمير الكعبة. أرسل الله طيور الأبابيل بحجارة من سجيل فأهلكت الجيش. القصة في سورة الفيل (105).",fr:"Abraha al-Ashram, gouverneur abyssinien chrétien du Yémen, mena une armée avec des éléphants pour détruire la Kaaba. Allah envoya des oiseaux (Ababil) avec des pierres qui détruisirent l'armée. (Sourate Al-Fil 105).",de:"Abraha al-Ashram, der christlich-abessinische Gouverneur des Jemen, führte eine Armee mit Kriegselefanten um die Kaaba zu zerstören. Allah sandte Vögel (Ababil) mit Steinen die die Armee vernichteten (Sure Al-Fil 105)."} },
-
-  { id:"hh2", category:"history", difficulty:"hard",
-    question:{en:"The Ridda Wars (Wars of Apostasy) during Abu Bakr's caliphate were fought against what?",ar:"حروب الردة في عهد أبي بكر شُنَّت ضد ماذا؟",fr:"Les Guerres de la Ridda (Guerres d'Apostasie) pendant le califat d'Abu Bakr étaient menées contre quoi?",de:"Die Ridda-Kriege (Apostasiekriege) während Abu Bakrs Kalifat wurden gegen was geführt?"},
-    options:{en:["The Byzantine Empire","Arab tribes who refused to pay Zakat and false prophets who arose after the Prophet's death","A Shia revolt against Abu Bakr's leadership","Pagan Arabs who never accepted Islam"],ar:["الإمبراطورية البيزنطية","قبائل عربية رفضت دفع الزكاة وأنبياء كذبة ظهروا بعد وفاة النبي","ثورة شيعية ضد قيادة أبي بكر","عرب مشركون لم يقبلوا الإسلام قط"],fr:["L'Empire byzantin","Des tribus arabes qui refusèrent de payer la Zakat et de faux prophètes apparus après la mort du Prophète","Une révolte chiite contre le leadership d'Abu Bakr","Des Arabes païens qui n'acceptèrent jamais l'Islam"],de:["Das Byzantinische Reich","Arabische Stämme die weigerten Zakat zu zahlen und falsche Propheten die nach dem Tod des Propheten auftraten","Ein schiitischer Aufstand gegen Abu Bakrs Führerschaft","Heidnische Araber die den Islam nie annahmen"]},
-    answer:1,
-    explanation:{en:"After the Prophet's ﷺ death, some Arab tribes refused to pay Zakat (claiming it was personal to the Prophet), some apostatized, and several false prophets emerged (like Musaylimah). Abu Bakr (RA) declared war to preserve the unity of Islam and Zakat as a pillar.",ar:"بعد وفاة النبي ﷺ رفضت بعض القبائل دفع الزكاة وارتدَّ بعضهم وظهرت أنبياء كذبة كمسيلمة. أعلن أبو بكر الحرب حفاظاً على وحدة الإسلام.",fr:"Après la mort du Prophète ﷺ, des tribus refusèrent de payer la Zakat, certaines apostasièrent et de faux prophètes émergèrent (comme Musaylimah). Abu Bakr déclara la guerre pour préserver l'unité de l'Islam.",de:"Nach dem Tod des Propheten ﷺ weigerten sich einige Stämme Zakat zu zahlen, andere traten ab und falsche Propheten tauchten auf (wie Musailima). Abu Bakr erklärte den Krieg zur Erhaltung der islamischen Einheit."} },
-
-  { id:"hh3", category:"history", difficulty:"hard",
-    question:{en:"The 'Fitna' (civil war) that led to Ali's caliphate ending was triggered by what event?",ar:"ما الحدث الذي أشعل 'الفتنة' (الحرب الأهلية) التي أنهت خلافة علي؟",fr:"Quel événement déclencha la 'Fitna' (guerre civile) qui mit fin au califat d'Ali?",de:"Welches Ereignis löste die 'Fitna' (Bürgerkrieg) aus die Alis Kalifat beendete?"},
-    options:{en:["The assassination of Uthman ibn Affan (RA)","The refusal of certain companions to give allegiance to Ali","A Mongol invasion","A famine that struck Medina"],ar:["اغتيال عثمان بن عفان رضي الله عنه","رفض بعض الصحابة مبايعة علي","غزو مغولي","مجاعة ضربت المدينة"],fr:["L'assassinat d'Uthman ibn Affan (RA)","Le refus de certains compagnons de prêter allégeance à Ali","Une invasion mongole","Une famine qui frappa Médine"],de:["Die Ermordung von Uthman ibn Affan (ra)","Die Weigerung bestimmter Gefährten Ali die Treue zu schwören","Eine Mongoleninvasion","Eine Hungersnot die Medina traf"]},
-    answer:0,
-    explanation:{en:"The assassination of Uthman ibn Affan (RA) in 656 CE by rebels created a major crisis. Ali (RA) became the 4th Caliph but faced challenges from Muawiyah (who demanded revenge for Uthman) and others (Battle of Camel with Aisha RA and Zubayr RA, Battle of Siffin with Muawiyah).",ar:"اغتيال عثمان بن عفان رضي الله عنه عام 656م أشعل أزمة كبرى. أصبح علي الخليفة الرابع لكنه واجه تحديات من معاوية والآخرين (موقعة الجمل وصفين).",fr:"L'assassinat d'Uthman ibn Affan (RA) en 656 EC provoqua une crise majeure. Ali (RA) devint 4e Calife mais fut confronté à des défis de Muawiyah et d'autres (Bataille du Chameau, Siffin).",de:"Die Ermordung von Uthman ibn Affan (ra) 656 n. Chr. schuf eine große Krise. Ali (ra) wurde der 4. Kalif stand aber Herausforderungen von Muawiyah und anderen gegenüber (Kamelschlacht, Siffin)."} },
-
-  { id:"hh4", category:"history", difficulty:"hard",
-    question:{en:"The 'Bayt al-Hikma' (House of Wisdom) in Baghdad was primarily associated with which scientific activity?",ar:"ما النشاط العلمي الذي ارتبط أساساً ببيت الحكمة في بغداد؟",fr:"La 'Bayt al-Hikma' (Maison de la Sagesse) à Bagdad était principalement associée à quelle activité scientifique?",de:"Das 'Bayt al-Hikma' (Haus der Weisheit) in Bagdad war hauptsächlich mit welcher wissenschaftlichen Tätigkeit verbunden?"},
-    options:{en:["Writing Islamic legal codes","Translating Greek, Persian and Indian texts into Arabic, advancing mathematics, astronomy, and medicine","Training Islamic soldiers and military strategy","Producing copies of the Quran"],ar:["كتابة القوانين الإسلامية","ترجمة النصوص اليونانية والفارسية والهندية إلى العربية وتطوير الرياضيات والفلك والطب","تدريب الجنود الإسلاميين والاستراتيجية العسكرية","إنتاج نسخ من القرآن"],fr:["Rédiger des codes juridiques islamiques","Traduire des textes grecs, persans et indiens en arabe, faisant avancer les mathématiques, l'astronomie et la médecine","Former des soldats islamiques et des stratégies militaires","Produire des copies du Coran"],de:["Islamische Gesetzbücher zu schreiben","Griechische, persische und indische Texte ins Arabische zu übersetzen und Mathematik, Astronomie und Medizin voranzubringen","Islamische Soldaten und Militärstrategie zu trainieren","Kopien des Qurans herzustellen"]},
-    answer:1,
-    explanation:{en:"The House of Wisdom (830-1258 CE) under Al-Ma'mun was the world's greatest intellectual center. Scholars translated Aristotle, Plato, Euclid, Galen, and Indian/Persian texts into Arabic, and made original contributions in algebra (Al-Khwarizmi), medicine (Ibn Sina), optics (Ibn al-Haytham), and astronomy.",ar:"بيت الحكمة (830-1258م) في عهد المأمون كان أعظم مركز فكري في العالم. ترجم العلماء أرسطو وأفلاطون وإقليدس وجالينوس والنصوص الهندية والفارسية.",fr:"La Maison de la Sagesse (830-1258 EC) sous Al-Ma'mun était le plus grand centre intellectuel du monde. Les savants traduisirent Aristote, Platon, Euclide, Galien en arabe.",de:"Das Haus der Weisheit (830-1258 n. Chr.) unter Al-Ma'mun war das größte intellektuelle Zentrum der Welt. Gelehrte übersetzten Aristoteles, Platon, Euklid und Galen ins Arabische."} },
-
-  { id:"hh5", category:"history", difficulty:"hard",
-    question:{en:"Who was Al-Hajjaj ibn Yusuf al-Thaqafi and what was his historical significance?",ar:"من كان الحجاج بن يوسف الثقفي وما أهميته التاريخية؟",fr:"Qui était Al-Hajjaj ibn Yusuf al-Thaqafi et quelle était son importance historique?",de:"Wer war Al-Hadschdschaj ibn Yusuf al-Thaqafi und was war seine historische Bedeutung?"},
-    options:{en:["A great Sufi mystic who founded a spiritual order","A powerful and feared Umayyad governor of Iraq and the East — known for his iron-fisted rule and also for standardizing Arabic script","A companion of the Prophet ﷺ who fought at Badr","An early Islamic poet who composed the first Arabic literary work"],ar:["صوفي كبير أسَّس طريقة روحية","حاكم أموي قوي ومهاب على العراق والمشرق — اشتُهر بحكمه الحديدي وبتوحيد الخط العربي","صحابي للنبي ﷺ شارك في بدر","شاعر إسلامي مبكر أبدع أول عمل أدبي عربي"],fr:["Un grand mystique soufi qui fonda un ordre spirituel","Un puissant et redouté gouverneur omeyyade de l'Iraq et de l'Orient — connu pour son gouvernement de fer et pour la standardisation de l'écriture arabe","Un compagnon du Prophète ﷺ qui combattit à Badr","Un premier poète islamique qui composa la première œuvre littéraire arabe"],de:["Ein großer Sufi-Mystiker der einen spirituellen Orden gründete","Ein mächtiger und gefürchteter Umayyaden-Gouverneur von Irak und dem Osten — bekannt für seine eiserne Herrschaft und die Standardisierung der arabischen Schrift","Ein Gefährte des Propheten ﷺ der bei Badr kämpfte","Ein früher islamischer Dichter der das erste arabische Literaturwerk verfasste"]},
-    answer:1,
-    explanation:{en:"Al-Hajjaj ibn Yusuf al-Thaqafi (661-714 CE) was the Umayyad governor of Iraq, Persia, and the East. He was feared for his ruthlessness and suppression of revolts. Significantly, he ordered the standardization of Arabic vowels (tashkil) and punctuation in the Quran, which helped preserve its correct recitation.",ar:"الحجاج بن يوسف الثقفي (661-714م) كان الحاكم الأموي على العراق وفارس والمشرق. اشتُهر بحكمه الحديدي. وقد أمر بتشكيل علامات التشكيل العربية ونقط المصحف.",fr:"Al-Hajjaj ibn Yusuf al-Thaqafi (661-714 EC) était le gouverneur omeyyade de l'Iraq, la Perse et l'Orient. Redouté pour sa brutalité, il ordonna la standardisation des voyelles arabes (tashkil) dans le Coran.",de:"Al-Hadschdschaj ibn Yusuf al-Thaqafi (661-714 n. Chr.) war der Umayyaden-Gouverneur von Irak, Persien und dem Osten. Er befahl die Standardisierung arabischer Vokale (Tashkil) im Quran."} },
-
-  { id:"hh6", category:"history", difficulty:"hard",
-    question:{en:"What was the significance of the Battle of Tours (Poitiers) in 732 CE?",ar:"ما أهمية معركة بواتيه عام 732م؟",fr:"Quelle était la signification de la Bataille de Tours (Poitiers) en 732 EC?",de:"Was war die Bedeutung der Schlacht von Tours (Poitiers) 732 n. Chr.?"},
-    options:{en:["It was the Muslim conquest of France","It was the decisive battle where Charles Martel's Frankish forces halted the Muslim advance into Western Europe","It was a Muslim victory that opened the way to Northern Europe","It was a naval battle between Muslims and Byzantines"],ar:["كانت الفتح الإسلامي لفرنسا","كانت المعركة الحاسمة التي أوقف فيها جيش شارل مارتيل تقدم المسلمين في أوروبا الغربية","كانت انتصاراً مسلماً فتح الطريق إلى شمال أوروبا","كانت معركة بحرية بين المسلمين والبيزنطيين"],fr:["Ce fut la conquête islamique de la France","Ce fut la bataille décisive où les forces franques de Charles Martel stoppèrent l'avance musulmane en Europe occidentale","Ce fut une victoire musulmane ouvrant la voie à l'Europe du Nord","Ce fut une bataille navale entre les musulmans et les Byzantins"],de:["Es war die muslimische Eroberung Frankreichs","Es war die entscheidende Schlacht wo Karl Martells fränkische Kräfte den muslimischen Vormarsch in Westeuropa stoppten","Es war ein muslimischer Sieg der den Weg nach Nordeuropa öffnete","Es war eine Seeschlacht zwischen Muslimen und Byzantinern"]},
-    answer:1,
-    explanation:{en:"The Battle of Tours/Poitiers (732 CE) halted the northward expansion of the Umayyad Caliphate into Western Europe. Charles Martel's Frankish army defeated Abd al-Rahman al-Ghafiqi's forces. Historians debate whether this stopped the Islamization of Europe.",ar:"معركة بواتيه (732م) أوقفت التوسع الشمالي للخلافة الأموية في أوروبا الغربية. هزم جيش شارل مارتيل الفرنكي قوات عبد الرحمن الغافقي.",fr:"La Bataille de Tours/Poitiers (732 EC) stoppa l'expansion nord de la Caliphate Omeyyade en Europe occidentale. L'armée franque de Charles Martel vainquit les forces d'Abd al-Rahman al-Ghafiqi.",de:"Die Schlacht von Tours/Poitiers (732 n. Chr.) stoppte die nordwärtige Expansion des Umayyaden-Kalifats nach Westeuropa. Karl Martells fränkische Armee besiegte Abd al-Rahmans Kräfte."} },
-
-  { id:"hh7", category:"history", difficulty:"hard",
-    question:{en:"Which Islamic scholar is credited with pioneering the field of algebra and wrote 'Kitab al-Mukhtasar fi Hisab al-Jabr wal-Muqabala'?",ar:"أي عالم إسلامي يُنسب إليه ريادة علم الجبر وكتب 'كتاب المختصر في حساب الجبر والمقابلة'؟",fr:"Quel savant islamique est crédité d'avoir été le pionnier de l'algèbre et écrivit 'Kitab al-Mukhtasar fi Hisab al-Jabr wal-Muqabala'?",de:"Welchem islamischen Gelehrten wird die Pionierarbeit auf dem Gebiet der Algebra zugeschrieben und der 'Kitab al-Mukhtasar fi Hisab al-Jabr wal-Muqabala' schrieb?"},
-    options:{en:["Ibn Sina (Avicenna)","Al-Biruni","Muhammad ibn Musa al-Khwarizmi","Ibn al-Haytham"],ar:["ابن سينا","البيروني","محمد بن موسى الخوارزمي","ابن الهيثم"],fr:["Ibn Sina (Avicenne)","Al-Biruni","Muhammad ibn Musa al-Khwarizmi","Ibn al-Haytham"],de:["Ibn Sina (Avicenna)","Al-Biruni","Muhammad ibn Musa al-Khwarizmi","Ibn al-Haitham"]},
-    answer:2,
-    explanation:{en:"Muhammad ibn Musa al-Khwarizmi (780-850 CE) wrote 'The Compendious Book on Calculation by Completion and Balancing' — which gave us the word 'algebra' (from 'al-jabr'). His name gave us the word 'algorithm.' He worked at the House of Wisdom in Baghdad.",ar:"محمد بن موسى الخوارزمي (780-850م) كتب 'كتاب المختصر في حساب الجبر والمقابلة' الذي أعطانا مصطلح 'الجبر'. واسمه أعطانا مصطلح 'الخوارزمية' (algorithm).",fr:"Muhammad ibn Musa al-Khwarizmi (780-850 EC) écrivit 'Le Livre Compendieux sur le Calcul par Complétion et Équilibrage' — qui nous donna le mot 'algèbre' (de 'al-jabr'). Son nom donna 'algorithme'.",de:"Muhammad ibn Musa al-Khwarizmi (780-850 n. Chr.) schrieb das Buch das uns das Wort 'Algebra' (aus 'al-jabr') gab. Sein Name gab uns das Wort 'Algorithmus'."} },
-
-  { id:"hh8", category:"history", difficulty:"hard",
-    question:{en:"The 'Reconquista' refers to what historical process?",ar:"ما الذي يشير إليه مصطلح 'الاسترداد' (Reconquista)؟",fr:"La 'Reconquista' fait référence à quel processus historique?",de:"Was bezeichnet die 'Reconquista' als historischen Prozess?"},
-    options:{en:["The Muslim conquest of Spain in 711 CE","The 700-year process by which Christian kingdoms gradually recaptured the Iberian Peninsula from Muslim rule, ending in 1492","The Ottoman expansion into Eastern Europe","The Crusader conquest of Jerusalem"],ar:["الفتح الإسلامي لإسبانيا عام 711م","العملية التي امتدت 700 سنة واسترد فيها الممالك المسيحية شبه الجزيرة الإيبيرية من الحكم الإسلامي، انتهت عام 1492","التوسع العثماني في أوروبا الشرقية","فتح الصليبيين للقدس"],fr:["La conquête islamique de l'Espagne en 711 EC","Le processus de 700 ans par lequel les royaumes chrétiens récupérèrent progressivement la péninsule ibérique, se terminant en 1492","L'expansion ottomane en Europe de l'Est","La conquête croisée de Jérusalem"],de:["Die muslimische Eroberung Spaniens 711 n. Chr.","Der 700-jährige Prozess durch den christliche Königreiche die Iberische Halbinsel schrittweise von muslimischer Herrschaft zurückeroberten und 1492 endeten","Die osmanische Expansion in Osteuropa","Die Kreuzzugseroberung Jerusalems"]},
-    answer:1,
-    explanation:{en:"The Reconquista was the 781-year process (711-1492 CE) by which Christian kingdoms gradually recaptured Iberian territories from Muslim rule. It ended in 1492 CE when Granada — the last Muslim stronghold in Spain — fell to Ferdinand and Isabella.",ar:"كانت الاسترداد (الريكونكيستا) عملية امتدت 781 سنة (711-1492م) استرد فيها الممالك المسيحية الأراضي الإيبيرية. انتهت عام 1492م بسقوط غرناطة.",fr:"La Reconquista fut un processus de 781 ans (711-1492 EC) par lequel les royaumes chrétiens reprirent graduellement les territoires ibériques. Elle se termina en 1492 avec la chute de Grenade.",de:"Die Reconquista war ein 781-jähriger Prozess (711-1492 n. Chr.) durch den christliche Königreiche iberische Gebiete von muslimischer Herrschaft zurückeroberten. Sie endete 1492 mit dem Fall Granadas."} },
-
-  { id:"hh9", category:"history", difficulty:"hard",
-    question:{en:"What was the 'Mihna' (Inquisition) under Caliph Al-Ma'mun?",ar:"ما كانت 'المحنة' في عهد الخليفة المأمون؟",fr:"Qu'était la 'Mihna' (Inquisition) sous le Calife Al-Ma'mun?",de:"Was war die 'Mihna' (Inquisition) unter Kalif Al-Ma'mun?"},
-    options:{en:["A test for soldiers before joining the Islamic army","A doctrinal inquisition (833-848 CE) that forced scholars to affirm the Mutazilite position that the Quran was created — Imam Ahmad ibn Hanbal famously refused","A tax assessment on non-Muslim subjects","A certification process for Islamic judges"],ar:["اختبار الجنود قبل الانضمام للجيش الإسلامي","محنة عقدية (833-848م) أجبرت العلماء على القول بخلق القرآن — رفضها الإمام أحمد بن حنبل بشجاعة","ضريبة تُفرض على الرعايا غير المسلمين","عملية تأهيل القضاة الإسلاميين"],fr:["Un test pour les soldats avant de rejoindre l'armée islamique","Une inquisition doctrinale (833-848 EC) qui força les savants à affirmer la position mutazilite selon laquelle le Coran était créé — Imam Ahmad ibn Hanbal refusa célèbrement","Un impôt sur les sujets non-musulmans","Un processus de certification pour les juges islamiques"],de:["Ein Test für Soldaten vor dem Beitritt zur islamischen Armee","Eine doktrinäre Inquisition (833-848 n. Chr.) die Gelehrte zwang die mutazilitische Position zu bestätigen dass der Quran erschaffen sei — Imam Ahmad ibn Hanbal verweigerte dies berühmt","Eine Steuer auf nichtmuslimische Untertanen","Ein Zertifizierungsprozess für islamische Richter"]},
-    answer:1,
-    explanation:{en:"The Mihna was an official Abbasid inquisition (833-848 CE) enforcing the Mutazilite doctrine that the Quran was created (makhlooq). Scholars who refused to affirm this were imprisoned. Imam Ahmad ibn Hanbal (RA) famously refused and was flogged — his steadfastness eventually led to the Mihna's abolition.",ar:"المحنة كانت محاكمة عقدية عباسية (833-848م) تُلزم العلماء بالقول بخلق القرآن. الإمام أحمد بن حنبل رفض بشجاعة وجُلد، وأدى ثباته في نهاية المطاف إلى إلغاء المحنة.",fr:"La Mihna fut une inquisition officielle abbasside (833-848 EC) imposant la doctrine mutazilite du Coran créé. L'Imam Ahmad ibn Hanbal (RA) refusa célèbrement et fut fouetté.",de:"Die Mihna war eine offizielle abbasidische Inquisition (833-848 n. Chr.) die die mutazilitische Doktrin des erschaffenen Qurans durchsetzte. Imam Ahmad ibn Hanbal verweigerte berühmt und wurde ausgepeitscht."} },
-
-  { id:"hh10", category:"history", difficulty:"hard",
-    question:{en:"The 'Pact of Umar' (Covenant of Umar) referred to what?",ar:"ما الذي يشير إليه 'عهد عمر' (ميثاق عمر)؟",fr:"Le 'Pacte d'Umar' (Covenant d'Umar) faisait référence à quoi?",de:"Auf was bezog sich der 'Pakt Umars' (Vertrag Umars)?"},
-    options:{en:["Umar's personal letter to his children about leadership","An agreement between Umar ibn al-Khattab and the Christian patriarch of Jerusalem guaranteeing the city's security and religious freedom","Umar's treaty with the Persian Empire","Umar's letter establishing the rules of Islamic governance"],ar:["رسالة عمر الشخصية لأبنائه عن القيادة","اتفاقية بين عمر بن الخطاب والبطريرك المسيحي للقدس تضمن أمن المدينة والحرية الدينية","معاهدة عمر مع الإمبراطورية الفارسية","رسالة عمر التي تؤسس قواعد الحكم الإسلامي"],fr:["La lettre personnelle d'Umar à ses enfants sur le leadership","Un accord entre Umar ibn al-Khattab et le patriarche chrétien de Jérusalem garantissant la sécurité de la ville et la liberté religieuse","Le traité d'Umar avec l'Empire perse","La lettre d'Umar établissant les règles de la gouvernance islamique"],de:["Umars persönlicher Brief an seine Kinder über Führung","Ein Abkommen zwischen Umar ibn al-Khattab und dem christlichen Patriarchen von Jerusalem das die Sicherheit der Stadt und Religionsfreiheit garantierte","Umars Vertrag mit dem Persischen Reich","Umars Brief der Regeln islamischer Regierungsführung etablierte"]},
-    answer:1,
-    explanation:{en:"When Umar ibn al-Khattab (RA) entered Jerusalem in 638 CE, he signed the 'Covenant of Umar' — a charter granting the Christian inhabitants security of life, property, and religious freedom. He refused to pray in the Church of the Holy Sepulchre to protect it from becoming a mosque.",ar:"حين دخل عمر بن الخطاب رضي الله عنه القدس عام 638م وقَّع 'العهد العمري' — ميثاق يمنح السكان المسيحيين الأمان على أنفسهم وأموالهم وكنائسهم.",fr:"Quand Umar ibn al-Khattab (RA) entra à Jérusalem en 638 EC, il signa le 'Covenant d'Umar' — une charte accordant aux habitants chrétiens la sécurité de leur vie, propriété et liberté religieuse.",de:"Als Umar ibn al-Khattab (ra) 638 n. Chr. in Jerusalem einzog unterzeichnete er den 'Pakt Umars' — eine Charta die den christlichen Bewohnern Sicherheit für Leben, Eigentum und Religionsfreiheit gewährte."} },
-
-  { id:"hh11", category:"history", difficulty:"hard",
-    question:{en:"The 'Battle of the Camel' (656 CE) was fought between Ali ibn Abi Talib and which group?",ar:"بين علي بن أبي طالب وأي مجموعة وقعت 'موقعة الجمل' عام 656م؟",fr:"La 'Bataille du Chameau' (656 EC) fut combattue entre Ali ibn Abi Talib et quel groupe?",de:"Die 'Kamelschlacht' (656 n. Chr.) wurde zwischen Ali ibn Abi Talib und welcher Gruppe gekämpft?"},
-    options:{en:["The Byzantine armies","Muawiyah ibn Abi Sufyan's forces from Syria","Aisha bint Abi Bakr, Talhah ibn Ubaydullah, and Al-Zubayr ibn al-Awwam, who demanded justice for Uthman's murder","The Kharijite rebels who rejected Ali's leadership"],ar:["الجيوش البيزنطية","قوات معاوية بن أبي سفيان من الشام","عائشة بنت أبي بكر وطلحة بن عبيد الله والزبير بن العوام الذين طالبوا بالقصاص لمقتل عثمان","خوارج رفضوا قيادة علي"],fr:["Les armées byzantines","Les forces de Muawiyah ibn Abi Sufyan de Syrie","Aïcha bint Abi Bakr, Talhah ibn Ubaydullah et Al-Zubayr ibn al-Awwam, qui réclamaient justice pour le meurtre d'Uthman","Les rebelles kharijites qui rejetèrent le leadership d'Ali"],de:["Die byzantinischen Armeen","Muawiyas Kräfte aus Syrien","Aisha bint Abi Bakr, Talha ibn Ubaidullah und Al-Zubayr ibn al-Awwam die Gerechtigkeit für Uthmans Mord forderten","Die kharijitischen Rebellen die Alis Führerschaft ablehnten"]},
-    answer:2,
-    explanation:{en:"The Battle of the Camel (Battle of Basra, 656 CE) was the first civil war among Muslims. Ali (RA) fought against Aisha (RA), Talhah (RA), and Zubayr (RA), who demanded that Ali first punish Uthman's murderers before they would give their allegiance. Talhah and Zubayr were killed. Ali won the battle.",ar:"موقعة الجمل (معركة البصرة 656م) كانت أول حرب أهلية بين المسلمين. قاتل علي رضي الله عنه عائشة وطلحة والزبير الذين طالبوا بالقصاص لمقتل عثمان.",fr:"La Bataille du Chameau (Bassora, 656 EC) fut la première guerre civile entre musulmans. Ali (RA) combattit Aïcha (RA), Talhah (RA) et Zubayr (RA) qui réclamaient que les meurtriers d'Uthman soient punis.",de:"Die Kamelschlacht (Basra, 656 n. Chr.) war der erste Bürgerkrieg unter Muslimen. Ali (ra) kämpfte gegen Aisha (ra), Talha (ra) und Zubayr (ra) die Gerechtigkeit für Uthmans Mörder forderten."} },
-
-  { id:"hh12", category:"history", difficulty:"hard",
-    question:{en:"Who was Ibn Rushd (Averroes) and why is he historically significant?",ar:"من كان ابن رشد وما أهميته التاريخية؟",fr:"Qui était Ibn Rushd (Averroès) et pourquoi est-il historiquement significatif?",de:"Wer war Ibn Rushd (Averroes) und warum ist er historisch bedeutsam?"},
-    options:{en:["An Abbasid Caliph known for his military conquests","A 12th-century Andalusian philosopher whose commentaries on Aristotle deeply influenced medieval European thought","A Sufi mystic who wrote about divine love","A 10th-century Persian astronomer"],ar:["خليفة عباسي مشهور بفتوحاته","فيلسوف أندلسي من القرن الثاني عشر — شروحاته على أرسطو أثّرت عميقاً في الفكر الأوروبي الوسيط","صوفي كتب في الحب الإلهي","فلكي فارسي من القرن العاشر"],fr:["Un calife abbasside connu pour ses conquêtes militaires","Un philosophe andalou du 12e siècle dont les commentaires sur Aristote influencèrent profondément la pensée européenne médiévale","Un mystique soufi qui écrivait sur l'amour divin","Un astronome persan du 10e siècle"],de:["Ein abbasidischer Kalif bekannt für seine Militärfeldzüge","Ein andalusischer Philosoph des 12. Jahrhunderts dessen Aristoteles-Kommentare das mittelalterliche europäische Denken tiefgreifend beeinflussten","Ein Sufi-Mystiker der über göttliche Liebe schrieb","Ein persischer Astronom des 10. Jahrhunderts"]},
-    answer:1,
-    explanation:{en:"Ibn Rushd (1126-1198 CE), known in the West as Averroes, was an Andalusian polymath. His extensive commentaries on Aristotle became the standard reference in European universities and profoundly shaped Scholasticism, including Thomas Aquinas's work.",ar:"ابن رشد (1126-1198م) المعروف في الغرب بأفيروس كان عالماً أندلسياً موسوعياً. شروحاته الواسعة على أرسطو أصبحت المرجع الأساسي في الجامعات الأوروبية وأثّرت عميقاً في الفكر المدرسي.",fr:"Ibn Rushd (1126-1198 EC), connu en Occident sous le nom d'Averroès, était un polymathe andalou. Ses commentaires sur Aristote devinrent la référence standard dans les universités européennes et influencèrent profondément la scolastique.",de:"Ibn Rushd (1126-1198 n. Chr.), im Westen als Averroes bekannt, war ein andalusischer Universalgelehrter. Seine umfangreichen Aristoteles-Kommentare wurden zur Standardreferenz an europäischen Universitäten und beeinflussten die Scholastik tiefgreifend."} },
+  // ============================================================
+  // HISTORY - Medium to Hard
+  // ============================================================
+  {
+    id: "h1", category: "history", difficulty: "hard",
+    question: {
+      en: "After the Prophet's death, some tribes refused to pay Zakat. Which Caliph insisted on fighting them despite opposition from some companions?",
+      ar: "بعد وفاة النبي ﷺ، رفضت بعض القبائل دفع الزكاة. أي خليفة أصر على قتالهم رغم معارضة بعض الصحابة؟",
+      fr: "Après la mort du Prophète, certaines tribus refusèrent de payer la Zakat. Quel Calife insista pour les combattre malgré l'opposition de certains compagnons?",
+      de: "Nach dem Tod des Propheten weigerten sich einige Stämme Zakat zu zahlen. Welcher Kalif bestand darauf sie zu bekämpfen trotz des Widerstands einiger Gefährten?"
+    },
+    options: {
+      en: ["Umar ibn al-Khattab", "Uthman ibn Affan", "Abu Bakr al-Siddiq", "Ali ibn Abi Talib"],
+      ar: ["عمر بن الخطاب", "عثمان بن عفان", "أبو بكر الصديق", "علي بن أبي طالب"],
+      fr: ["Umar ibn al-Khattab", "Uthman ibn Affan", "Abu Bakr al-Siddiq", "Ali ibn Abi Talib"],
+      de: ["Umar ibn al-Khattab", "Uthman ibn Affan", "Abu Bakr al-Siddiq", "Ali ibn Abi Talib"]
+    },
+    answer: 2,
+    explanation: {
+      en: "Abu Bakr (RA) famously declared: 'By Allah, if they withhold even a rope they used to give to the Prophet, I will fight them for it.' This established Zakat as a compulsory pillar of Islam.",
+      ar: "قال أبو بكر رضي الله عنه: 'والله لو منعوني عقالاً كانوا يؤدونه لرسول الله لقاتلتهم عليه.' وهذا أثبت الزكاة ركناً إلزامياً في الإسلام.",
+      fr: "Abu Bakr déclara: 'Par Allah, s'ils retiennent ne serait-ce qu'une corde qu'ils donnaient au Prophète, je les combattrai pour cela.'",
+      de: "Abu Bakr erklärte: 'Bei Allah, wenn sie auch nur ein Seil zurückhalten das sie dem Propheten gaben, werde ich sie dafür bekämpfen.'"
+    }
+  },
+  {
+    id: "h2", category: "history", difficulty: "hard",
+    question: {
+      en: "Which battle in 636 CE led to the Muslim conquest of the Levant (Syria and Palestine) and the end of Byzantine rule there?",
+      ar: "أي معركة في عام 636م أدت إلى الفتح الإسلامي للشام (سوريا وفلسطين) ونهاية الحكم البيزنطي هناك؟",
+      fr: "Quelle bataille en 636 EC a conduit à la conquête musulmane du Levant (Syrie et Palestine) et à la fin de la domination byzantine?",
+      de: "Welche Schlacht im Jahr 636 n. Chr. führte zur muslimischen Eroberung der Levante (Syrien und Palästina) und zum Ende der byzantinischen Herrschaft dort?"
+    },
+    options: {
+      en: ["Battle of Qadisiyyah", "Battle of Yarmouk", "Battle of Ajnadayn", "Battle of Hunayn"],
+      ar: ["معركة القادسية", "معركة اليرموك", "معركة أجنادين", "معركة حنين"],
+      fr: ["Bataille de Qadisiyyah", "Bataille de Yarmouk", "Bataille d'Ajnadayn", "Bataille de Hunayn"],
+      de: ["Schlacht von Qadisiyya", "Schlacht am Yarmouk", "Schlacht von Ajnadayn", "Schlacht von Hunayn"]
+    },
+    answer: 1,
+    explanation: {
+      en: "The Battle of Yarmouk (636 CE) was a decisive Muslim victory against the Byzantines, led by Khalid ibn al-Walid. It opened the Levant to Muslim rule, including Jerusalem and Damascus.",
+      ar: "معركة اليرموك (636م) كانت انتصاراً حاسماً للمسلمين بقيادة خالد بن الوليد، وفتحت الشام بما فيها القدس ودمشق للحكم الإسلامي.",
+      fr: "La bataille de Yarmouk fut une victoire décisive des musulmans contre les Byzantins, ouvrant le Levant à la domination musulmane.",
+      de: "Die Schlacht am Yarmouk war ein entscheidender muslimischer Sieg gegen die Byzantiner und öffnete die Levante für muslimische Herrschaft."
+    }
+  },
+  {
+    id: "h3", category: "history", difficulty: "hard",
+    question: {
+      en: "Which dynasty established the first standing army and navy in Islamic history, and moved the capital from Medina to Damascus?",
+      ar: "أي سلالة أسست أول جيش نظامي وأسطول بحري في التاريخ الإسلامي، ونقلت العاصمة من المدينة إلى دمشق؟",
+      fr: "Quelle dynastie a établi la première armée permanente et la première marine de l'histoire islamique, et a déplacé la capitale de Médine à Damas?",
+      de: "Welche Dynastie etablierte die erste stehende Armee und Marine in der islamischen Geschichte und verlegte die Hauptstadt von Medina nach Damaskus?"
+    },
+    options: {
+      en: ["Abbasid Dynasty", "Umayyad Dynasty", "Fatimid Dynasty", "Ottoman Dynasty"],
+      ar: ["الدولة العباسية", "الدولة الأموية", "الدولة الفاطمية", "الدولة العثمانية"],
+      fr: ["Dynastie Abbasside", "Dynastie Omeyyade", "Dynastie Fatimide", "Dynastie Ottomane"],
+      de: ["Abbasiden-Dynastie", "Umayyaden-Dynastie", "Fatimiden-Dynastie", "Osmanische Dynastie"]
+    },
+    answer: 1,
+    explanation: {
+      en: "The Umayyad Dynasty (661-750 CE), founded by Muawiyah ibn Abi Sufyan, centralized Islamic governance and expanded the empire from Spain to India, establishing the first permanent Muslim navy.",
+      ar: "الدولة الأموية (661-750م) أسسها معاوية بن أبي سفيان، ووسعت الإمبراطورية من الأندلس إلى الهند، وأسست أول أسطول بحري دائم للمسلمين.",
+      fr: "La dynastie omeyyade centralisa le gouvernement islamique et établit la première marine musulmane permanente.",
+      de: "Die Umayyaden-Dynastie zentralisierte die islamische Regierungsführung und etablierte die erste ständige muslimische Marine."
+    }
+  },
+  {
+    id: "h4", category: "history", difficulty: "hard",
+    question: {
+      en: "Which city served as the capital of the Abbasid Caliphate and became the center of the Islamic Golden Age?",
+      ar: "أي مدينة كانت عاصمة الخلافة العباسية وأصبحت مركز العصر الذهبي الإسلامي؟",
+      fr: "Quelle ville servit de capitale au Califat Abbasside et devint le centre de l'Âge d'Or islamique?",
+      de: "Welche Stadt diente als Hauptstadt des Abbasiden-Kalifats und wurde zum Zentrum des Islamischen Goldenen Zeitalters?"
+    },
+    options: {
+      en: ["Cairo", "Damascus", "Baghdad", "Cordoba"],
+      ar: ["القاهرة", "دمشق", "بغداد", "قرطبة"],
+      fr: ["Le Caire", "Damas", "Bagdad", "Cordoue"],
+      de: ["Kairo", "Damaskus", "Bagdad", "Córdoba"]
+    },
+    answer: 2,
+    explanation: {
+      en: "Baghdad, founded in 762 CE by Caliph Al-Mansur, was home to the House of Wisdom (Bayt al-Hikma), where scholars advanced mathematics, astronomy, medicine, and philosophy during the Islamic Golden Age.",
+      ar: "بغداد، أسسها الخليفة المنصور عام 762م، كانت موطناً لبيت الحكمة حيث تقدم العلماء في الرياضيات والفلك والطب والفلسفة.",
+      fr: "Bagdad, fondée en 762 EC, abritait la Maison de la Sagesse où les savants firent progresser les sciences.",
+      de: "Bagdad, gegründet 762 n. Chr., beherbergte das Haus der Weisheit wo Gelehrte Wissenschaften vorantrieben."
+    }
+  },
+  {
+    id: "h5", category: "history", difficulty: "hard",
+    question: {
+      en: "What was the outcome of the Battle of Siffin (657 CE) between Ali ibn Abi Talib and Muawiyah?",
+      ar: "ماذا كانت نتيجة معركة صفين (657م) بين علي بن أبي طالب ومعاوية؟",
+      fr: "Quel fut le résultat de la Bataille de Siffin (657 EC) entre Ali ibn Abi Talib et Muawiyah?",
+      de: "Was war das Ergebnis der Schlacht von Siffin (657 n. Chr.) zwischen Ali ibn Abi Talib und Muawiyah?"
+    },
+    options: {
+      en: ["Decisive victory for Ali", "Decisive victory for Muawiyah", "Stalemate leading to arbitration", "Both sides withdrew without fighting"],
+      ar: ["انتصار حاسم لعلي", "انتصار حاسم لمعاوية", "جمود أدى إلى التحكيم", "انسحب الجانبان دون قتال"],
+      fr: ["Victoire décisive d'Ali", "Victoire décisive de Muawiyah", "Impasse menant à l'arbitrage", "Les deux camps se retirèrent sans combattre"],
+      de: ["Entscheidender Sieg für Ali", "Entscheidender Sieg für Muawiyah", "Pattsituation die zu Schlichtung führte", "Beide Seiten zogen sich ohne Kampf zurück"]
+    },
+    answer: 2,
+    explanation: {
+      en: "The battle ended in a stalemate when Muawiyah's soldiers raised Qurans on their spears, calling for arbitration. Ali agreed to arbitration, which led to the Kharijite secession and later his assassination.",
+      ar: "انتهت المعركة بالجمود حين رفع جند معاوية المصاحف على رماحهم داعين للتحكيم. أدى ذلك إلى انشقاق الخوارج واستشهاد علي لاحقاً.",
+      fr: "La bataille se termina par une impasse et un arbitrage, menant à la sécession kharijite.",
+      de: "Die Schlacht endete in einer Pattsituation und führte zur Schlichtung, die zur Abspaltung der Charidschiten führte."
+    }
+  },
+
+  // ============================================================
+  // QURAN - Medium to Hard
+  // ============================================================
+  {
+    id: "q1", category: "quran", difficulty: "hard",
+    question: {
+      en: "Which surah contains the longest verse (ayat) in the entire Quran?",
+      ar: "أي سورة تحتوي على أطول آية في القرآن الكريم كله؟",
+      fr: "Quelle sourate contient le plus long verset (ayat) du Coran?",
+      de: "Welche Sure enthält den längsten Vers (Ayat) im gesamten Quran?"
+    },
+    options: {
+      en: ["Al-Baqarah", "Al-Imran", "An-Nisa", "Al-Ma'idah"],
+      ar: ["البقرة", "آل عمران", "النساء", "المائدة"],
+      fr: ["Al-Baqarah", "Al-Imran", "An-Nisa", "Al-Ma'idah"],
+      de: ["Al-Baqarah", "Al-Imran", "An-Nisa", "Al-Ma'idah"]
+    },
+    answer: 0,
+    explanation: {
+      en: "Ayat al-Dayn (verse 282 of Surah Al-Baqarah) is the longest verse in the Quran, dealing with debt contracts and the importance of written documentation.",
+      ar: "آية الدين (الآية 282 من سورة البقرة) هي أطول آية في القرآن، وتتعلق بعقود الدين وأهمية التوثيق الكتابي.",
+      fr: "Ayat al-Dayn (verset 282 de la sourate Al-Baqarah) est le plus long verset du Coran, traitant des contrats de dette.",
+      de: "Ayat al-Dayn (Vers 282 von Sure Al-Baqarah) ist der längste Vers im Quran über Schuldverträge."
+    }
+  },
+  {
+    id: "q2", category: "quran", difficulty: "hard",
+    question: {
+      en: "Which surah is named after a battle that never actually occurred?",
+      ar: "أي سورة سُميت على اسم معركة لم تحدث قط؟",
+      fr: "Quelle sourate est nommée d'après une bataille qui n'a jamais eu lieu?",
+      de: "Welche Sure ist nach einer Schlacht benannt die nie stattfand?"
+    },
+    options: {
+      en: ["Al-Fath", "Al-Ahzab", "Al-Anfal", "Al-Hashr"],
+      ar: ["الفتح", "الأحزاب", "الأنفال", "الحشر"],
+      fr: ["Al-Fath", "Al-Ahzab", "Al-Anfal", "Al-Hashr"],
+      de: ["Al-Fath", "Al-Ahzab", "Al-Anfal", "Al-Hashr"]
+    },
+    answer: 0,
+    explanation: {
+      en: "Surah Al-Fath (The Victory) refers to the Treaty of Hudaybiyyah, which the Quran called a 'clear victory' — even though no battle was fought. The treaty led to the eventual conquest of Mecca.",
+      ar: "سورة الفتح تشير إلى صلح الحديبية الذي وصفه القرآن بأنه 'فتح مبين' — رغم عدم وقوع معركة.",
+      fr: "La sourate Al-Fath fait référence au traité de Hudaybiyyah, qualifié de 'victoire éclatante' bien qu'aucune bataille n'ait eu lieu.",
+      de: "Sure Al-Fath bezieht sich auf den Vertrag von Hudaibiyya, den der Quran als 'klaren Sieg' bezeichnete."
+    }
+  },
+  {
+    id: "q3", category: "quran", difficulty: "hard",
+    question: {
+      en: "What is the name of the only companion mentioned by name in the Quran?",
+      ar: "ما اسم الصحابي الوحيد المذكور باسمه في القرآن الكريم؟",
+      fr: "Quel est le nom du seul compagnon mentionné par son nom dans le Coran?",
+      de: "Wie heißt der einzige Gefährte der namentlich im Quran erwähnt wird?"
+    },
+    options: {
+      en: ["Zayd ibn Harithah", "Abu Bakr al-Siddiq", "Bilal ibn Rabah", "Khalid ibn al-Walid"],
+      ar: ["زيد بن حارثة", "أبو بكر الصديق", "بلال بن رباح", "خالد بن الوليد"],
+      fr: ["Zayd ibn Harithah", "Abu Bakr al-Siddiq", "Bilal ibn Rabah", "Khalid ibn al-Walid"],
+      de: ["Zayd ibn Haritha", "Abu Bakr al-Siddiq", "Bilal ibn Rabah", "Chalid ibn al-Walid"]
+    },
+    answer: 0,
+    explanation: {
+      en: "Zayd ibn Harithah (RA), the Prophet's adopted son, is mentioned by name in Surah Al-Ahzab (33:37) regarding his divorce and the Prophet's marriage to Zaynab bint Jahsh.",
+      ar: "زيد بن حارثة رضي الله عنه، الابن بالتبني للنبي ﷺ، مذكور باسمه في سورة الأحزاب (33:37).",
+      fr: "Zayd ibn Harithah, le fils adoptif du Prophète, est mentionné par son nom dans la sourate Al-Ahzab.",
+      de: "Zayd ibn Haritha, der Adoptivsohn des Propheten, wird namentlich in Sure Al-Ahzab erwähnt."
+    }
+  },
+  {
+    id: "q4", category: "quran", difficulty: "hard",
+    question: {
+      en: "Which surah is known for containing the command for Muslims to lower their gaze?",
+      ar: "أي سورة تُعرف باحتوائها على الأمر للمسلمين بغض البصر؟",
+      fr: "Quelle sourate est connue pour contenir l'ordre aux musulmans de baisser leur regard?",
+      de: "Welche Sure ist bekannt für den Befehl an Muslime ihren Blick zu senken?"
+    },
+    options: {
+      en: ["Surah Al-Mu'minun", "Surah An-Nur", "Surah Al-Ahzab", "Surah Al-Hujurat"],
+      ar: ["سورة المؤمنون", "سورة النور", "سورة الأحزاب", "سورة الحجرات"],
+      fr: ["Sourate Al-Mu'minun", "Sourate An-Nur", "Sourate Al-Ahzab", "Sourate Al-Hujurat"],
+      de: ["Sure Al-Mu'minun", "Sure An-Nur", "Sure Al-Ahzab", "Sure Al-Hudschurat"]
+    },
+    answer: 1,
+    explanation: {
+      en: "Surah An-Nur (Chapter 24, verses 30-31) commands believing men and women to lower their gaze and guard their modesty.",
+      ar: "سورة النور (الفصل 24، الآيات 30-31) تأمر الرجال والنساء المؤمنين بغض البصر وحفظ العفة.",
+      fr: "La sourate An-Nur ordonne aux hommes et femmes croyants de baisser leur regard.",
+      de: "Sure An-Nur befiehlt gläubigen Männern und Frauen ihren Blick zu senken."
+    }
+  },
+  {
+    id: "q5", category: "quran", difficulty: "hard",
+    question: {
+      en: "What is the meaning of 'Mudawwanah' in Islamic scholarship?",
+      ar: "ما معنى 'المدونة' في الدراسات الإسلامية؟",
+      fr: "Quelle est la signification de 'Mudawwanah' dans les études islamiques?",
+      de: "Was bedeutet 'Mudawwanah' in der islamischen Gelehrsamkeit?"
+    },
+    options: {
+      en: ["A collection of poetry", "A written compilation of legal rulings", "A biography of the Prophet", "A commentary on the Quran"],
+      ar: ["مجموعة شعرية", "تجميع مكتوب للأحكام الفقهية", "سيرة النبي ﷺ", "تفسير للقرآن"],
+      fr: ["Un recueil de poésie", "Une compilation écrite de jugements juridiques", "Une biographie du Prophète", "Un commentaire du Coran"],
+      de: ["Eine Gedichtsammlung", "Eine schriftliche Sammlung von Rechtsurteilen", "Eine Biographie des Propheten", "Ein Kommentar zum Quran"]
+    },
+    answer: 1,
+    explanation: {
+      en: "Al-Mudawwanah al-Kubra is a foundational text of the Maliki school of law, compiled by Sahnun from the teachings of Imam Malik.",
+      ar: "المدونة الكبرى هي نص تأسيسي للمذهب المالكي، جمعها سحنون من تعاليم الإمام مالك.",
+      fr: "Al-Mudawwanah al-Kubra est un texte fondateur de l'école Malikite de jurisprudence.",
+      de: "Al-Mudawwanah al-Kubra ist ein grundlegender Text der malikitischen Rechtsschule."
+    }
+  },
+
+  // ============================================================
+  // FIQH - Medium to Hard
+  // ============================================================
+  {
+    id: "f1", category: "fiqh", difficulty: "hard",
+    question: {
+      en: "What is the minimum amount of wealth (nisab) for Zakat on silver in grams?",
+      ar: "ما هو أقل نصاب للزكاة على الفضة بالغرامات؟",
+      fr: "Quel est le montant minimum (nisab) pour la Zakat sur l'argent en grammes?",
+      de: "Was ist der Mindestbetrag (Nisab) für Zakat auf Silber in Gramm?"
+    },
+    options: {
+      en: ["85 grams", "200 grams", "595 grams", "1000 grams"],
+      ar: ["85 غرام", "200 غرام", "595 غرام", "1000 غرام"],
+      fr: ["85 grammes", "200 grammes", "595 grammes", "1000 grammes"],
+      de: ["85 Gramm", "200 Gramm", "595 Gramm", "1000 Gramm"]
+    },
+    answer: 2,
+    explanation: {
+      en: "The nisab for silver is 595 grams (approximately 52.5 tola). For gold, it is 85 grams. Zakat is 2.5% of wealth held for one lunar year above this threshold.",
+      ar: "نصاب الفضة هو 595 غراماً، ونصاب الذهب 85 غراماً. الزكاة هي 2.5% من المال المملوك حولاً كاملاً.",
+      fr: "Le nisab pour l'argent est de 595 grammes, et pour l'or 85 grammes. La Zakat est de 2,5% sur les biens détenus pendant une année lunaire.",
+      de: "Der Nisab für Silber beträgt 595 Gramm und für Gold 85 Gramm. Zakat beträgt 2,5% des über einem Jahr gehaltenen Vermögens."
+    }
+  },
+  {
+    id: "f2", category: "fiqh", difficulty: "hard",
+    question: {
+      en: "In which situation is it permissible to combine Dhuhr and Asr prayers without traveling?",
+      ar: "في أي حالة يجوز الجمع بين صلاتي الظهر والعصر بدون سفر؟",
+      fr: "Dans quelle situation est-il permis de combiner les prières de Dhuhr et Asr sans voyager?",
+      de: "In welcher Situation ist es erlaubt Dhuhr und Asr zu kombinieren ohne zu reisen?"
+    },
+    options: {
+      en: ["During rain or extreme weather", "When one is ill", "During Friday sermon", "Never, only during travel"],
+      ar: ["عند المطر أو الطقس القاسي", "عند المرض", "أثناء خطبة الجمعة", "أبداً، فقط أثناء السفر"],
+      fr: ["Pendant la pluie ou le mauvais temps", "En cas de maladie", "Pendant le sermon du vendredi", "Jamais, seulement en voyage"],
+      de: ["Bei Regen oder extremem Wetter", "Bei Krankheit", "Während der Freitagspredigt", "Nie, nur auf Reisen"]
+    },
+    answer: 0,
+    explanation: {
+      en: "Many scholars permit combining prayers (jam') due to rain, heavy snow, mud, or strong cold winds to ease hardship. This is based on hadith where the Prophet combined prayers during rain.",
+      ar: "يجيز كثير من العلماء الجمع بين الصلوات بسبب المطر أو الثلج أو الوحل تخفيفاً للمشقة، استناداً إلى فعل النبي ﷺ.",
+      fr: "De nombreux savants permettent de combiner les prières en raison de la pluie ou du mauvais temps, selon la pratique du Prophète.",
+      de: "Viele Gelehrte erlauben das Kombinieren von Gebeten wegen Regen oder schlechtem Wetter basierend auf der Praxis des Propheten."
+    }
+  },
+  {
+    id: "f3", category: "fiqh", difficulty: "hard",
+    question: {
+      en: "What is the Islamic ruling on tattooing (warsh)?",
+      ar: "ما هو الحكم الإسلامي للوشم (الوارش)؟",
+      fr: "Quel est le jugement islamique sur le tatouage (warsh)?",
+      de: "Was ist das islamische Urteil über Tätowierungen (Warsch)?"
+    },
+    options: {
+      en: ["Permissible for women only", "Permissible if not painful", "Forbidden (haram) because it changes Allah's creation", "Permissible with small designs"],
+      ar: ["جائز للنساء فقط", "جائز إذا لم يكن مؤلماً", "حرام لأنه تغيير لخلق الله", "جائز بتصاميم صغيرة"],
+      fr: ["Permis pour les femmes seulement", "Permis si indolore", "Interdit (haram) car cela modifie la création d'Allah", "Permis avec de petits motifs"],
+      de: ["Nur für Frauen erlaubt", "Erlaubt wenn nicht schmerzhaft", "Verboten (Haram) weil es Allahs Schöpfung verändert", "Erlaubt mit kleinen Designs"]
+    },
+    answer: 2,
+    explanation: {
+      en: "The Prophet ﷺ cursed the one who does tattoos and the one who gets them done. It is considered haram because it alters Allah's creation and causes unnecessary pain.",
+      ar: "لعن النبي ﷺ الواشمة والمستوشمة، والوشم حرام لأنه تغيير لخلق الله ويسبب ألماً لا داعي له.",
+      fr: "Le Prophète a maudit celui qui fait des tatouages et celui qui se fait tatouer. C'est haram car cela modifie la création d'Allah.",
+      de: "Der Prophet verfluchte den der Tätowierungen macht und den der sie bekommt. Es ist haram weil es Allahs Schöpfung verändert."
+    }
+  },
+  {
+    id: "f4", category: "fiqh", difficulty: "hard",
+    question: {
+      en: "What is the difference between 'fard' and 'wajib' in Islamic jurisprudence?",
+      ar: "ما الفرق بين 'الفرض' و 'الواجب' في الفقه الإسلامي؟",
+      fr: "Quelle est la différence entre 'fard' et 'wajib' en jurisprudence islamique?",
+      de: "Was ist der Unterschied zwischen 'Fard' und 'Wadschib' in der islamischen Rechtswissenschaft?"
+    },
+    options: {
+      en: ["No difference — same meaning", "Fard is from Quran, wajib is from Sunnah only", "Fard is obligatory with certainty, wajib is obligatory but less than fard in Hanafi school", "Fard is for men, wajib for women"],
+      ar: ["لا فرق — نفس المعنى", "الفرض من القرآن والواجب من السنة فقط", "الفرض واجب بيقين، والواجب أقل درجة في المذهب الحنفي", "الفرض للرجال والواجب للنساء"],
+      fr: ["Pas de différence", "Fard vient du Coran, wajib seulement de la Sunna", "Fard est obligatoire avec certitude, wajib est obligatoire mais moins que fard selon l'école hanafite", "Fard pour les hommes, wajib pour les femmes"],
+      de: ["Kein Unterschied", "Fard kommt aus dem Quran, Wadschib nur aus der Sunna", "Fard ist mit Sicherheit verpflichtend, Wadschib ist verpflichtend aber weniger als Fard in der hanafitischen Schule", "Fard für Männer, Wadschib für Frauen"]
+    },
+    answer: 2,
+    explanation: {
+      en: "In Hanafi fiqh, 'fard' is proven by definitive evidence (Quran/mutawatir hadith) and denying it is disbelief. 'Wajib' is proven by speculative evidence — missing it is sinful but doesn't constitute disbelief.",
+      ar: "في الفقه الحنفي، 'الفرض' ثابت بدليل قطعي (قرآن/حديث متواتر) وجحده كفر. 'الواجب' ثابت بدليل ظني — تركه إثم لا كفر.",
+      fr: "Dans le fiqh hanafite, 'fard' est prouvé par des preuves définitives, 'wajib' par des preuves spéculatives.",
+      de: "In der hanafitischen Fiqh ist 'Fard' durch definitive Beweise belegt, 'Wadschib' durch spekulative Beweise."
+    }
+  },
+
+  // ============================================================
+  // PROPHETS - Medium to Hard
+  // ============================================================
+  {
+    id: "p1", category: "prophets", difficulty: "hard",
+    question: {
+      en: "Which prophet was swallowed by a giant fish and later forgiven after repenting?",
+      ar: "أي نبي ابتلعه حوت كبير ثم غُفر له بعد توبته؟",
+      fr: "Quel prophète fut avalé par un poisson géant puis pardonné après son repentir?",
+      de: "Welcher Prophet wurde von einem riesigen Fisch verschluckt und später nach seiner Reue vergeben?"
+    },
+    options: {
+      en: ["Prophet Musa", "Prophet Ayyub", "Prophet Yunus", "Prophet Yusuf"],
+      ar: ["النبي موسى", "النبي أيوب", "النبي يونس", "النبي يوسف"],
+      fr: ["Prophète Moussa", "Prophète Ayyub", "Prophète Yunus", "Prophète Yusuf"],
+      de: ["Prophet Musa", "Prophet Ayyub", "Prophet Yunus", "Prophet Yusuf"]
+    },
+    answer: 2,
+    explanation: {
+      en: "Prophet Yunus (Jonah) left his people without Allah's permission. After being swallowed by a whale, he called out: 'La ilaha illa Anta, subhanaka, inni kuntu min al-zalimin' — 'There is no god but You, glory be to You, I was among the wrongdoers.'",
+      ar: "النبي يونس عليه السلام ترك قومه دون إذن الله. نادى في بطن الحوت: 'لا إله إلا أنت سبحانك إني كنت من الظالمين'.",
+      fr: "Le prophète Yunus (Jonas) appela depuis le ventre de la baleine: 'Il n'y a de dieu que Toi, gloire à Toi, j'étais parmi les injustes.'",
+      de: "Prophet Yunus (Jona) rief aus dem Wal: 'Es gibt keinen Gott außer Dir, gepriesen seist Du, ich war einer der Ungerechten.'"
+    }
+  },
+  {
+    id: "p2", category: "prophets", difficulty: "hard",
+    question: {
+      en: "Which prophet was known as 'Khatim al-Anbiya' (Seal of the Prophets)?",
+      ar: "أي نبي عُرف بـ'خاتم الأنبياء'؟",
+      fr: "Quel prophète était connu comme 'Khatim al-Anbiya' (Sceau des Prophètes)?",
+      de: "Welcher Prophet war als 'Khatim al-Anbiya' (Siegel der Propheten) bekannt?"
+    },
+    options: {
+      en: ["Prophet Isa", "Prophet Ibrahim", "Prophet Muhammad ﷺ", "Prophet Musa"],
+      ar: ["النبي عيسى", "النبي إبراهيم", "النبي محمد ﷺ", "النبي موسى"],
+      fr: ["Prophète Isa", "Prophète Ibrahim", "Prophète Muhammad ﷺ", "Prophète Moussa"],
+      de: ["Prophet Isa", "Prophet Ibrahim", "Prophet Muhammad ﷺ", "Prophet Musa"]
+    },
+    answer: 2,
+    explanation: {
+      en: "The Quran states: 'Muhammad is not the father of any of your men, but he is the Messenger of Allah and the Seal of the Prophets.' (33:40) — indicating no prophet will come after him.",
+      ar: "القرآن يقول: {مَّا كَانَ مُحَمَّدٌ أَبَا أَحَدٍ مِّن رِّجَالِكُمْ وَلَٰكِن رَّسُولَ اللَّهِ وَخَاتَمَ النَّبِيِّينَ} (33:40).",
+      fr: "Le Coran dit: 'Muhammad n'est le père d'aucun de vos hommes, mais il est le Messager d'Allah et le Sceau des Prophètes.' (33:40)",
+      de: "Der Quran sagt: 'Muhammad ist nicht der Vater eines eurer Männer, aber er ist der Gesandte Allahs und das Siegel der Propheten.' (33:40)"
+    }
+  },
+  {
+    id: "p3", category: "prophets", difficulty: "hard",
+    question: {
+      en: "Which prophet is known for his patience and was restored to health, wealth, and family after a severe trial?",
+      ar: "أي نبي اشتُهر بصبره وأُعيدت له صحته وثروته وعائلته بعد محنة شديدة؟",
+      fr: "Quel prophète est connu pour sa patience et fut restauré en santé, richesse et famille après une dure épreuve?",
+      de: "Welcher Prophet ist für seine Geduld bekannt und wurde nach einer schweren Prüfung in Gesundheit, Reichtum und Familie wiederhergestellt?"
+    },
+    options: {
+      en: ["Prophet Yunus", "Prophet Ayyub", "Prophet Yaqub", "Prophet Zakariyya"],
+      ar: ["النبي يونس", "النبي أيوب", "النبي يعقوب", "النبي زكريا"],
+      fr: ["Prophète Yunus", "Prophète Ayyub", "Prophète Yaqub", "Prophète Zakariyya"],
+      de: ["Prophet Yunus", "Prophet Ayyub", "Prophet Yaqub", "Prophet Zakariyya"]
+    },
+    answer: 1,
+    explanation: {
+      en: "Prophet Ayyub (Job) lost his wealth, children, and health. He remained patient for 18 years. When he called upon Allah, Allah restored him with even more than he had lost, saying 'Strike with your foot — this is a cool bath.' (38:42)",
+      ar: "فقد النبي أيوب ثروته وأولاده وصحته. صبر 18 سنة. فلما دعا ربه، رده الله إليه بأفضل مما كان، وقال: {ارْكُضْ بِرِجْلِكَ هَٰذَا مُغْتَسَلٌ بَارِدٌ وَشَرَابٌ} (38:42)",
+      fr: "Le prophète Ayyub (Job) perdit sa richesse, ses enfants et sa santé. Il resta patient 18 ans. Allah le restaura ensuite.",
+      de: "Prophet Ayyub (Hiob) verlor Reichtum, Kinder und Gesundheit. Er blieb 18 Jahre geduldig. Allah stellte ihn wieder her."
+    }
+  },
+  {
+    id: "p4", category: "prophets", difficulty: "hard",
+    question: {
+      en: "Which prophet was given the miracle of the staff turning into a snake and the shining hand?",
+      ar: "أي نبي أُعطي معجزة العصا التي تتحول إلى ثعبان واليد البيضاء؟",
+      fr: "Quel prophète reçut le miracle du bâton se transformant en serpent et de la main brillante?",
+      de: "Welcher Prophet erhielt das Wunder des Stabs der zur Schlange wird und der leuchtenden Hand?"
+    },
+    options: {
+      en: ["Prophet Sulayman", "Prophet Dawud", "Prophet Musa", "Prophet Isa"],
+      ar: ["النبي سليمان", "النبي داوود", "النبي موسى", "النبي عيسى"],
+      fr: ["Prophète Sulayman", "Prophète Dawud", "Prophète Moussa", "Prophète Isa"],
+      de: ["Prophet Sulayman", "Prophet Dawud", "Prophet Musa", "Prophet Isa"]
+    },
+    answer: 2,
+    explanation: {
+      en: "Prophet Musa (Moses) was given nine clear signs including his staff becoming a serpent and his hand shining white when placed in his garment. These were shown to Pharaoh and his court.",
+      ar: "أُعطي النبي موسى عليه السلام تسع آيات بينات من بينها العصا واليد البيضاء. أظهرها لفرعون وملئه.",
+      fr: "Le prophète Moussa (Moïse) reçut neuf signes clairs dont son bâton et sa main brillante, montrés à Pharaon.",
+      de: "Prophet Musa (Moses) erhielt neun klare Zeichen darunter seinen Stab und seine leuchtende Hand, die dem Pharao gezeigt wurden."
+    }
+  },
+
+  // ============================================================
+  // COMPANIONS - Medium to Hard
+  // ============================================================
+  {
+    id: "c1", category: "companions", difficulty: "hard",
+    question: {
+      en: "Which companion was known as 'The Interpreter of the Quran' (Tarjuman al-Quran) due to his deep knowledge of tafsir?",
+      ar: "أي صحابي عُرف بـ'ترجمان القرآن' بسبب معرفته العميقة بالتفسير؟",
+      fr: "Quel compagnon était connu comme 'l'Interprète du Coran' (Tarjuman al-Quran) pour sa profonde connaissance du tafsir?",
+      de: "Welcher Gefährte war als 'Der Interpret des Qurans' (Tardschuman al-Quran) für sein tiefes Wissen über Tafsir bekannt?"
+    },
+    options: {
+      en: ["Abdullah ibn Masud", "Abdullah ibn Abbas", "Abdullah ibn Umar", "Abdullah ibn Amr"],
+      ar: ["عبد الله بن مسعود", "عبد الله بن عباس", "عبد الله بن عمر", "عبد الله بن عمرو"],
+      fr: ["Abdullah ibn Masud", "Abdullah ibn Abbas", "Abdullah ibn Umar", "Abdullah ibn Amr"],
+      de: ["Abdullah ibn Masud", "Abdullah ibn Abbas", "Abdullah ibn Umar", "Abdullah ibn Amr"]
+    },
+    answer: 1,
+    explanation: {
+      en: "Abdullah ibn Abbas (RA), the Prophet's cousin, was called 'Tarjuman al-Quran' because of his exceptional ability to interpret Quranic verses. The Prophet ﷺ prayed for him: 'O Allah, grant him understanding of the religion and teach him interpretation.'",
+      ar: "عبد الله بن عباس رضي الله عنه، ابن عم النبي، دُعي 'ترجمان القرآن' لقدرته الاستثنائية على تفسير الآيات. دعا له النبي ﷺ: 'اللهم فقهه في الدين وعلمه التأويل.'",
+      fr: "Abdullah ibn Abbas, cousin du Prophète, fut appelé 'Tarjuman al-Quran' pour sa capacité exceptionnelle à interpréter le Coran.",
+      de: "Abdullah ibn Abbas, der Cousin des Propheten, wurde 'Tardschuman al-Quran' genannt für seine außergewöhnliche Fähigkeit den Quran zu interpretieren."
+    }
+  },
+  {
+    id: "c2", category: "companions", difficulty: "hard",
+    question: {
+      en: "Which companion was the first to give the Adhan in Islam?",
+      ar: "أي صحابي كان أول من أذن في الإسلام؟",
+      fr: "Quel compagnon fut le premier à appeler l'Adhan en Islam?",
+      de: "Welcher Gefährte rief als erster den Adhan im Islam?"
+    },
+    options: {
+      en: ["Abdullah ibn Zayd", "Bilal ibn Rabah", "Abu Mahdhurah", "Umar ibn al-Khattab"],
+      ar: ["عبد الله بن زيد", "بلال بن رباح", "أبو محذورة", "عمر بن الخطاب"],
+      fr: ["Abdullah ibn Zayd", "Bilal ibn Rabah", "Abu Mahdhurah", "Umar ibn al-Khattab"],
+      de: ["Abdullah ibn Zayd", "Bilal ibn Rabah", "Abu Mahdhura", "Umar ibn al-Khattab"]
+    },
+    answer: 0,
+    explanation: {
+      en: "Abdullah ibn Zayd (RA) saw the Adhan in a dream. When he told the Prophet ﷺ, the Prophet said it was a true vision and instructed Bilal to call it. So Abdullah ibn Zayd was the first to conceive the Adhan, while Bilal was the first to call it.",
+      ar: "رأى عبد الله بن زيد الأذان في المنام. قال له النبي ﷺ: 'إنها رؤيا حق، ألقها على بلال.' فكان عبد الله أول من ألهم بالأذان، وبلال أول من نادى به.",
+      fr: "Abdullah ibn Zayd vit l'Adhan en rêve. Le Prophète dit que c'était une vraie vision et demanda à Bilal de l'appeler.",
+      de: "Abdullah ibn Zayd sah den Adhan im Traum. Der Prophet sagte es sei eine wahre Vision und bat Bilal ihn zu rufen."
+    }
+  },
+  {
+    id: "c3", category: "companions", difficulty: "hard",
+    question: {
+      en: "Which companion was martyred at the Battle of Uhud and was called 'Sayyid al-Shuhada' (Master of the Martyrs) by the Prophet ﷺ?",
+      ar: "أي صحابي استشهد في غزوة أحد ودعاه النبي ﷺ 'سيد الشهداء'؟",
+      fr: "Quel compagnon fut martyrisé à la bataille d'Uhud et fut appelé 'Sayyid al-Shuhada' par le Prophète?",
+      de: "Welcher Gefährte wurde in der Schlacht von Uhud gemartert und vom Propheten 'Sayyid al-Schuhada' genannt?"
+    },
+    options: {
+      en: ["Mus'ab ibn Umayr", "Hamzah ibn Abdul-Muttalib", "Anas ibn Nadr", "Abdullah ibn Jahsh"],
+      ar: ["مصعب بن عمير", "حمزة بن عبد المطلب", "أنس بن النضر", "عبد الله بن جحش"],
+      fr: ["Mus'ab ibn Umayr", "Hamzah ibn Abd al-Muttalib", "Anas ibn Nadr", "Abdullah ibn Jahsh"],
+      de: ["Mus'ab ibn Umayr", "Hamza ibn Abd al-Muttalib", "Anas ibn Nadr", "Abdullah ibn Dschahsch"]
+    },
+    answer: 1,
+    explanation: {
+      en: "Hamzah ibn Abdul-Muttalib (RA), the Prophet's uncle, was killed by Wahshi ibn Harb at Uhud. The Prophet ﷺ said: 'The best of martyrs is Hamzah ibn Abdul-Muttalib.'",
+      ar: "حمزة بن عبد المطلب رضي الله عنه، عم النبي، قتله وحشي بن حرب في أحد. قال النبي ﷺ: 'سيد الشهداء حمزة بن عبد المطلب.'",
+      fr: "Hamzah ibn Abd al-Muttalib, l'oncle du Prophète, fut tué à Uhud. Le Prophète dit: 'Le meilleur des martyrs est Hamzah.'",
+      de: "Hamza ibn Abd al-Muttalib, der Onkel des Propheten, wurde bei Uhud getötet. Der Prophet sagte: 'Der beste der Märtyrer ist Hamza.'"
+    }
+  },
+  {
+    id: "c4", category: "companions", difficulty: "hard",
+    question: {
+      en: "Which companion was known as 'The Truthful' (al-Siddiq) for his immediate and unquestioning belief in the Prophet's Night Journey?",
+      ar: "أي صحابي عُرف بـ'الصديق' لتصديقه الفوري للرسول في رحلة الإسراء والمعراج؟",
+      fr: "Quel compagnon était connu comme 'le Véridique' (al-Siddiq) pour sa croyance immédiate et sans questionnement au Voyage Nocturne du Prophète?",
+      de: "Welcher Gefährte war als 'der Wahrhaftige' (as-Siddiq) bekannt für seinen sofortigen und fraglosen Glauben an die Nachtreise des Propheten?"
+    },
+    options: {
+      en: ["Umar ibn al-Khattab", "Uthman ibn Affan", "Abu Bakr al-Siddiq", "Ali ibn Abi Talib"],
+      ar: ["عمر بن الخطاب", "عثمان بن عفان", "أبو بكر الصديق", "علي بن أبي طالب"],
+      fr: ["Umar ibn al-Khattab", "Uthman ibn Affan", "Abu Bakr al-Siddiq", "Ali ibn Abi Talib"],
+      de: ["Umar ibn al-Khattab", "Uthman ibn Affan", "Abu Bakr al-Siddiq", "Ali ibn Abi Talib"]
+    },
+    answer: 2,
+    explanation: {
+      en: "When disbelievers mocked the Prophet's ﷺ Night Journey, Abu Bakr said: 'If he said it, then it is true.' The Prophet ﷺ then gave him the title 'al-Siddiq' (the Truthful/Verifier of Truth).",
+      ar: "حين سخر الكفار من رحلة الإسراء، قال أبو بكر: 'إن قالها لقد صدق.' فلقبه النبي ﷺ بـ'الصديق'.",
+      fr: "Quand les mécréants raillèrent le Voyage Nocturne, Abu Bakr dit: 'S'il l'a dit, c'est vrai.' Le Prophète lui donna alors le titre d'al-Siddiq.",
+      de: "Als die Ungläubigen die Nachtreise verspotteten, sagte Abu Bakr: 'Wenn er es sagte, ist es wahr.' Der Prophet gab ihm den Titel 'as-Siddiq'."
+    }
+  },
+  {
+    id: "c5", category: "companions", difficulty: "hard",
+    question: {
+      en: "Which companion was the first to embrace Islam from among the youth?",
+      ar: "أي صحابي كان أول من أسلم من الشباب؟",
+      fr: "Quel compagnon fut le premier à embrasser l'Islam parmi les jeunes?",
+      de: "Welcher Gefährte war der erste der den Islam aus der Jugend annahm?"
+    },
+    options: {
+      en: ["Zayd ibn Harithah", "Ali ibn Abi Talib", "Mus'ab ibn Umayr", "Abdullah ibn Masud"],
+      ar: ["زيد بن حارثة", "علي بن أبي طالب", "مصعب بن عمير", "عبد الله بن مسعود"],
+      fr: ["Zayd ibn Harithah", "Ali ibn Abi Talib", "Mus'ab ibn Umayr", "Abdullah ibn Masud"],
+      de: ["Zayd ibn Haritha", "Ali ibn Abi Talib", "Mus'ab ibn Umayr", "Abdullah ibn Masud"]
+    },
+    answer: 1,
+    explanation: {
+      en: "Ali ibn Abi Talib (RA) was only about 10 years old when he accepted Islam, making him the first youth to embrace Islam, after Khadijah (first woman) and Abu Bakr (first free man).",
+      ar: "علي بن أبي طالب رضي الله عنه كان عمره 10 سنوات تقريباً حين أسلم، فكان أول شباب أسلم، بعد خديجة وأبي بكر.",
+      fr: "Ali ibn Abi Talib n'avait qu'environ 10 ans quand il accepta l'Islam, le premier jeune à embrasser l'Islam.",
+      de: "Ali ibn Abi Talib war nur etwa 10 Jahre alt als er den Islam annahm, der erste Jugendliche der den Islam annahm."
+    }
+  }
 ];
-
-export const QUIZ_CATEGORIES = [
-  { id: "all",        label: "All Categories", en: "All Categories",    ar: "جميع الفئات",   fr: "Toutes catégories", de: "Alle Kategorien" },
-  { id: "history",   label: "History",        en: "Islamic History",  ar: "التاريخ الإسلامي", fr: "Histoire Islamique",  de: "Islamische Geschichte" },
-  { id: "quran",     label: "Quran",          en: "Quran & Tafsir",   ar: "القرآن والتفسير",   fr: "Coran & Tafsir",      de: "Koran & Tafsir" },
-  { id: "fiqh",      label: "Fiqh",           en: "Fiqh & Pillars",  ar: "الفقه وأركان الإسلام", fr: "Fiqh & Piliers",    de: "Fiqh & Säulen" },
-  { id: "prophets",  label: "Prophets",       en: "Prophets",         ar: "الأنبياء",        fr: "Les Prophètes",       de: "Die Propheten" },
-  { id: "companions",label: "Companions",     en: "Companions",       ar: "الصحابة",         fr: "Les Compagnons",      de: "Die Gefährten" },
-] as const;
