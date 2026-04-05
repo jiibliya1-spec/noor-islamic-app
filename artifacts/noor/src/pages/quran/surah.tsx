@@ -28,29 +28,10 @@ function stripHtml(html: string): string {
 }
 
 function stripBismillah(text: string): string {
-  const normalize = (s: string) =>
-    s.replace(/[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED\u06E1\u0671]/g, "")
-     .replace(/\s+/g, " ").trim();
-
-  const normalized = normalize(text);
-  const target = "\u0627\u0644\u0631\u062D\u064A\u0645";
-  const idx = normalized.indexOf(target);
-  if (idx === -1) return text;
-
-  let origPos = 0;
-  let normCount = 0;
-  const endNorm = idx + target.length;
-  while (origPos < text.length && normCount < endNorm) {
-    const c = text[origPos];
-    const skip = /[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED\u06E1\u0671]/.test(c);
-    if (!skip) normCount++;
-    origPos++;
-  }
-  while (origPos < text.length && /[\s\n]/.test(text[origPos])) origPos++;
-  return text.slice(origPos).trim() || text;
+  const bismillahPattern = /^[\s\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED\u06E1\u0671]*بِسْمِ\s*ٱللَّهِ\s*ٱلرَّحْمَٰنِ\s*ٱلرَّحِيمِ[\s\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED\u06E1\u0671]*/i;
+  const cleaned = text.replace(bismillahPattern, '').trim();
+  return cleaned || text;
 }
-
-
 
 const TAFSIR_SOURCE: Record<string, string> = {
   ar: "التفسير الميسر — وزارة الشؤون الإسلامية السعودية",
@@ -422,4 +403,3 @@ export default function SurahDetail() {
     </div>
   );
 }
-
