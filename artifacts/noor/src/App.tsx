@@ -1,3 +1,4 @@
+import SplashScreen from "./SplashScreen";
 import { useState, useEffect } from "react";
 import { Switch, Route, Router as WouterRouter } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -194,23 +195,31 @@ function AppLayout() {
 }
 
 function App() {
+  const [loading, setLoading] = useState(true);
+
   return (
-    <QueryClientProvider client={queryClient}>
-      <I18nProvider>
-        <AuthProvider>
-          <TooltipProvider>
-            <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-              <Switch>
-                <Route path="/login"    component={Login}    />
-                <Route path="/register" component={Register} />
-                <Route                  component={AppLayout} />
-              </Switch>
-            </WouterRouter>
-            <Toaster />
-          </TooltipProvider>
-        </AuthProvider>
-      </I18nProvider>
-    </QueryClientProvider>
+    <>
+      {loading && <SplashScreen onFinish={() => setLoading(false)} />}
+
+      {!loading && (
+        <QueryClientProvider client={queryClient}>
+          <I18nProvider>
+            <AuthProvider>
+              <TooltipProvider>
+                <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+                  <Switch>
+                    <Route path="/login"    component={Login}    />
+                    <Route path="/register" component={Register} />
+                    <Route                  component={AppLayout} />
+                  </Switch>
+                </WouterRouter>
+                <Toaster />
+              </TooltipProvider>
+            </AuthProvider>
+          </I18nProvider>
+        </QueryClientProvider>
+      )}
+    </>
   );
 }
 
