@@ -6,7 +6,7 @@ import { AudioPlayer } from "@/components/audio-player";
 import { useI18n } from "@/lib/i18n";
 import {
   Loader2, ArrowLeft, Bookmark, BookmarkCheck,
-  BookOpen, AlignLeft, ChevronLeft, ChevronRight, Save, CheckCircle2, BookmarkPlus,
+  BookOpen, AlignLeft, ChevronLeft, Save, CheckCircle2, BookmarkPlus,
 } from "lucide-react";
 import { useEffect, useRef, useState, useCallback } from "react";
 
@@ -34,8 +34,6 @@ const TAFSIR_SOURCE: Record<string, string> = {
   de: "Tafhim al-Quran — Sayyid Abul Ala Maududi",
 };
 
-const AYAT_PER_PAGE = 10; // عدد الآيات في كل صفحة
-
 export default function SurahDetail() {
   const params = useParams();
   const surahNumber = parseInt(params.id || "1", 10);
@@ -45,11 +43,10 @@ export default function SurahDetail() {
 
   const [sheetAyah, setSheetAyah] = useState<AyahData | null>(null);
   const [sheetView, setSheetView] = useState<SheetView>("menu");
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentAyah, setCurrentAyah] = useState(1);
   const [saveFlash, setSaveFlash] = useState(false);
 
   const translationRef = useRef<HTMLDivElement>(null);
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const { data: tafsirText, isLoading: tafsirLoading, isError: tafsirError } = useTafsir(
     surahNumber,
@@ -67,85 +64,58 @@ export default function SurahDetail() {
   const openSheet = (ayah: AyahData) => { setSheetAyah(ayah); setSheetView("menu"); };
   const closeSheet = () => { setSheetAyah(null); setSheetView("menu"); };
 
-  if (!surah) return <div className="p-8 text-center text-red-500">Surah not found.</div>;
-
-  const totalPages = Math.ceil(surah.numberOfAyahs / AYAT_PER_PAGE);
-  
-  // الآيات في الصفحة الحالية
-  const startIndex = (currentPage - 1) * AYAT_PER_PAGE;
-  const endIndex = startIndex + AYAT_PER_PAGE;
-  const currentAyahs = surah.ayahs.slice(startIndex, endIndex);
-  
-  // أول آية وآخر آية في الصفحة الحالية
-  const firstAyahNumber = currentAyahs[0]?.numberInSurah || 1;
-  const lastAyahNumber = currentAyahs[currentAyahs.length - 1]?.numberInSurah || 1;
-
-  const goToNextPage = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
-      if (scrollContainerRef.current) {
-        scrollContainerRef.current.scrollTo({ top: 0, behavior: "smooth" });
-      }
-    }
-  };
-
-  const goToPrevPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-      if (scrollContainerRef.current) {
-        scrollContainerRef.current.scrollTo({ top: 0, behavior: "smooth" });
-      }
-    }
-  };
-
-  // Scroll to top when page changes
-  useEffect(() => {
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollTo({ top: 0, behavior: "auto" });
-    }
-  }, [currentPage]);
-
   // Scroll to specific ayah from URL (?ayah=N)
   useEffect(() => {
     if (!surah) return;
     const target = new URLSearchParams(window.location.search).get("ayah");
-    if (!target) {
-      // استعادة آخر صفحة محفوظة
-      const saved = loadProgress();
-      if (saved && saved.surahNumber === surahNumber && saved.ayahNumber) {
-        const savedPage = Math.ceil(saved.ayahNumber / AYAT_PER_PAGE);
-        setCurrentPage(savedPage);
-      }
-      return;
-    }
-    const targetAyah = parseInt(target, 10);
-    if (!isNaN(targetAyah)) {
-      const targetPage = Math.ceil(targetAyah / AYAT_PER_PAGE);
-      setCurrentPage(targetPage);
+    if (!target) return;
+    const el = document.getElementById(`ayah-${target}`);
+    if (el) setTimeout(() => el.scrollIntoView({ behavior: "smooth", block: "center" }), 350);
+  }, [surah]);
+
+  // Save progress when surah first loads (or when switching surahs)
+  useEffect(() => {
+    if (!surah) return;
+    const existing = loadProgress();
+    if (!existing || existing.surahNumber !== surahNumber) {
+      saveProgress({ surahNumber, surahName: surah.name, surahEnglishName: surah.englishName, ayahNumber: 1 });
     }
   }, [surah, surahNumber]);
 
-  // Save progress when page changes
+  // IntersectionObserver — auto-track current ayah as user reads
   useEffect(() => {
-    if (!surah) return;
-    saveProgress({ 
-      surahNumber, 
-      surahName: surah.name, 
-      surahEnglishName: surah.englishName, 
-      ayahNumber: firstAyahNumber 
-    });
-  }, [surah, surahNumber, currentPage, firstAyahNumber]);
+    if (!surah || !translationRef.current) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            const n = parseInt(entry.target.id.replace("ayah-", ""), 10);
+            if (!isNaN(n)) {
+              setCurrentAyah(n);
+              saveProgress({ surahNumber, surahName: surah.name, surahEnglishName: surah.englishName, ayahNumber: n });
+            }
+          }
+        }
+      },
+      { threshold: 0.5 }
+    );
+    const els = translationRef.current.querySelectorAll("[id^='ayah-']");
+    els.forEach(el => observer.observe(el));
+    return () => observer.disconnect();
+  }, [surah, surahNumber]);
 
   const handleSaveProgress = useCallback(() => {
     if (!surah) return;
-    saveProgress({ surahNumber, surahName: surah.name, surahEnglishName: surah.englishName, ayahNumber: firstAyahNumber });
+    saveProgress({ surahNumber, surahName: surah.name, surahEnglishName: surah.englishName, ayahNumber: currentAyah });
     setSaveFlash(true);
     setTimeout(() => setSaveFlash(false), 2000);
-  }, [surah, surahNumber, firstAyahNumber]);
+  }, [surah, surahNumber, currentAyah]);
 
   if (isLoading) {
     return <div className="flex justify-center items-center h-screen"><Loader2 className="w-12 h-12 text-primary animate-spin" /></div>;
   }
+
+  if (!surah) return <div className="p-8 text-center text-red-500">Surah not found.</div>;
 
   const sheetBookmarked = sheetAyah ? isBookmarked(surahNumber, sheetAyah.numberInSurah) : false;
   const isRtl = language === "ar";
@@ -154,14 +124,14 @@ export default function SurahDetail() {
     <div className="min-h-screen pb-28">
       <AudioPlayer surahNumber={surahNumber} surahName={surah.englishName} />
 
-      {/* Save Progress bar */}
+      {/* Save Progress bar — below audio player, above surah title */}
       <div className="sticky top-[57px] z-30 w-full bg-background/90 backdrop-blur-md border-b border-white/5 px-4 py-2 flex items-center justify-between gap-3">
         <div className="flex items-center gap-2 text-xs text-muted-foreground min-w-0">
           <span className="truncate font-medium text-foreground/80">
             {isRtl ? surah.name : surah.englishName}
           </span>
           <span className="text-muted-foreground shrink-0">
-            · {t("verse")} {firstAyahNumber}-{lastAyahNumber}
+            · {t("verse")} {currentAyah}
           </span>
         </div>
         <button
@@ -179,7 +149,7 @@ export default function SurahDetail() {
         </button>
       </div>
 
-      <div className="p-4 md:p-8 max-w-4xl mx-auto" ref={scrollContainerRef}>
+      <div className="p-4 md:p-8 max-w-4xl mx-auto">
         <Link href="/quran" className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary mb-8 transition-colors">
           <ArrowLeft className="w-5 h-5" /> {isRtl ? "العودة إلى السور" : "Back to Surahs"}
         </Link>
@@ -196,16 +166,9 @@ export default function SurahDetail() {
           </div>
         </div>
 
-        {/* صفحة المعلومات */}
-        <div className="text-center mb-6">
-          <span className="px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium">
-            {t("page")} {currentPage} / {totalPages}
-          </span>
-        </div>
-
-        {/* Bismillah - فقط في أول صفحة */}
-        {currentPage === 1 && surahNumber !== 1 && surahNumber !== 9 && (
-          <div className="text-center py-8 mb-6 border-t border-b border-primary/15">
+        {/* Bismillah */}
+        {surahNumber !== 1 && surahNumber !== 9 && (
+          <div className="text-center py-8 mb-6">
             <p className="text-4xl font-quran text-foreground leading-loose">بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</p>
           </div>
         )}
@@ -213,7 +176,7 @@ export default function SurahDetail() {
         {/* Mushaf-style flowing Arabic */}
         <div className="glass-card rounded-3xl p-6 md:p-10 mb-8">
           <p className="font-quran leading-[2.6] text-right text-foreground text-3xl md:text-4xl" dir="rtl" lang="ar">
-            {currentAyahs.map((ayah: AyahData) => (
+            {surah.ayahs.map((ayah: AyahData) => (
               <span key={ayah.number}>
                 {ayah.text}
                 <span
@@ -235,7 +198,7 @@ export default function SurahDetail() {
           </div>
 
           <div className="space-y-1">
-            {currentAyahs.map((ayah: AyahData) => {
+            {surah.ayahs.map((ayah: AyahData) => {
               const bookmarked = isBookmarked(surahNumber, ayah.numberInSurah);
               return (
                 <div
@@ -245,12 +208,14 @@ export default function SurahDetail() {
                     bookmarked ? "bg-primary/10 border border-primary/25" : "border border-transparent hover:bg-white/5"
                   }`}
                 >
+                  {/* Verse number badge */}
                   <div className="shrink-0 flex items-start mt-0.5">
                     <span className="w-8 h-8 rounded-full bg-primary/15 flex items-center justify-center text-primary text-sm font-bold">
                       {ayah.numberInSurah}
                     </span>
                   </div>
 
+                  {/* Translation — tap opens tafsir/sheet */}
                   <button
                     type="button"
                     onClick={() => openSheet(ayah)}
@@ -262,6 +227,7 @@ export default function SurahDetail() {
                     </p>
                   </button>
 
+                  {/* Inline bookmark icon — tap directly bookmarks this verse */}
                   <button
                     type="button"
                     title={bookmarked ? (isRtl ? "إزالة الإشارة" : "Remove bookmark") : (isRtl ? "إضافة إشارة" : "Bookmark verse")}
@@ -289,38 +255,9 @@ export default function SurahDetail() {
             })}
           </div>
         </div>
-
-        {/* أزرار التنقل بين الصفحات - حسب اتجاه اللغة */}
-        <div className={`flex justify-between gap-4 mt-8 ${isRtl ? "flex-row-reverse" : ""}`}>
-          <button
-            onClick={goToPrevPage}
-            disabled={currentPage === 1}
-            className={`flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-all ${
-              currentPage === 1
-                ? "bg-white/5 text-muted-foreground cursor-not-allowed"
-                : "bg-primary/15 text-primary hover:bg-primary/25"
-            }`}
-          >
-            {isRtl ? <ChevronRight className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />}
-            {t("previous")}
-          </button>
-          
-          <button
-            onClick={goToNextPage}
-            disabled={currentPage === totalPages}
-            className={`flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-all ${
-              currentPage === totalPages
-                ? "bg-white/5 text-muted-foreground cursor-not-allowed"
-                : "bg-primary/15 text-primary hover:bg-primary/25"
-            }`}
-          >
-            {t("next")}
-            {isRtl ? <ChevronLeft className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
-          </button>
-        </div>
       </div>
 
-      {/* ───── Bottom Sheet ───── (نفس الكود بدون تغيير) ───── */}
+      {/* ───── Bottom Sheet ───── */}
       {sheetAyah && (
         <>
           <div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm" onClick={closeSheet} />
