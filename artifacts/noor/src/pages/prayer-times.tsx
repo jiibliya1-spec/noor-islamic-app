@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { usePrayerTimesByCoords, usePrayerTimes } from "@/hooks/use-external-api";
 import { loadPrayerPrefs, savePrayerPrefs } from "@/hooks/use-prayer-prefs";
 import { useDeviceCompass } from "@/hooks/use-device-compass";
@@ -12,6 +12,7 @@ import { useI18n } from "@/lib/i18n";
 
 const PRAYERS = ["Fajr", "Sunrise", "Dhuhr", "Asr", "Maghrib", "Isha"];
 type Lang = "en" | "ar" | "fr" | "de";
+type Tab = "times" | "mosques";
 
 const PRAYER_NAMES: Record<Lang, Record<string, string>> = {
   en: { Fajr: "Fajr", Sunrise: "Sunrise", Dhuhr: "Dhuhr", Asr: "Asr", Maghrib: "Maghrib", Isha: "Isha" },
@@ -27,6 +28,96 @@ const METHODS = [
   { value: "4", label: "Umm Al-Qura (Makkah)" },
   { value: "2", label: "ISNA (North America)" },
 ] as const;
+
+// الطريقة الافتراضية حسب البلد
+function getDefaultMethod(lat: number, lng: number): string {
+  // أوروبا
+  if (lat > 35 && lat < 72 && lng > -25 && lng < 45) return "3"; // Muslim World League
+  // أمريكا الشمالية
+  if (lat > 15 && lat < 72 && lng < -50) return "2"; // ISNA
+  // السعودية والخليج
+  if (lat > 15 && lat < 32 && lng > 35 && lng < 60) return "4"; // Umm Al-Qura
+  // مصر وشمال أفريقيا
+  if (lat > 20 && lat < 38 && lng > -15 && lng < 37) return "5"; // Egyptian
+  // الهند وباكستان
+  if (lat > 5 && lat < 38 && lng > 60 && lng < 100) return "1"; // Karachi
+  return "3"; // افتراضي
+}
+
+interface Mosque {
+  id: number;
+  name: string;
+  lat: number;
+  lon: number;
+  distance: number;
+  address?: string;
+}
+
+function getDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const R = 6371000;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+function formatDistance(m: number): string {
+  if (m < 1000) return Math.round(m) + " m";
+  return (m / 1000).toFixed(1) + " km";
+}
+
+function MosqueCard({ mosque, userLat, userLng, lang }: {
+  mosque: Mosque;
+  userLat: number;
+  userLng: number;
+  lang: Lang;
+}) {
+  const mapsUrl = "https://www.google.com/maps/dir/" + userLat + "," + userLng + "/" + mosque.lat + "," + mosque.lon;
+  const isRtl = lang === "ar";
+
+  return (
+    <div className="glass-card rounded-2xl p-4 flex items-start gap-4">
+      {/* أيقونة المسجد */}
+      <div className="w-12 h-12 rounded-xl bg-primary/15 flex items-center justify-center shrink-0">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-primary">
+          <path d="M12 2L8 6H4v2h1l1 12h12L19 8h1V6h-4L12 2z" fill="currentColor" opacity="0.2"/>
+          <path d="M12 2L8 6H4v2h1l1 12h12L19 8h1V6h-4L12 2z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
+          <path d="M10 20v-6h4v6" stroke="currentColor" strokeWidth="1.5"/>
+          <path d="M12 2v2M8 6h8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+        </svg>
+      </div>
+
+      <div className="flex-1 min-w-0">
+        <h3 className="font-bold text-foreground text-sm truncate">
+          {mosque.name || (lang === "ar" ? "مسجد" : lang === "fr" ? "Mosquée" : lang === "de" ? "Moschee" : "Mosque")}
+        </h3>
+        {mosque.address && (
+          <p className="text-xs text-muted-foreground mt-0.5 truncate">{mosque.address}</p>
+        )}
+        <div className="flex items-center gap-2 mt-2">
+          <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+            {formatDistance(mosque.distance)}
+          </span>
+        </div>
+      </div>
+
+      {/* زر الاتجاه */}
+      <a
+        href={mapsUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-bold hover:bg-primary/90 transition-all active:scale-95"
+      >
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <polygon points="3 11 22 2 13 21 11 13 3 11"/>
+        </svg>
+        {lang === "ar" ? "اتجاه" : lang === "fr" ? "Itinéraire" : lang === "de" ? "Route" : "Go"}
+      </a>
+    </div>
+  );
+}
 
 function PrayerIcon({ prayer, className = "w-5 h-5" }: { prayer: string; className?: string }) {
   switch (prayer) {
@@ -96,13 +187,9 @@ function QiblaCompass({ qiblaAngle, deviceHeading, isLive, t }: QiblaCompassProp
 
   if (isLive) {
     const heading = deviceHeading ?? 0;
-    // السهم يدور عكس heading باش يبقى ثابت جغرافيا
-    // الكعبة ثابتة فوق (North)
-    // فاش heading = qiblaAngle، السهم يشير للكعبة
     const needleRotation = qiblaAngle - heading;
     const diff = Math.abs(((heading - qiblaAngle + 540) % 360) - 180);
     const isAligned = diff <= 5;
-
     const alignedColor = "#22c55e";
     const needleColor = isAligned ? alignedColor : "hsl(var(--primary))";
     const ringStroke = isAligned ? "rgba(34,197,94,0.55)" : "rgba(255,255,255,0.10)";
@@ -113,7 +200,6 @@ function QiblaCompass({ qiblaAngle, deviceHeading, isLive, t }: QiblaCompassProp
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
           {t("liveCompass")}
         </div>
-
         <div className="relative w-64 h-64 select-none">
           <svg viewBox="0 0 240 240" className="w-full h-full">
             <defs>
@@ -126,12 +212,10 @@ function QiblaCompass({ qiblaAngle, deviceHeading, isLive, t }: QiblaCompassProp
                 <stop offset="100%" stopColor={isAligned ? "#22c55e" : "hsl(var(--primary))"} stopOpacity="0.20" />
               </radialGradient>
             </defs>
-
             <circle cx="120" cy="120" r="118" fill="url(#outerGlow)" />
             <circle cx="120" cy="120" r="108" fill="url(#dialBg)"
               stroke={ringStroke} strokeWidth={isAligned ? 3 : 1.5}
               style={{ transition: "stroke 0.4s ease, stroke-width 0.4s ease" }} />
-
             {Array.from({ length: 72 }).map((_, i) => {
               const deg = i * 5;
               const isCardinal = deg % 90 === 0;
@@ -147,40 +231,30 @@ function QiblaCompass({ qiblaAngle, deviceHeading, isLive, t }: QiblaCompassProp
                 />
               );
             })}
-
             <text x="120" y="30" textAnchor="middle" dominantBaseline="middle" fill="#ef4444" fontSize="16" fontWeight="800" fontFamily="Inter,system-ui,sans-serif">N</text>
             <text x="120" y="212" textAnchor="middle" dominantBaseline="middle" fill="rgba(255,255,255,0.40)" fontSize="13" fontWeight="600" fontFamily="Inter,system-ui,sans-serif">S</text>
             <text x="213" y="121" textAnchor="middle" dominantBaseline="middle" fill="rgba(255,255,255,0.40)" fontSize="13" fontWeight="600" fontFamily="Inter,system-ui,sans-serif">E</text>
             <text x="27" y="121" textAnchor="middle" dominantBaseline="middle" fill="rgba(255,255,255,0.40)" fontSize="13" fontWeight="600" fontFamily="Inter,system-ui,sans-serif">W</text>
-
-            {/* الكعبة ثابتة فوق دايما */}
             <circle cx="120" cy="36" r="14" fill="hsl(var(--primary))" opacity="0.15" />
             <rect x="111" y="26" width="18" height="16" rx="2" fill="#0a0a0a" stroke="hsl(var(--primary))" strokeWidth="1.8" />
             <rect x="111" y="32" width="18" height="4" fill="hsl(var(--primary))" opacity="0.8" />
             <path d="M114,42 Q120,36 126,42 L126,43 L114,43 Z" fill="hsl(var(--primary))" opacity="0.6" />
-
-            {/* السهم يدور بـ needleRotation */}
             <g style={{ transform: "rotate(" + needleRotation + "deg)", transformOrigin: "120px 120px", transition: "transform 0.10s linear" }}>
-              <polygon points="120,32 127,82 113,82" fill={needleColor} opacity="0.95"
-                style={{ transition: "fill 0.4s ease" }} />
+              <polygon points="120,32 127,82 113,82" fill={needleColor} opacity="0.95" style={{ transition: "fill 0.4s ease" }} />
               <polygon points="120,210 125,162 115,162" fill="rgba(255,255,255,0.12)" />
-              <circle cx="120" cy="120" r="7" fill="hsl(var(--background))" stroke={needleColor} strokeWidth="2.5"
-                style={{ transition: "stroke 0.4s ease" }} />
-              <circle cx="120" cy="120" r="3.5" fill={needleColor}
-                style={{ transition: "fill 0.4s ease" }} />
+              <circle cx="120" cy="120" r="7" fill="hsl(var(--background))" stroke={needleColor} strokeWidth="2.5" style={{ transition: "stroke 0.4s ease" }} />
+              <circle cx="120" cy="120" r="3.5" fill={needleColor} style={{ transition: "fill 0.4s ease" }} />
             </g>
           </svg>
         </div>
-
         <div className="text-center">
           <p className="text-5xl font-bold font-mono leading-none"
             style={{ color: isAligned ? "#22c55e" : "hsl(var(--primary))", transition: "color 0.4s ease" }}>
-            {bearing}
+            {bearing}°
           </p>
           {isAligned ? (
             <p className="text-base font-bold mt-2 animate-pulse flex items-center justify-center gap-2" style={{ color: "#22c55e" }} dir="rtl">
-              هذه هي القبلة
-              <CheckCircle2 className="w-4 h-4 inline-block" />
+              هذه هي القبلة <CheckCircle2 className="w-4 h-4 inline-block" />
             </p>
           ) : (
             <p className="text-xs text-muted-foreground mt-2 max-w-[240px] leading-relaxed">{t("rotateToAlign")}</p>
@@ -199,9 +273,7 @@ function QiblaCompass({ qiblaAngle, deviceHeading, isLive, t }: QiblaCompassProp
         {t("qiblaDirection")}
       </div>
       <p className="text-base font-semibold text-foreground text-center leading-snug">
-        {t("qiblaDesktopPre")}{" "}
-        <span className="text-primary font-bold font-mono text-xl">{bearing}</span>{" "}
-        {t("qiblaDesktopSuf")}
+        {t("qiblaDesktopPre")} <span className="text-primary font-bold font-mono text-xl">{bearing}°</span> {t("qiblaDesktopSuf")}
       </p>
       <div className="relative w-64 h-64 select-none">
         <svg viewBox="0 0 240 240" className="w-full h-full">
@@ -227,11 +299,10 @@ function QiblaCompass({ qiblaAngle, deviceHeading, isLive, t }: QiblaCompassProp
               />
             );
           })}
-          <text x="120" y="30" textAnchor="middle" dominantBaseline="middle" fill="#ef4444" fontSize="17" fontWeight="800" fontFamily="Inter,system-ui,sans-serif">N</text>
-          <text x="120" y="212" textAnchor="middle" dominantBaseline="middle" fill="rgba(255,255,255,0.35)" fontSize="14" fontWeight="600" fontFamily="Inter,system-ui,sans-serif">S</text>
-          <text x="213" y="121" textAnchor="middle" dominantBaseline="middle" fill="rgba(255,255,255,0.35)" fontSize="14" fontWeight="600" fontFamily="Inter,system-ui,sans-serif">E</text>
-          <text x="27" y="121" textAnchor="middle" dominantBaseline="middle" fill="rgba(255,255,255,0.35)" fontSize="14" fontWeight="600" fontFamily="Inter,system-ui,sans-serif">W</text>
-          <text x="120" y="145" textAnchor="middle" dominantBaseline="middle" fill="rgba(255,255,255,0.18)" fontSize="11" fontFamily="Inter,system-ui,sans-serif">{bearing}</text>
+          <text x="120" y="30" textAnchor="middle" dominantBaseline="middle" fill="#ef4444" fontSize="17" fontWeight="800">N</text>
+          <text x="120" y="212" textAnchor="middle" dominantBaseline="middle" fill="rgba(255,255,255,0.35)" fontSize="14" fontWeight="600">S</text>
+          <text x="213" y="121" textAnchor="middle" dominantBaseline="middle" fill="rgba(255,255,255,0.35)" fontSize="14" fontWeight="600">E</text>
+          <text x="27" y="121" textAnchor="middle" dominantBaseline="middle" fill="rgba(255,255,255,0.35)" fontSize="14" fontWeight="600">W</text>
           <circle cx="120" cy="120" r="5" fill="hsl(var(--background))" stroke="hsl(var(--primary))" strokeWidth="2" />
           <g style={{ transform: "rotate(" + bearing + "deg)", transformOrigin: "120px 120px" }}>
             <line x1="120" y1="120" x2="120" y2="36" stroke="hsl(var(--primary))" strokeWidth="8" strokeLinecap="round" opacity="0.10" />
@@ -245,16 +316,11 @@ function QiblaCompass({ qiblaAngle, deviceHeading, isLive, t }: QiblaCompassProp
       </div>
       <div className="w-full max-w-sm bg-card border border-border rounded-2xl px-4 py-3 text-center">
         <p className="text-sm text-muted-foreground leading-relaxed">
-          {t("findNorthPre")}{" "}
-          <span className="text-primary font-bold font-mono">{bearing}</span>{" "}
-          {t("findNorthSuf")}
+          {t("findNorthPre")} <span className="text-primary font-bold font-mono">{bearing}°</span> {t("findNorthSuf")}
         </p>
       </div>
       <div className="flex flex-col items-center gap-2 w-full max-w-sm">
-        <button
-          onClick={() => setShowQr(q => !q)}
-          className="w-full flex items-center justify-center gap-2 bg-primary/10 hover:bg-primary/20 border border-primary/30 text-primary text-sm font-semibold rounded-xl px-4 py-2.5 transition-colors"
-        >
+        <button onClick={() => setShowQr(q => !q)} className="w-full flex items-center justify-center gap-2 bg-primary/10 hover:bg-primary/20 border border-primary/30 text-primary text-sm font-semibold rounded-xl px-4 py-2.5 transition-colors">
           {t("openOnPhone")}
         </button>
         {showQr && (
@@ -293,6 +359,13 @@ export default function PrayerTimes() {
   const [submittedCountry, setSubmittedCountry] = useState(initial.submittedCountry);
   const [method, setMethod] = useState(initial.method);
   const [qiblaAngle, setQiblaAngle] = useState<number | null>(null);
+  const [activeTab, setActiveTab] = useState<Tab>("times");
+
+  // المساجد
+  const [mosques, setMosques] = useState<Mosque[]>([]);
+  const [mosquesLoading, setMosquesLoading] = useState(false);
+  const [mosquesError, setMosquesError] = useState<string | null>(null);
+  const [mosqueSearch, setMosqueSearch] = useState("");
 
   const { data: coordData, isLoading: coordLoading, error: coordError } =
     usePrayerTimesByCoords(coords?.lat ?? 0, coords?.lng ?? 0, method);
@@ -307,223 +380,54 @@ export default function PrayerTimes() {
 
   const { banner, dismissBanner, playFromTap } = useAdhanAlarm(timings, language);
 
-  useEffect(() => { if (timings) savePrayerTimings(timings); }, [timings]);
-  useEffect(() => { if (coords) setQiblaAngle(calculateQibla(coords.lat, coords.lng)); }, [coords]);
-  useEffect(() => {
-    const lat = cityData?.meta?.latitude ? parseFloat(cityData.meta.latitude) : null;
-    const lng = cityData?.meta?.longitude ? parseFloat(cityData.meta.longitude) : null;
-    if (lat !== null && lng !== null) setQiblaAngle(calculateQibla(lat, lng));
-  }, [cityData]);
-  useEffect(() => {
-    const prefs = loadPrayerPrefs();
-    if (prefs) savePrayerPrefs({ ...prefs, method });
-  }, [method]);
-  useEffect(() => {
-    const prefs = loadPrayerPrefs();
-    if (prefs) return;
-    if (!("geolocation" in navigator)) return;
-    navigator.geolocation.getCurrentPosition(
-      pos => {
-        const c = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-        setCoords(c);
-        setCityInput(""); setSubmittedCity(""); setSubmittedCountry("");
-        savePrayerPrefs({ type: "coords", lat: c.lat, lng: c.lng, method: "3" });
-      },
-      () => {}
-    );
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const handleDetectLocation = () => {
-    setLoadingLoc(true); setLocError(null);
-    if (!("geolocation" in navigator)) {
-      setLoadingLoc(false);
-      setLocError(language === "ar" ? "الموقع الجغرافي غير مدعوم في هذا المتصفح." : "Geolocation is not supported by your browser.");
-      return;
+  // جلب المساجد من Overpass API
+  const fetchMosques = useCallback(async (lat: number, lng: number) => {
+    setMosquesLoading(true);
+    setMosquesError(null);
+    try {
+      // نبحث في radius 5km كامل المدينة
+      const query = "[out:json][timeout:25];(node[\"amenity\"=\"place_of_worship\"][\"religion\"=\"muslim\"](around:5000," + lat + "," + lng + ");way[\"amenity\"=\"place_of_worship\"][\"religion\"=\"muslim\"](around:5000," + lat + "," + lng + "););out center;";
+      const res = await fetch("https://overpass-api.de/api/interpreter", {
+        method: "POST",
+        body: query,
+      });
+      const json = await res.json();
+      const elements = json.elements || [];
+      const result: Mosque[] = elements
+        .map((el: any) => {
+          const elLat = el.lat ?? el.center?.lat;
+          const elLon = el.lon ?? el.center?.lon;
+          if (!elLat || !elLon) return null;
+          const dist = getDistance(lat, lng, elLat, elLon);
+          return {
+            id: el.id,
+            name: el.tags?.name || el.tags?.["name:ar"] || el.tags?.["name:en"] || "",
+            lat: elLat,
+            lon: elLon,
+            distance: dist,
+            address: [el.tags?.["addr:street"], el.tags?.["addr:housenumber"], el.tags?.["addr:city"]]
+              .filter(Boolean).join(" "),
+          };
+        })
+        .filter(Boolean)
+        .sort((a: Mosque, b: Mosque) => a.distance - b.distance);
+      setMosques(result);
+    } catch {
+      setMosquesError(language === "ar" ? "تعذر تحميل المساجد." : "Could not load mosques.");
+    } finally {
+      setMosquesLoading(false);
     }
-    navigator.geolocation.getCurrentPosition(
-      pos => {
-        const c = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-        setCoords(c); setSubmittedCity(""); setSubmittedCountry(""); setCityInput(""); setLoadingLoc(false);
-        savePrayerPrefs({ type: "coords", lat: c.lat, lng: c.lng, method });
-      },
-      (err) => {
-        setLoadingLoc(false);
-        if (err.code === err.PERMISSION_DENIED) {
-          setLocError(language === "ar" ? "تم رفض إذن الموقع." : "Location permission denied.");
-        } else if (err.code === err.POSITION_UNAVAILABLE) {
-          setLocError(language === "ar" ? "تعذر تحديد الموقع." : "Location unavailable.");
-        } else {
-          setLocError(language === "ar" ? "انتهت مهلة طلب الموقع." : "Location request timed out.");
-        }
-      },
-      { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 }
-    );
-  };
+  }, [language]);
 
-  const handleCitySearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    const parts = cityInput.trim().split(",");
-    const city = parts[0].trim();
-    const country = parts[1]?.trim() || "SA";
-    if (!city) return;
-    setCoords(null); setQiblaAngle(null);
-    setSubmittedCity(city); setSubmittedCountry(country);
-    savePrayerPrefs({ type: "city", city, country, method });
-  };
+  useEffect(() => { if (timings) savePrayerTimings(timings); }, [timings]);
 
-  const dir = language === "ar" ? "rtl" : "ltr";
-  const currentPrayer = timings ? getCurrentPrayer(timings, timezone) : null;
-  const nextPrayer = timings ? getNextPrayer(timings, timezone) : null;
-  const locationLabel = coords ? t("myLocation") : submittedCity || "";
-  const compassLive = permission === "granted" && deviceHeading !== null;
+  useEffect(() => {
+    if (coords) {
+      setQiblaAngle(calculateQibla(coords.lat, coords.lng));
+      // جلب المساجد تلقائياً
+      fetchMosques(coords.lat, coords.lng);
+    }
+  }, [coords, fetchMosques]);
 
-  return (
-    <div className="p-4 md:p-8 max-w-5xl mx-auto min-h-full pb-20" dir={dir}>
-      <h1 className="text-4xl font-bold text-foreground mb-8">{t("prayerTimes")}</h1>
-
-      <div className="flex flex-col sm:flex-row gap-3 mb-6">
-        <form onSubmit={handleCitySearch} className="flex flex-1 gap-2">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <input type="text" value={cityInput} onChange={e => setCityInput(e.target.value)}
-              placeholder={t("cityCountryPlaceholder")}
-              className="w-full pl-9 pr-4 py-3 rounded-xl bg-card border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary text-sm"
-            />
-          </div>
-          <button type="submit" className="px-5 py-3 bg-primary text-primary-foreground rounded-xl font-semibold text-sm hover:bg-primary/90 transition">
-            {t("search")}
-          </button>
-        </form>
-        <button onClick={handleDetectLocation} disabled={loadingLoc}
-          className="flex items-center gap-2 px-4 py-3 rounded-xl bg-card border border-border text-foreground hover:bg-white/10 transition text-sm font-medium">
-          {loadingLoc ? <Loader2 className="w-4 h-4 animate-spin" /> : <MapPin className="w-4 h-4 text-primary" />}
-          {t("myLocation")}
-        </button>
-      </div>
-
-      <div className="mb-8">
-        <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-          {t("calculationMethod")}
-        </label>
-        <div className="flex flex-wrap gap-2">
-          {METHODS.map(m => (
-            <button key={m.value} onClick={() => setMethod(m.value)}
-              className={"px-3 py-1.5 rounded-full text-xs font-semibold transition-all " + (method === m.value ? "bg-primary text-primary-foreground shadow-sm" : "bg-card border border-border/50 text-muted-foreground hover:bg-white/10")}>
-              {m.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {locError && (
-        <div className="flex items-start gap-2 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 mb-6 text-sm text-red-400">
-          <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" /><span>{locError}</span>
-        </div>
-      )}
-      {apiError && !isLoading && (
-        <div className="flex items-center gap-2 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 mb-6 text-sm text-red-400">
-          <AlertCircle className="w-4 h-4 shrink-0" />
-          {language === "ar" ? "لم يتم العثور على المدينة." : "City not found. Check the name and country code (e.g. Berlin, DE)."}
-        </div>
-      )}
-
-      {isLoading && <div className="flex justify-center py-20"><Loader2 className="w-12 h-12 text-primary animate-spin" /></div>}
-
-      {!isLoading && timings && (
-        <>
-          <div className="flex flex-wrap items-center justify-between gap-2 mb-6">
-            <div className="flex items-center gap-2">
-              <MapPin className="w-4 h-4 text-primary shrink-0" />
-              <span className="font-semibold text-foreground">{locationLabel}</span>
-            </div>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              {data?.date?.readable && <span>{data.date.readable}</span>}
-              {timezone && <span className="px-2 py-0.5 bg-primary/10 text-primary rounded-full text-xs font-medium">{timezone}</span>}
-            </div>
-          </div>
-
-          {nextPrayer && (
-            <div className="glass-card rounded-3xl p-6 mb-6 border-l-4 border-l-primary flex items-center justify-between">
-              <div>
-                <p className="text-xs text-muted-foreground font-semibold uppercase tracking-widest mb-1">{t("nextPrayer")}</p>
-                <p className="text-3xl font-bold text-foreground">{PRAYER_NAMES[lang][nextPrayer]}</p>
-              </div>
-              <div className="flex items-center gap-4">
-                <PrayerIcon prayer={nextPrayer} className="w-8 h-8 text-primary" />
-                <span className="text-5xl font-mono font-bold text-primary">{timings[nextPrayer]}</span>
-              </div>
-            </div>
-          )}
-
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
-            {PRAYERS.map(prayer => {
-              const isCurrent = prayer === currentPrayer, isNext = prayer === nextPrayer;
-              return (
-                <div key={prayer} className={"glass-card rounded-2xl p-6 text-center transition-all " + (isCurrent ? "border-primary/60 bg-primary/10" : isNext ? "border-primary/30" : "border-white/5")}>
-                  <div className={"flex justify-center mb-2 " + (isCurrent || isNext ? "text-primary" : "text-muted-foreground")}>
-                    <PrayerIcon prayer={prayer} className="w-7 h-7" />
-                  </div>
-                  <h3 className="font-bold text-muted-foreground text-xs uppercase tracking-widest mb-1">{PRAYER_NAMES[lang][prayer]}</h3>
-                  <p className="text-3xl font-mono font-bold text-primary">{timings[prayer]}</p>
-                  {isCurrent && <span className="text-xs text-primary font-semibold mt-2 block">{t("currentPrayer")}</span>}
-                </div>
-              );
-            })}
-          </div>
-
-          <div className="glass-card rounded-3xl p-8">
-            <h3 className="text-xl font-bold text-foreground mb-6 text-center">{t("qiblaDirection")}</h3>
-            {qiblaAngle !== null ? (
-              <div className="flex flex-col items-center gap-6">
-                <QiblaCompass qiblaAngle={qiblaAngle} deviceHeading={deviceHeading} isLive={compassLive} t={t} />
-                {permission === "unknown" && (
-                  <button onClick={requestPermission} className="flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:bg-primary/90 transition shadow-lg shadow-primary/20">
-                    <Navigation2 className="w-4 h-4" />{t("liveCompass")}
-                  </button>
-                )}
-                {permission === "denied" && <p className="text-xs text-muted-foreground text-center max-w-xs">{t("enableCompassLive")}</p>}
-                {permission === "unavailable" && <p className="text-xs text-muted-foreground text-center">{t("staticBearing")}</p>}
-              </div>
-            ) : (
-              <div className="flex flex-col items-center gap-4 text-center py-4">
-                <div className="w-20 h-20 rounded-full bg-primary/20 flex items-center justify-center">
-                  <Compass className="w-10 h-10 text-primary" />
-                </div>
-                <p className="text-muted-foreground text-sm max-w-xs">{t("qiblaDirection")}</p>
-              </div>
-            )}
-          </div>
-        </>
-      )}
-
-      {!isLoading && !timings && !apiError && (
-        <div className="flex flex-col items-center justify-center py-20 text-center text-muted-foreground gap-4">
-          <MapPin className="w-16 h-16 text-primary/30" />
-          <p className="text-lg font-medium">{t("searchCity")}</p>
-          <button onClick={handleDetectLocation} className="mt-2 px-6 py-3 bg-primary text-primary-foreground rounded-xl font-semibold text-sm">{t("myLocation")}</button>
-        </div>
-      )}
-
-      {banner.visible && (
-        <div className="fixed bottom-20 left-4 right-4 z-50 rounded-2xl border border-primary/40 bg-card shadow-2xl shadow-primary/20 px-5 py-4 flex items-center justify-between gap-4" style={{ backdropFilter: "blur(12px)" }}>
-          <div>
-            <p className="text-xs text-muted-foreground font-semibold uppercase tracking-widest mb-0.5">{language === "ar" ? "حان وقت الصلاة" : "Prayer Time"}</p>
-            <p className="text-xl font-bold text-foreground">{PRAYER_NAMES[lang][banner.prayer] ?? banner.prayer}</p>
-            <p className="text-sm font-mono text-primary">{banner.time}</p>
-          </div>
-          <div className="flex flex-col items-end gap-2">
-            {banner.requiresTap ? (
-              <button onClick={() => playFromTap(banner.audioUrl)} className="px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-bold hover:bg-primary/90 transition">
-                اضغط لسماع الأذان
-              </button>
-            ) : (
-              <p className="text-xs text-primary font-semibold animate-pulse">{language === "ar" ? "يُشغَّل الأذان..." : "Playing Adhan..."}</p>
-            )}
-            <button onClick={dismissBanner} className="text-xs text-muted-foreground hover:text-foreground transition">{language === "ar" ? "إغلاق" : "Dismiss"}</button>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
+  useEffect(() => {
+    const lat​​​​​​​​​​​​​​​​
