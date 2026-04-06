@@ -525,3 +525,11 @@ export const QUIZ_QUESTIONS: QuizQuestion[] = [
     }
   }
 ];
+export const QUIZ_CATEGORIES = [
+  { id: "all", label: "All Categories", en: "All Categories", ar: "جميع الفئات", fr: "Toutes catégories", de: "Alle Kategorien" },
+  { id: "history", label: "History", en: "Islamic History", ar: "التاريخ الإسلامي", fr: "Histoire Islamique", de: "Islamische Geschichte" },
+  { id: "quran", label: "Quran", en: "Quran & Tafsir", ar: "القرآن والتفسير", fr: "Coran & Tafsir", de: "Koran & Tafsir" },
+  { id: "fiqh", label: "Fiqh", en: "Fiqh & Pillars", ar: "الفقه وأركان الإسلام", fr: "Fiqh & Piliers", de: "Fiqh & Säulen" },
+  { id: "prophets", label: "Prophets", en: "Prophets", ar: "الأنبياء", fr: "Les Prophètes", de: "Die Propheten" },
+  { id: "companions", label: "Companions", en: "Companions", ar: "الصحابة", fr: "Les Compagnons", de: "Die Gefährten" },
+] as const;
