@@ -33,7 +33,6 @@ export default function SplashScreen({ onFinish }: { onFinish: () => void }) {
         gap: "0px",
       }}
     >
-      {/* Crescent + Star SVG */}
       <svg
         width="110"
         height="110"
@@ -42,17 +41,14 @@ export default function SplashScreen({ onFinish }: { onFinish: () => void }) {
         xmlns="http://www.w3.org/2000/svg"
         style={{ marginBottom: "20px", filter: "drop-shadow(0 0 18px rgba(212,175,55,0.45))" }}
       >
-        {/* Crescent moon */}
         <circle cx="50" cy="55" r="38" fill="hsl(45 70% 52%)" />
         <circle cx="66" cy="45" r="31" fill="hsl(156 51% 10%)" />
-        {/* Star */}
         <polygon
           points="88,18 90.5,25.5 98.5,25.5 92,30 94.5,37.5 88,33 81.5,37.5 84,30 77.5,25.5 85.5,25.5"
           fill="hsl(45 70% 52%)"
         />
       </svg>
 
-      {/* Arabic name */}
       <p
         style={{
           fontFamily: "'Amiri', serif",
@@ -69,7 +65,6 @@ export default function SplashScreen({ onFinish }: { onFinish: () => void }) {
         نُور
       </p>
 
-      {/* English name */}
       <p
         style={{
           fontFamily: "'Inter', sans-serif",
@@ -84,7 +79,6 @@ export default function SplashScreen({ onFinish }: { onFinish: () => void }) {
         Noor
       </p>
 
-      {/* Tagline */}
       <p
         style={{
           fontFamily: "'Inter', sans-serif",
