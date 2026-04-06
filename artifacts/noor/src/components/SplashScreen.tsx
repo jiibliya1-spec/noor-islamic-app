@@ -1,41 +1,39 @@
 import { useEffect, useState } from "react";
 
 export default function SplashScreen({ onFinish }: { onFinish: () => void }) {
-  const [animate, setAnimate] = useState(false);
+  const [visible, setVisible] = useState(true);
 
   useEffect(() => {
-    setAnimate(true);
-
-    const timer = setTimeout(() => {
+    setTimeout(() => {
+      setVisible(false);
       onFinish();
-    }, 2200);
+    }, 2000);
+  }, []);
 
-    return () => clearTimeout(timer);
-  }, [onFinish]);
+  if (!visible) return null;
 
   return (
-    <div className="fixed inset-0 z-[999] flex items-center justify-center bg-[#064e3b] overflow-hidden">
-      <div
-        className={`flex flex-col items-center transition-all duration-1000 ease-out ${
-          animate
-            ? "translate-y-0 opacity-100 scale-100"
-            : "translate-y-24 opacity-0 scale-90"
-        }`}
-      >
-        <h1
-          className="text-7xl mb-2"
-          style={{
-            color: "#facc15",
-            fontFamily: "'Amiri', serif",
-          }}
-        >
-          نور
-        </h1>
-
-        <p className="text-2xl font-bold tracking-widest text-yellow-400">
-          NOOR
-        </p>
-      </div>
+    <div style={styles.container}>
+      <img src="/logo.png" style={styles.logo} />
     </div>
   );
 }
+
+const styles = {
+  container: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    background: "#2b0a5c",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 9999,
+  },
+  logo: {
+    width: "120px",
+    animation: "zoomFade 1.5s ease-in-out",
+  },
+};
