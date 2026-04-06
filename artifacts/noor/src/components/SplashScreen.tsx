@@ -1,16 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 export default function SplashScreen({ onFinish }: { onFinish: () => void }) {
-  const [visible, setVisible] = useState(true);
-
   useEffect(() => {
-    setTimeout(() => {
-      setVisible(false);
+    const timer = setTimeout(() => {
       onFinish();
     }, 2000);
-  }, []);
 
-  if (!visible) return null;
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <div style={styles.container}>
@@ -26,14 +23,14 @@ const styles = {
     left: 0,
     width: "100%",
     height: "100%",
-    background: "#2b0a5c",
+    background: "#0f3d2e",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
     zIndex: 9999,
   },
   logo: {
-    width: "120px",
+    width: "140px",
     animation: "zoomFade 1.5s ease-in-out",
   },
 };
