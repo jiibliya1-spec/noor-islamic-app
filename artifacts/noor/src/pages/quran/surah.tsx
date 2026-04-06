@@ -50,8 +50,6 @@ function stripBismillah(text: string): string {
   return text.slice(origPos).trim() || text;
 }
 
-
-
 const TAFSIR_SOURCE: Record<string, string> = {
   ar: "التفسير الميسر — وزارة الشؤون الإسلامية السعودية",
   en: "Tafhim al-Quran — Sayyid Abul Ala Maududi",
@@ -72,6 +70,27 @@ export default function SurahDetail() {
   const [saveFlash, setSaveFlash] = useState(false);
 
   const translationRef = useRef<HTMLDivElement>(null);
+
+  // ✅ swipe (إضافة فقط)
+  const touchStartX = useRef(0);
+  const touchEndX = useRef(0);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.changedTouches[0].screenX;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    touchEndX.current = e.changedTouches[0].screenX;
+    const distance = touchStartX.current - touchEndX.current;
+
+    if (Math.abs(distance) < 50) return;
+
+    if (distance > 0) {
+      window.scrollBy({ top: window.innerHeight, behavior: "smooth" });
+    } else {
+      window.scrollBy({ top: -window.innerHeight, behavior: "smooth" });
+    }
+  };
 
   const { data: tafsirText, isLoading: tafsirLoading, isError: tafsirError } = useTafsir(
     surahNumber,
@@ -189,49 +208,35 @@ export default function SurahDetail() {
           </div>
         </div>
 
-        {/* Bismillah — سطر منفصل فوق الآيات */}
+        {/* Bismillah */}
         {hasBismillah && (
-          <div
-            className="text-center mb-8"
-            style={{
-              paddingTop: "2.5rem",
-              paddingBottom: "2.5rem",
-              borderTop: "1px solid rgba(201,168,76,0.15)",
-              borderBottom: "1px solid rgba(201,168,76,0.15)",
-            }}
-          >
-            <p
-              className="font-quran text-primary"
-              style={{
-                display: "block",
-                width: "100%",
-                textAlign: "center",
-                fontSize: "2.25rem",
-                lineHeight: "2.5",
-                letterSpacing: "0.05em",
-              }}
-            >
+          <div className="text-center mb-8">
+            <p className="font-quran text-primary text-2xl">
               بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ
             </p>
           </div>
         )}
 
-        {/* Mushaf-style flowing Arabic */}
-        <div className="glass-card rounded-3xl p-6 md:p-10 mb-8">
-          <p className="font-quran leading-[2.6] text-right text-foreground text-3xl md:text-4xl" dir="rtl" lang="ar">
+        {/* Mushaf */}
+        <div
+          className="glass-card rounded-3xl p-6 md:p-10 mb-8"
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+        >
+          <p className="font-quran leading-[2.6] text-right text-foreground text-3xl md:text-4xl" dir="rtl">
             {surah.ayahs.map((ayah: AyahData) => {
-              const verseText = (hasBismillah && ayah.numberInSurah === 1)
-                ? stripBismillah(ayah.text)
-                : ayah.text;
+
+              const verseText =
+                hasBismillah && ayah.numberInSurah === 1
+                  ? ayah.text.replace(/^بِسْمِ.*?ٱلرَّحِيمِ\s*/, "")
+                  : ayah.text;
+
               return (
                 <span key={ayah.number}>
                   {verseText}
-                  <span
-                    className="inline-flex items-center justify-center mx-2 text-primary"
-                    style={{ fontFamily: "'Amiri', serif", fontSize: "0.8em", verticalAlign: "middle" }}
-                  >
+                  <span className="mx-2 text-primary">
                     ﴿{toArabicNumeral(ayah.numberInSurah)}﴾
-                  </span>{" "}
+                  </span>
                 </span>
               );
             })}
@@ -275,7 +280,6 @@ export default function SurahDetail() {
 
                   <button
                     type="button"
-                    title={bookmarked ? (isRtl ? "إزالة الإشارة" : "Remove bookmark") : (isRtl ? "إضافة إشارة" : "Bookmark verse")}
                     onClick={() => toggleBookmark({
                       surahNumber,
                       surahName: surah.name,
@@ -284,142 +288,16 @@ export default function SurahDetail() {
                       text: ayah.text,
                       translation: ayah.translation,
                     })}
-                    className={`shrink-0 flex items-center justify-center w-8 h-8 rounded-xl transition-all ${
-                      bookmarked
-                        ? "text-primary bg-primary/15"
-                        : "text-muted-foreground hover:text-primary hover:bg-primary/10"
-                    }`}
                   >
-                    {bookmarked
-                      ? <BookmarkCheck className="w-4 h-4 fill-primary/30" />
-                      : <BookmarkPlus className="w-4 h-4" />
-                    }
+                    {bookmarked ? <BookmarkCheck /> : <BookmarkPlus />}
                   </button>
                 </div>
               );
             })}
           </div>
         </div>
+
       </div>
-
-      {/* ───── Bottom Sheet ───── */}
-      {sheetAyah && (
-        <>
-          <div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm" onClick={closeSheet} />
-          <div className="fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-white/10 rounded-t-3xl shadow-2xl max-h-[80vh] flex flex-col">
-            <div className="flex justify-center pt-4 pb-1 shrink-0">
-              <div className="w-10 h-1 bg-white/20 rounded-full" />
-            </div>
-
-            {sheetView === "menu" && (
-              <>
-                <div className="px-6 pt-2 pb-4 shrink-0">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="w-7 h-7 rounded-full bg-primary/15 flex items-center justify-center text-primary text-xs font-bold shrink-0">
-                      {sheetAyah.numberInSurah}
-                    </span>
-                    <span className="text-xs text-muted-foreground font-medium">
-                      {surah.englishName} · Verse {sheetAyah.numberInSurah}
-                    </span>
-                  </div>
-                  <p className="text-sm text-foreground/80 leading-relaxed line-clamp-2">{sheetAyah.translation}</p>
-                </div>
-                <div className="border-t border-white/5 mx-6 shrink-0" />
-                <div className="p-4 space-y-2 pb-8 shrink-0">
-                  <button
-                    type="button"
-                    onClick={() => { toggleBookmark({ surahNumber, surahName: surah.name, surahEnglishName: surah.englishName, ayahNumber: sheetAyah.numberInSurah, text: sheetAyah.text, translation: sheetAyah.translation }); closeSheet(); }}
-                    className="w-full flex items-center gap-3 p-4 rounded-2xl bg-primary/10 border border-primary/20 hover:bg-primary/15 transition-colors"
-                  >
-                    {sheetBookmarked ? (
-                      <><BookmarkCheck className="w-5 h-5 text-primary fill-primary/30 shrink-0" /><span className="text-sm font-semibold text-primary">{t("removeBookmark")}</span></>
-                    ) : (
-                      <><Bookmark className="w-5 h-5 text-primary shrink-0" /><span className="text-sm font-semibold text-primary">{t("bookmarkVerse")}</span></>
-                    )}
-                  </button>
-                  <button type="button" onClick={() => setSheetView("tafsir")} className="w-full flex items-center gap-3 p-4 rounded-2xl bg-white/5 hover:bg-white/8 transition-colors">
-                    <BookOpen className="w-5 h-5 text-primary shrink-0" />
-                    <div className="text-left">
-                      <p className="text-sm font-semibold text-foreground">{t("tafsir")}</p>
-                      <p className="text-xs text-muted-foreground">{TAFSIR_SOURCE[language] || TAFSIR_SOURCE.en}</p>
-                    </div>
-                  </button>
-                  <button type="button" onClick={() => setSheetView("words")} className="w-full flex items-center gap-3 p-4 rounded-2xl bg-white/5 hover:bg-white/8 transition-colors">
-                    <AlignLeft className="w-5 h-5 text-primary shrink-0" />
-                    <div className="text-left">
-                      <p className="text-sm font-semibold text-foreground">{t("wordMeanings")}</p>
-                      <p className="text-xs text-muted-foreground">Meaning of each Arabic word</p>
-                    </div>
-                  </button>
-                  <button type="button" onClick={closeSheet} className="w-full p-4 rounded-2xl text-sm text-muted-foreground hover:bg-white/5 transition-colors font-medium">
-                    {t("cancel")}
-                  </button>
-                </div>
-              </>
-            )}
-
-            {sheetView === "tafsir" && (
-              <>
-                <div className="px-4 pb-3 pt-1 flex items-center gap-3 shrink-0 border-b border-white/5">
-                  <button onClick={() => setSheetView("menu")} className="p-1.5 rounded-xl hover:bg-white/10 transition-colors">
-                    <ChevronLeft className="w-4 h-4 text-muted-foreground" />
-                  </button>
-                  <div>
-                    <p className="text-sm font-bold text-foreground">Tafsir · {surah.englishName} {sheetAyah.numberInSurah}</p>
-                    <p className="text-xs text-primary">{TAFSIR_SOURCE[language] || TAFSIR_SOURCE.en}</p>
-                  </div>
-                </div>
-                <div className="px-5 pt-3 pb-2 shrink-0">
-                  <p className="font-quran text-lg text-foreground text-right leading-[2]" dir="rtl" lang="ar">{sheetAyah.text}</p>
-                </div>
-                <div className="flex-1 overflow-y-auto px-5 pb-8 pt-2">
-                  {tafsirLoading && <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 text-primary animate-spin" /></div>}
-                  {tafsirError && <p className="text-sm text-red-400 text-center py-6">Tafsir unavailable — check your connection.</p>}
-                  {tafsirText && !tafsirLoading && (
-                    <div className={`text-sm text-foreground/90 leading-relaxed ${language === "ar" ? "text-right" : ""}`} dir={language === "ar" ? "rtl" : "ltr"}>
-                      {stripHtml(tafsirText).split("\n").map((para, i) => <p key={i} className="mb-3">{para}</p>)}
-                    </div>
-                  )}
-                </div>
-              </>
-            )}
-
-            {sheetView === "words" && (
-              <>
-                <div className="px-4 pb-3 pt-1 flex items-center gap-3 shrink-0 border-b border-white/5">
-                  <button onClick={() => setSheetView("menu")} className="p-1.5 rounded-xl hover:bg-white/10 transition-colors">
-                    <ChevronLeft className="w-4 h-4 text-muted-foreground" />
-                  </button>
-                  <div>
-                    <p className="text-sm font-bold text-foreground">Word Meanings · {surah.englishName} {sheetAyah.numberInSurah}</p>
-                    <p className="text-xs text-muted-foreground">Quran.com — word-by-word</p>
-                  </div>
-                </div>
-                <div className="px-5 pt-3 pb-2 shrink-0">
-                  <p className="font-quran text-lg text-foreground text-right leading-[2]" dir="rtl" lang="ar">{sheetAyah.text}</p>
-                </div>
-                <div className="flex-1 overflow-y-auto px-5 pb-8 pt-2">
-                  {wordsLoading && <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 text-primary animate-spin" /></div>}
-                  {wordsError && <p className="text-sm text-red-400 text-center py-6">Word meanings unavailable — check your connection.</p>}
-                  {wordData && !wordsLoading && wordData.length === 0 && <p className="text-sm text-muted-foreground text-center py-6">No word data available for this verse.</p>}
-                  {wordData && !wordsLoading && wordData.length > 0 && (
-                    <div className="grid grid-cols-2 gap-2">
-                      {wordData.map((word, idx) => (
-                        <div key={word.id ?? idx} className="bg-white/5 rounded-xl p-3 border border-white/8">
-                          <p className="font-quran text-xl text-primary text-right leading-loose" dir="rtl" lang="ar">{word.text_uthmani}</p>
-                          {word.transliteration?.text && <p className="text-xs text-muted-foreground italic mt-1">{word.transliteration.text}</p>}
-                          {word.translation?.text && <p className="text-xs text-foreground font-medium mt-0.5">{word.translation.text}</p>}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </>
-            )}
-          </div>
-        </>
-      )}
     </div>
   );
 }
-
