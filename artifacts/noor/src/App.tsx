@@ -1,4 +1,4 @@
-import SplashScreen from "./SplashScreen";
+import SplashScreen from "./components/SplashScreen";
 import { useState, useEffect } from "react";
 import { Switch, Route, Router as WouterRouter } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
