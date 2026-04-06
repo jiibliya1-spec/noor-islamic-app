@@ -6,11 +6,13 @@ import { AudioPlayer } from "@/components/audio-player";
 import { useI18n } from "@/lib/i18n";
 import {
   Loader2, ArrowLeft, Bookmark, BookmarkCheck,
-  BookOpen, AlignLeft, ChevronLeft, Save, CheckCircle2, BookmarkPlus,
+  BookOpen, AlignLeft, ChevronLeft, ChevronRight,
+  Save, CheckCircle2, BookmarkPlus,
 } from "lucide-react";
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 
 type SheetView = "menu" | "tafsir" | "words";
+const AYAHS_PER_PAGE = 15;
 
 function toArabicNumeral(n: number): string {
   return n.toString().replace(/\d/g, d => "٠١٢٣٤٥٦٧٨٩"[parseInt(d)]);
@@ -43,10 +45,13 @@ export default function SurahDetail() {
 
   const [sheetAyah, setSheetAyah] = useState<AyahData | null>(null);
   const [sheetView, setSheetView] = useState<SheetView>("menu");
-  const [currentAyah, setCurrentAyah] = useState(1);
+  const [currentPage, setCurrentPage] = useState(0);
   const [saveFlash, setSaveFlash] = useState(false);
 
-  const translationRef = useRef<HTMLDivElement>(null);
+  // Swipe handling
+  const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
+  const pageRef = useRef<HTMLDivElement>(null);
 
   const { data: tafsirText, isLoading: tafsirLoading, isError: tafsirError } = useTafsir(
     surahNumber,
@@ -64,13 +69,22 @@ export default function SurahDetail() {
   const openSheet = (ayah: AyahData) => { setSheetAyah(ayah); setSheetView("menu"); };
   const closeSheet = () => { setSheetAyah(null); setSheetView("menu"); };
 
-  useEffect(() => {
-    if (!surah) return;
-    const target = new URLSearchParams(window.location.search).get("ayah");
-    if (!target) return;
-    const el = document.getElementById(`ayah-${target}`);
-    if (el) setTimeout(() => el.scrollIntoView({ behavior: "smooth", block: "center" }), 350);
-  }, [surah]);
+  const hasBismillah = surahNumber !== 1 && surahNumber !== 9;
+
+  const ayahs = useMemo(() => {
+    if (!surah) return [];
+    if (hasBismillah) return surah.ayahs.filter((a: AyahData) => a.numberInSurah !== 1);
+    return surah.ayahs;
+  }, [surah, hasBismillah]);
+
+  const totalPages = Math.ceil(ayahs.length / AYAHS_PER_PAGE);
+
+  const currentAyahs = useMemo(() => {
+    const start = currentPage * AYAHS_PER_PAGE;
+    return ayahs.slice(start, start + AYAHS_PER_PAGE);
+  }, [ayahs, currentPage]);
+
+  const currentAyahNumber = currentAyahs[0]?.numberInSurah ?? 1;
 
   useEffect(() => {
     if (!surah) return;
@@ -81,32 +95,47 @@ export default function SurahDetail() {
   }, [surah, surahNumber]);
 
   useEffect(() => {
-    if (!surah || !translationRef.current) return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            const n = parseInt(entry.target.id.replace("ayah-", ""), 10);
-            if (!isNaN(n)) {
-              setCurrentAyah(n);
-              saveProgress({ surahNumber, surahName: surah.name, surahEnglishName: surah.englishName, ayahNumber: n });
-            }
-          }
-        }
-      },
-      { threshold: 0.5 }
-    );
-    const els = translationRef.current.querySelectorAll("[id^='ayah-']");
-    els.forEach(el => observer.observe(el));
-    return () => observer.disconnect();
-  }, [surah, surahNumber]);
+    if (surah) {
+      saveProgress({
+        surahNumber,
+        surahName: surah.name,
+        surahEnglishName: surah.englishName,
+        ayahNumber: currentAyahNumber,
+      });
+    }
+  }, [currentPage, surah, surahNumber, currentAyahNumber]);
 
   const handleSaveProgress = useCallback(() => {
     if (!surah) return;
-    saveProgress({ surahNumber, surahName: surah.name, surahEnglishName: surah.englishName, ayahNumber: currentAyah });
+    saveProgress({ surahNumber, surahName: surah.name, surahEnglishName: surah.englishName, ayahNumber: currentAyahNumber });
     setSaveFlash(true);
     setTimeout(() => setSaveFlash(false), 2000);
-  }, [surah, surahNumber, currentAyah]);
+  }, [surah, surahNumber, currentAyahNumber]);
+
+  const goNext = useCallback(() => {
+    if (currentPage < totalPages - 1) setCurrentPage(p => p + 1);
+  }, [currentPage, totalPages]);
+
+  const goPrev = useCallback(() => {
+    if (currentPage > 0) setCurrentPage(p => p - 1);
+  }, [currentPage]);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null || touchStartY.current === null) return;
+    const dx = e.changedTouches[0].clientX - touchStartX.current;
+    const dy = e.changedTouches[0].clientY - touchStartY.current;
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) {
+      if (dx < 0) goNext();
+      else goPrev();
+    }
+    touchStartX.current = null;
+    touchStartY.current = null;
+  };
 
   if (isLoading) {
     return <div className="flex justify-center items-center h-screen"><Loader2 className="w-12 h-12 text-primary animate-spin" /></div>;
@@ -116,21 +145,18 @@ export default function SurahDetail() {
 
   const sheetBookmarked = sheetAyah ? isBookmarked(surahNumber, sheetAyah.numberInSurah) : false;
   const isRtl = language === "ar";
-  const hasBismillah = surahNumber !== 1 && surahNumber !== 9;
 
   return (
     <div className="min-h-screen pb-28">
       <AudioPlayer surahNumber={surahNumber} surahName={surah.englishName} />
 
-      {/* Save Progress bar */}
+      {/* Progress bar */}
       <div className="sticky top-[57px] z-30 w-full bg-background/90 backdrop-blur-md border-b border-white/5 px-4 py-2 flex items-center justify-between gap-3">
         <div className="flex items-center gap-2 text-xs text-muted-foreground min-w-0">
           <span className="truncate font-medium text-foreground/80">
             {isRtl ? surah.name : surah.englishName}
           </span>
-          <span className="text-muted-foreground shrink-0">
-            · {t("verse")} {currentAyah}
-          </span>
+          <span className="shrink-0">· {t("verse")} {currentAyahNumber}</span>
         </div>
         <button
           onClick={handleSaveProgress}
@@ -152,53 +178,46 @@ export default function SurahDetail() {
           <ArrowLeft className="w-5 h-5" /> {isRtl ? "العودة إلى السور" : "Back to Surahs"}
         </Link>
 
-        {/* Header card */}
-        <div className="text-center mb-10 glass-card rounded-3xl p-10 relative overflow-hidden">
+        {/* Header */}
+        <div className="text-center mb-8 glass-card rounded-3xl p-8 relative overflow-hidden">
           <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/arabesque.png')] opacity-10" />
           <div className="relative z-10">
-            <h1 className="text-5xl font-bold font-quran text-primary mb-4 leading-relaxed">{surah.name}</h1>
+            <h1 className="text-5xl font-bold font-quran text-primary mb-3 leading-relaxed">{surah.name}</h1>
             <h2 className="text-2xl font-semibold text-foreground">{surah.englishName}</h2>
-            <p className="text-muted-foreground mt-2">
+            <p className="text-muted-foreground mt-1 text-sm">
               {surah.englishNameTranslation} · {surah.revelationType} · {surah.numberOfAyahs} {isRtl ? "آية" : "verses"}
             </p>
           </div>
         </div>
 
-        {/* البسملة المعزولة فوق الآيات */}
-        {hasBismillah && (
+        {/* Bismillah */}
+        {hasBismillah && currentPage === 0 && (
           <div
-            className="text-center mb-8"
+            className="text-center mb-6"
             style={{
-              paddingTop: "2.5rem",
-              paddingBottom: "2.5rem",
+              paddingTop: "2rem",
+              paddingBottom: "2rem",
               borderTop: "1px solid rgba(201,168,76,0.15)",
               borderBottom: "1px solid rgba(201,168,76,0.15)",
             }}
           >
-            <p
-              className="font-quran text-primary"
-              style={{
-                display: "block",
-                width: "100%",
-                textAlign: "center",
-                fontSize: "2.25rem",
-                lineHeight: "2.5",
-                letterSpacing: "0.05em",
-              }}
-            >
+            <p className="font-quran text-primary text-4xl leading-loose">
               بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ
             </p>
           </div>
         )}
 
-        {/* Mushaf-style flowing Arabic */}
-        <div className="glass-card rounded-3xl p-6 md:p-10 mb-8">
-          <p className="font-quran leading-[2.6] text-right text-foreground text-3xl md:text-4xl" dir="rtl" lang="ar">
-            {surah.ayahs.map((ayah: AyahData) => {
-              // إخفاء الآية 1 كلياً لأن API تضمنها مع البسملة
-              // والبسملة معروضة منفردة فوق
-              if (hasBismillah && ayah.numberInSurah === 1) return null;
-              return (
+        {/* Swipeable Page */}
+        <div
+          ref={pageRef}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+          className="select-none"
+        >
+          {/* Arabic mushaf */}
+          <div className="glass-card rounded-3xl p-6 md:p-10 mb-6">
+            <p className="font-quran leading-[2.8] text-right text-foreground text-3xl md:text-4xl" dir="rtl" lang="ar">
+              {currentAyahs.map((ayah: AyahData) => (
                 <span key={ayah.number}>
                   {ayah.text}
                   <span
@@ -208,76 +227,103 @@ export default function SurahDetail() {
                     ﴿{toArabicNumeral(ayah.numberInSurah)}﴾
                   </span>{" "}
                 </span>
-              );
-            })}
-          </p>
-        </div>
-
-        {/* Translation */}
-        <div className="glass-card rounded-3xl p-6 md:p-8" ref={translationRef}>
-          <div className="flex items-center justify-between mb-5 pb-3 border-b border-border/50">
-            <h3 className="text-lg font-bold text-foreground">{isRtl ? "الترجمة" : "Translation"}</h3>
-            <span className="text-xs text-muted-foreground">{isRtl ? "اضغط على آية للتفسير" : "Tap a verse for tafsir & bookmarks"}</span>
+              ))}
+            </p>
           </div>
 
-          <div className="space-y-1">
-            {surah.ayahs.map((ayah: AyahData) => {
-              const bookmarked = isBookmarked(surahNumber, ayah.numberInSurah);
-              return (
-                <div
-                  key={ayah.number}
-                  id={`ayah-${ayah.numberInSurah}`}
-                  className={`flex gap-3 rounded-2xl p-3 transition-colors ${
-                    bookmarked ? "bg-primary/10 border border-primary/25" : "border border-transparent hover:bg-white/5"
-                  }`}
-                >
-                  <div className="shrink-0 flex items-start mt-0.5">
-                    <span className="w-8 h-8 rounded-full bg-primary/15 flex items-center justify-center text-primary text-sm font-bold">
-                      {ayah.numberInSurah}
-                    </span>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={() => openSheet(ayah)}
-                    className="flex-1 text-left pt-1"
-                  >
-                    <p className="text-foreground leading-relaxed text-sm">{ayah.translation}</p>
-                    <p className="text-[11px] text-muted-foreground mt-1 opacity-60">
-                      {isRtl ? "اضغط للتفسير" : "Tap for tafsir"}
-                    </p>
-                  </button>
-
-                  <button
-                    type="button"
-                    title={bookmarked ? (isRtl ? "إزالة الإشارة" : "Remove bookmark") : (isRtl ? "إضافة إشارة" : "Bookmark verse")}
-                    onClick={() => toggleBookmark({
-                      surahNumber,
-                      surahName: surah.name,
-                      surahEnglishName: surah.englishName,
-                      ayahNumber: ayah.numberInSurah,
-                      text: ayah.text,
-                      translation: ayah.translation,
-                    })}
-                    className={`shrink-0 flex items-center justify-center w-8 h-8 rounded-xl transition-all ${
-                      bookmarked
-                        ? "text-primary bg-primary/15"
-                        : "text-muted-foreground hover:text-primary hover:bg-primary/10"
+          {/* Translation */}
+          <div className="glass-card rounded-3xl p-6 mb-6">
+            <div className="flex items-center justify-between mb-4 pb-3 border-b border-border/50">
+              <h3 className="text-lg font-bold text-foreground">{isRtl ? "الترجمة" : "Translation"}</h3>
+              <span className="text-xs text-muted-foreground">{isRtl ? "اضغط على آية للتفسير" : "Tap a verse for tafsir"}</span>
+            </div>
+            <div className="space-y-1">
+              {currentAyahs.map((ayah: AyahData) => {
+                const bookmarked = isBookmarked(surahNumber, ayah.numberInSurah);
+                return (
+                  <div
+                    key={ayah.number}
+                    className={`flex gap-3 rounded-2xl p-3 transition-colors ${
+                      bookmarked ? "bg-primary/10 border border-primary/25" : "border border-transparent hover:bg-white/5"
                     }`}
                   >
-                    {bookmarked
-                      ? <BookmarkCheck className="w-4 h-4 fill-primary/30" />
-                      : <BookmarkPlus className="w-4 h-4" />
-                    }
-                  </button>
-                </div>
-              );
-            })}
+                    <div className="shrink-0 flex items-start mt-0.5">
+                      <span className="w-8 h-8 rounded-full bg-primary/15 flex items-center justify-center text-primary text-sm font-bold">
+                        {ayah.numberInSurah}
+                      </span>
+                    </div>
+                    <button type="button" onClick={() => openSheet(ayah)} className="flex-1 text-left pt-1">
+                      <p className="text-foreground leading-relaxed text-sm">{ayah.translation}</p>
+                      <p className="text-[11px] text-muted-foreground mt-1 opacity-60">
+                        {isRtl ? "اضغط للتفسير" : "Tap for tafsir"}
+                      </p>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => toggleBookmark({
+                        surahNumber,
+                        surahName: surah.name,
+                        surahEnglishName: surah.englishName,
+                        ayahNumber: ayah.numberInSurah,
+                        text: ayah.text,
+                        translation: ayah.translation,
+                      })}
+                      className={`shrink-0 flex items-center justify-center w-8 h-8 rounded-xl transition-all ${
+                        bookmarked ? "text-primary bg-primary/15" : "text-muted-foreground hover:text-primary hover:bg-primary/10"
+                      }`}
+                    >
+                      {bookmarked ? <BookmarkCheck className="w-4 h-4 fill-primary/30" /> : <BookmarkPlus className="w-4 h-4" />}
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
           </div>
+        </div>
+
+        {/* Page navigation */}
+        <div className="flex items-center justify-between gap-4 mt-2">
+          <button
+            onClick={goPrev}
+            disabled={currentPage === 0}
+            className="flex items-center gap-2 px-5 py-3 rounded-2xl bg-card border border-border/50 text-foreground font-semibold text-sm disabled:opacity-30 disabled:cursor-not-allowed hover:bg-white/5 transition-all"
+          >
+            <ChevronLeft className="w-4 h-4" />
+            {isRtl ? "السابقة" : "Prev"}
+          </button>
+
+          <div className="flex flex-col items-center gap-1">
+            <span className="text-sm font-bold text-primary">
+              {currentPage + 1} / {totalPages}
+            </span>
+            <div className="flex gap-1">
+              {Array.from({ length: Math.min(totalPages, 7) }).map((_, i) => {
+                const pageIdx = totalPages <= 7 ? i : Math.floor(i * (totalPages / 7));
+                const isActive = pageIdx === currentPage || (i === 6 && currentPage === totalPages - 1);
+                return (
+                  <div
+                    key={i}
+                    className={`rounded-full transition-all ${
+                      isActive ? "w-4 h-2 bg-primary" : "w-2 h-2 bg-primary/25"
+                    }`}
+                  />
+                );
+              })}
+            </div>
+          </div>
+
+          <button
+            onClick={goNext}
+            disabled={currentPage === totalPages - 1}
+            className="flex items-center gap-2 px-5 py-3 rounded-2xl bg-primary text-primary-foreground font-semibold text-sm disabled:opacity-30 disabled:cursor-not-allowed hover:bg-primary/90 transition-all"
+          >
+            {isRtl ? "التالية" : "Next"}
+            <ChevronRight className="w-4 h-4" />
+          </button>
         </div>
       </div>
 
-      {/* ───── Bottom Sheet ───── */}
+      {/* Bottom Sheet */}
       {sheetAyah && (
         <>
           <div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm" onClick={closeSheet} />
@@ -317,44 +363,26 @@ export default function SurahDetail() {
                     className="w-full flex items-center gap-3 p-4 rounded-2xl bg-primary/10 border border-primary/20 hover:bg-primary/15 transition-colors"
                   >
                     {sheetBookmarked ? (
-                      <>
-                        <BookmarkCheck className="w-5 h-5 text-primary fill-primary/30 shrink-0" />
-                        <span className="text-sm font-semibold text-primary">{t("removeBookmark")}</span>
-                      </>
+                      <><BookmarkCheck className="w-5 h-5 text-primary fill-primary/30 shrink-0" /><span className="text-sm font-semibold text-primary">{t("removeBookmark")}</span></>
                     ) : (
-                      <>
-                        <Bookmark className="w-5 h-5 text-primary shrink-0" />
-                        <span className="text-sm font-semibold text-primary">{t("bookmarkVerse")}</span>
-                      </>
+                      <><Bookmark className="w-5 h-5 text-primary shrink-0" /><span className="text-sm font-semibold text-primary">{t("bookmarkVerse")}</span></>
                     )}
                   </button>
-                  <button
-                    type="button"
-                    onClick={() => setSheetView("tafsir")}
-                    className="w-full flex items-center gap-3 p-4 rounded-2xl bg-white/5 hover:bg-white/8 transition-colors"
-                  >
+                  <button type="button" onClick={() => setSheetView("tafsir")} className="w-full flex items-center gap-3 p-4 rounded-2xl bg-white/5 hover:bg-white/8 transition-colors">
                     <BookOpen className="w-5 h-5 text-primary shrink-0" />
                     <div className="text-left">
                       <p className="text-sm font-semibold text-foreground">{t("tafsir")}</p>
                       <p className="text-xs text-muted-foreground">{TAFSIR_SOURCE[language] || TAFSIR_SOURCE.en}</p>
                     </div>
                   </button>
-                  <button
-                    type="button"
-                    onClick={() => setSheetView("words")}
-                    className="w-full flex items-center gap-3 p-4 rounded-2xl bg-white/5 hover:bg-white/8 transition-colors"
-                  >
+                  <button type="button" onClick={() => setSheetView("words")} className="w-full flex items-center gap-3 p-4 rounded-2xl bg-white/5 hover:bg-white/8 transition-colors">
                     <AlignLeft className="w-5 h-5 text-primary shrink-0" />
                     <div className="text-left">
                       <p className="text-sm font-semibold text-foreground">{t("wordMeanings")}</p>
                       <p className="text-xs text-muted-foreground">Meaning of each Arabic word</p>
                     </div>
                   </button>
-                  <button
-                    type="button"
-                    onClick={closeSheet}
-                    className="w-full p-4 rounded-2xl text-sm text-muted-foreground hover:bg-white/5 transition-colors font-medium"
-                  >
+                  <button type="button" onClick={closeSheet} className="w-full p-4 rounded-2xl text-sm text-muted-foreground hover:bg-white/5 transition-colors font-medium">
                     {t("cancel")}
                   </button>
                 </div>
@@ -373,27 +401,14 @@ export default function SurahDetail() {
                   </div>
                 </div>
                 <div className="px-5 pt-3 pb-2 shrink-0">
-                  <p className="font-quran text-lg text-foreground text-right leading-[2]" dir="rtl" lang="ar">
-                    {sheetAyah.text}
-                  </p>
+                  <p className="font-quran text-lg text-foreground text-right leading-[2]" dir="rtl" lang="ar">{sheetAyah.text}</p>
                 </div>
                 <div className="flex-1 overflow-y-auto px-5 pb-8 pt-2">
-                  {tafsirLoading && (
-                    <div className="flex justify-center py-8">
-                      <Loader2 className="w-6 h-6 text-primary animate-spin" />
-                    </div>
-                  )}
-                  {tafsirError && (
-                    <p className="text-sm text-red-400 text-center py-6">Tafsir unavailable — check your connection.</p>
-                  )}
+                  {tafsirLoading && <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 text-primary animate-spin" /></div>}
+                  {tafsirError && <p className="text-sm text-red-400 text-center py-6">Tafsir unavailable.</p>}
                   {tafsirText && !tafsirLoading && (
-                    <div
-                      className={`text-sm text-foreground/90 leading-relaxed ${language === "ar" ? "text-right" : ""}`}
-                      dir={language === "ar" ? "rtl" : "ltr"}
-                    >
-                      {stripHtml(tafsirText).split("\n").map((para, i) => (
-                        <p key={i} className="mb-3">{para}</p>
-                      ))}
+                    <div className={`text-sm text-foreground/90 leading-relaxed ${language === "ar" ? "text-right" : ""}`} dir={language === "ar" ? "rtl" : "ltr"}>
+                      {stripHtml(tafsirText).split("\n").map((para, i) => <p key={i} className="mb-3">{para}</p>)}
                     </div>
                   )}
                 </div>
@@ -412,35 +427,19 @@ export default function SurahDetail() {
                   </div>
                 </div>
                 <div className="px-5 pt-3 pb-2 shrink-0">
-                  <p className="font-quran text-lg text-foreground text-right leading-[2]" dir="rtl" lang="ar">
-                    {sheetAyah.text}
-                  </p>
+                  <p className="font-quran text-lg text-foreground text-right leading-[2]" dir="rtl" lang="ar">{sheetAyah.text}</p>
                 </div>
                 <div className="flex-1 overflow-y-auto px-5 pb-8 pt-2">
-                  {wordsLoading && (
-                    <div className="flex justify-center py-8">
-                      <Loader2 className="w-6 h-6 text-primary animate-spin" />
-                    </div>
-                  )}
-                  {wordsError && (
-                    <p className="text-sm text-red-400 text-center py-6">Word meanings unavailable — check your connection.</p>
-                  )}
-                  {wordData && !wordsLoading && wordData.length === 0 && (
-                    <p className="text-sm text-muted-foreground text-center py-6">No word data available for this verse.</p>
-                  )}
+                  {wordsLoading && <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 text-primary animate-spin" /></div>}
+                  {wordsError && <p className="text-sm text-red-400 text-center py-6">Word meanings unavailable.</p>}
+                  {wordData && !wordsLoading && wordData.length === 0 && <p className="text-sm text-muted-foreground text-center py-6">No word data available.</p>}
                   {wordData && !wordsLoading && wordData.length > 0 && (
                     <div className="grid grid-cols-2 gap-2">
                       {wordData.map((word, idx) => (
                         <div key={word.id ?? idx} className="bg-white/5 rounded-xl p-3 border border-white/8">
-                          <p className="font-quran text-xl text-primary text-right leading-loose" dir="rtl" lang="ar">
-                            {word.text_uthmani}
-                          </p>
-                          {word.transliteration?.text && (
-                            <p className="text-xs text-muted-foreground italic mt-1">{word.transliteration.text}</p>
-                          )}
-                          {word.translation?.text && (
-                            <p className="text-xs text-foreground font-medium mt-0.5">{word.translation.text}</p>
-                          )}
+                          <p className="font-quran text-xl text-primary text-right leading-loose" dir="rtl" lang="ar">{word.text_uthmani}</p>
+                          {word.transliteration?.text && <p className="text-xs text-muted-foreground italic mt-1">{word.transliteration.text}</p>}
+                          {word.translation?.text && <p className="text-xs text-foreground font-medium mt-0.5">{word.translation.text}</p>}
                         </div>
                       ))}
                     </div>
