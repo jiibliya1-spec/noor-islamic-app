@@ -27,13 +27,6 @@ function stripHtml(html: string): string {
   return html.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
 }
 
-const TAFSIR_SOURCE: Record<string, string> = {
-  ar: "التفسير الميسر — وزارة الشؤون الإسلامية السعودية",
-  en: "Tafhim al-Quran — Maududi",
-  fr: "Tafhim al-Quran — Maududi",
-  de: "Tafhim al-Quran — Maududi",
-};
-
 export default function SurahDetail() {
   const params = useParams();
   const surahNumber = parseInt(params.id || "1", 10);
@@ -45,26 +38,40 @@ export default function SurahDetail() {
   const [sheetView, setSheetView] = useState<SheetView>("menu");
   const [currentAyah, setCurrentAyah] = useState(1);
   const [saveFlash, setSaveFlash] = useState(false);
-
-  // NEW
   const [showTranslation, setShowTranslation] = useState(false);
   const [page, setPage] = useState(0);
   const ayahsPerPage = 10;
 
   const translationRef = useRef<HTMLDivElement>(null);
 
-  const { data: tafsirText, isLoading: tafsirLoading, isError: tafsirError } = useTafsir(
+  const { data: tafsirText } = useTafsir(
     surahNumber,
     sheetAyah?.numberInSurah ?? 0,
     language,
     sheetView === "tafsir" && sheetAyah !== null
   );
 
-  const { data: wordData, isLoading: wordsLoading, isError: wordsError } = useWordMeanings(
+  const { data: wordData } = useWordMeanings(
     surahNumber,
     sheetAyah?.numberInSurah ?? 0,
     sheetView === "words" && sheetAyah !== null
   );
+
+  // Swipe refs
+  const touchStartX = useRef(0);
+  const touchEndX = useRef(0);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.changedTouches[0].screenX;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    touchEndX.current = e.changedTouches[0].screenX;
+    const distance = touchStartX.current - touchEndX.current;
+    if (Math.abs(distance) < 50) return;
+    if (distance > 0) handleNext(); // swipe left → next
+    if (distance < 0) handlePrev(); // swipe right → previous
+  };
 
   const openSheet = (ayah: AyahData) => { setSheetAyah(ayah); setSheetView("menu"); };
   const closeSheet = () => { setSheetAyah(null); setSheetView("menu"); };
@@ -72,7 +79,6 @@ export default function SurahDetail() {
   const isRtl = language === "ar";
   const hasBismillah = surahNumber !== 1 && surahNumber !== 9;
 
-  // PAGINATION
   const pages: AyahData[][] = [];
   if (surah) {
     for (let i = 0; i < surah.ayahs.length; i += ayahsPerPage) {
@@ -80,25 +86,17 @@ export default function SurahDetail() {
     }
   }
 
-  const handleNext = () => {
-    if (page < pages.length - 1) setPage(page + 1);
-  };
-
-  const handlePrev = () => {
-    if (page > 0) setPage(page - 1);
-  };
-
-  useEffect(() => {
-    if (!surah) return;
-    const existing = loadProgress();
-    if (!existing || existing.surahNumber !== surahNumber) {
-      saveProgress({ surahNumber, surahName: surah.name, surahEnglishName: surah.englishName, ayahNumber: 1 });
-    }
-  }, [surah, surahNumber]);
+  const handleNext = () => { if (page < pages.length - 1) setPage(page + 1); };
+  const handlePrev = () => { if (page > 0) setPage(page - 1); };
 
   const handleSaveProgress = useCallback(() => {
     if (!surah) return;
-    saveProgress({ surahNumber, surahName: surah.name, surahEnglishName: surah.englishName, ayahNumber: currentAyah });
+    saveProgress({
+      surahNumber,
+      surahName: surah.name,
+      surahEnglishName: surah.englishName,
+      ayahNumber: currentAyah
+    });
     setSaveFlash(true);
     setTimeout(() => setSaveFlash(false), 2000);
   }, [surah, currentAyah]);
@@ -109,13 +107,12 @@ export default function SurahDetail() {
 
   if (!surah) return <div className="p-8 text-center text-red-500">Surah not found.</div>;
 
-  const sheetBookmarked = sheetAyah ? isBookmarked(surahNumber, sheetAyah.numberInSurah) : false;
-
   return (
     <div className="min-h-screen pb-28">
       <AudioPlayer surahNumber={surahNumber} surahName={surah.englishName} />
 
       <div className="p-4 md:p-8 max-w-4xl mx-auto">
+
         <Link href="/quran" className="inline-flex items-center gap-2 mb-6">
           <ArrowLeft className="w-5 h-5" />
         </Link>
@@ -131,41 +128,54 @@ export default function SurahDetail() {
           </div>
         )}
 
-        {/* Quran */}
-        <div className="p-6 rounded-2xl bg-white/5">
+        <div
+          className="p-6 rounded-2xl bg-white/5"
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+        >
           <div className="font-quran text-3xl leading-[2.6] text-right" dir="rtl">
-            {pages[page]?.map((ayah: AyahData) => (
-              <span key={ayah.number}>
-                {ayah.text}
-                <span className="mx-2 text-primary">
-                  ﴿{toArabicNumeral(ayah.numberInSurah)}﴾
+            {pages[page]?.map((ayah: AyahData) => {
+              const text =
+                hasBismillah && ayah.numberInSurah === 1
+                  ? ayah.text.replace(/^بِسْمِ.*?ٱلرَّحِيمِ\s*/, "")
+                  : ayah.text;
+
+              return (
+                <span key={ayah.number}>
+                  {text}
+                  <span className="mx-2 text-primary">
+                    ﴿{toArabicNumeral(ayah.numberInSurah)}﴾
+                  </span>
                 </span>
-              </span>
-            ))}
+              );
+            })}
           </div>
 
           <div className="flex justify-between mt-6">
-            <button onClick={handlePrev} className="px-4 py-2 bg-white/10 rounded-xl">
-              {isRtl ? "السابق" : "Previous"}
-            </button>
-            <button onClick={handleNext} className="px-4 py-2 bg-white/10 rounded-xl">
-              {isRtl ? "التالي" : "Next"}
-            </button>
+            {isRtl ? (
+              <>
+                <button onClick={handleNext} className="px-4 py-2 bg-white/10 rounded-xl">السابق</button>
+                <button onClick={handlePrev} className="px-4 py-2 bg-white/10 rounded-xl">التالي</button>
+              </>
+            ) : (
+              <>
+                <button onClick={handlePrev} className="px-4 py-2 bg-white/10 rounded-xl">Previous</button>
+                <button onClick={handleNext} className="px-4 py-2 bg-white/10 rounded-xl">Next</button>
+              </>
+            )}
           </div>
         </div>
 
-        {/* Translation */}
         <div className="mt-6">
           <div className="flex justify-between mb-3">
             <h3>{isRtl ? "الترجمة" : "Translation"}</h3>
             <button onClick={() => setShowTranslation(!showTranslation)}>
-              {showTranslation ? "Hide" : "Show"}
+              {showTranslation ? (isRtl ? "إخفاء" : "Hide") : (isRtl ? "إظهار" : "Show")}
             </button>
           </div>
 
           {showTranslation && pages[page]?.map((ayah: AyahData) => {
             const bookmarked = isBookmarked(surahNumber, ayah.numberInSurah);
-
             return (
               <div key={ayah.number} className="flex gap-2 p-2 border rounded">
                 <span>{ayah.numberInSurah}</span>
@@ -184,9 +194,8 @@ export default function SurahDetail() {
             );
           })}
         </div>
-      </div>
 
-      {/* Bottom Sheet بقى كيف كان */}
+      </div>
     </div>
   );
 }
